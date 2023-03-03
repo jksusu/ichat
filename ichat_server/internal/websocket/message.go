@@ -11,6 +11,7 @@ const (
 	CHATTYPE = "CHAT" //chat消息
 )
 
+// websocket 基础消息格式
 type WSMessage struct {
 	MsgType int
 	MsgData []byte
@@ -18,8 +19,8 @@ type WSMessage struct {
 
 // 业务消息体
 type BusinessMessage struct {
-	Type string          `json:"type"` // ping pong
-	Body json.RawMessage `json:"body"`
+	Type string `json:"type"` // ping pong
+	Data *ChatMessage
 }
 
 type PONGMessage struct {
@@ -44,26 +45,15 @@ func DecodeMessageBody(buf []byte) (msg *BusinessMessage, err error) {
 	return
 }
 
-// 编码消息体 方便后续替换
-func EncodeMessage(msg *BusinessMessage) (buf []byte, err error) {
-	return json.Marshal(msg)
-}
-
-// 聊天消息
+// ChatMessage 公共消息字段
 type ChatMessage struct {
 	Msgv    string            `json:"msgv"`
 	MsgId   string            `json:"msgId"`
 	Seq     int64             `json:"seq"`
-	Route   string            `json:"route"` //消息处理 action
+	Route   string            `json:"route"`
 	From    string            `json:"from"`
 	To      string            `json:"to"`
-	Content string            `json:"data"`
+	Content string            `json:"content"`
+	Type    string            `json:"type"`
 	Extra   map[string]string `json:"extra"`
-}
-
-// 消息ack
-type AckMessage struct {
-	Type   string `json:"type"`
-	MsgId  string `json:"msgId"`
-	Status int    `json:"status"`
 }

@@ -1,6 +1,8 @@
 package websocket
 
 import (
+	"bytes"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"net"
@@ -19,7 +21,7 @@ type Acceptor interface {
 	Accept(*Connect, *http.Request) (uint64, error)
 }
 type MessageListener interface {
-	Receive(*Connect, []byte)
+	Receive(*Connect, *ChatMessage)
 }
 type StateListener interface {
 	Disconnect(id string) error
@@ -121,8 +123,8 @@ func (s *Server) handler(c *Connect) {
 				goto CLOSE
 			}
 		case CHATTYPE:
-			if msg.Body != nil {
-				s.Receive(c, msg.Body)
+			if msg.Data != nil {
+				s.Receive(c, msg.Data)
 			}
 		}
 	}
@@ -137,28 +139,22 @@ func printStart() {
 	serviceId := GlobalConfig.WsServiceId
 	serviceName := GlobalConfig.WsServiceName
 
-	fmt.Println("******************************************************************************************************************")
-	fmt.Printf("\u25A0\u25A0                                   \033[1;31;47m %s \033[0m\n", "gateway websocket server start success")
-	fmt.Println("\u25A0\u25A0")
-	fmt.Printf("\u25A0\u25A0     serviceId    : %s", serviceId)
-	fmt.Println()
-	fmt.Println("\u25A0\u25A0")
-	fmt.Printf("\u25A0\u25A0     serviceName  : %s", serviceName)
-	fmt.Println()
-	fmt.Println("\u25A0\u25A0")
-	fmt.Println("\u25A0\u25A0     httpRoute    : /ws")
-	fmt.Println("\u25A0\u25A0")
-	fmt.Printf("\u25A0\u25A0     listen       : %s ", listenAddr)
-	fmt.Println()
-	fmt.Println("\u25A0\u25A0")
-	fmt.Println("*******************************************************************************************************************")
+	fmt.Printf("\033[1;31;47m %s \033[0m\n", "gateway websocket server start success")
+	fmt.Printf("serviceId    : %s\n", serviceId)
+	fmt.Printf("serviceName  : %s\n", serviceName)
+	fmt.Printf("httpRoute    : /ws\n")
+	fmt.Printf("listen       : %s\n", listenAddr)
 }
 
-// api
-func SendMsg(connId string, p []byte) error {
+// SendChatMessage 发送聊天消息
+func SendChatMessage(connId string, chat *ChatMessage) error {
+	buf := &bytes.Buffer{}
+	if err := binary.Write(buf, binary.LittleEndian, chat); err != nil {
+		return err
+	}
 	conn, ok := GlobalConnManager.GetConn(connId)
 	if !ok {
-		return errors.New("send msg err")
+		return errors.New("SendChatMessage get conn error")
 	}
-	return conn.Push(&WSMessage{MsgType: websocket.TextMessage, MsgData: p})
+	return conn.Push(&WSMessage{MsgType: websocket.TextMessage, MsgData: buf.Bytes()})
 }

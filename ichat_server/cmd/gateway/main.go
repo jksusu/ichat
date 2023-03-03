@@ -19,9 +19,6 @@ func r() {
 
 	ichat.InitConf(envPath)
 
-	db.InitMysql(ichat.MysqlConf)
-	db.InitRedis(ichat.RedisConf)
-
 	handler := handler.HandlerImpl{}
 	ws := websocket.NewServer(envPath)
 	ws.Acceptor = &handler
@@ -31,6 +28,9 @@ func r() {
 	if err := ws.Run(); err != nil {
 		logrus.Error(err)
 	}
+
+	db.InitMysql(ichat.MysqlConf)
+	db.InitRedis(ichat.RedisConf)
 
 	for {
 		time.Sleep(1 * time.Second)

@@ -15,23 +15,29 @@
 
 {
 	"type": "CHAT",
-	"body": {
+	"data": {
 		"msgv": "1",
 		"msgId": "1212121",
-		"contentType": "1",
 		"seq": "1",
-		"route": "/chat/message",
+		"route": "cha.message",
 		"from": "1212121",
 		"to": "1212121",
 		"content": "hello",
+		"type": 1,
 		"Extra": {}
 	}
 }
 
+3.消息ack
 ```
 
 ## 待优化点
 > 连接map打散到更小的bucket中，减少推送遍历
+## 消息ack
+> 根据 route 中的内容来确定 状态
+> * chat.message.server.ack 服务端已收到并已经缓存
+> * chat.message.arrive.ack 已经送达，但还未读
+> * chat.message.read.ack   已读回执
 
 ## 唯一数生成
 >1. 一个字节8个bit

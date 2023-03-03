@@ -1,0 +1,46 @@
+# 网关配置
+gateway:
+  serviceId: gate01
+  serviceName: gateway
+  wsPort: 9501 #监听端口
+  wsReadTimeout: 200000 #读超时时间 毫秒
+  wsWriteTimeout: 200000 #写超时时间 毫秒
+  wsWriteChannelSize: 1000 #通道最大消息数量
+  wsReadChannelSize: 1000 #读通道最大数量
+  wsHeartbeatTimeout: 60 #心跳超时时间 秒
+  #  tags:
+  #    IDC: SH_ALI
+  domain:
+  consulurl: localhost:8500
+  appsecret: ""
+  messagegpool: 5000
+  connectiongpool: 15000
+
+# mysql connect configuration
+mysql:
+  host: localhost
+  port: 3306
+  database: "im"
+  username: "root"
+  password: "phpdock"
+  max-idle-conns: 10
+  max-open-conns: 100
+  log-mode: false
+  log-zap: false
+
+# redis configuration
+redis:
+  db: 0
+  host: "127.0.0.1"
+  port: 6379
+  password: ""
+
+# email configuration
+email:
+  to: "xxx@qq.com"
+  port: 465
+  from: "xxx@163.com"
+  host: "smtp.163.com"
+  is-ssl: true
+  secret: "xxx"
+  nickname: "test"

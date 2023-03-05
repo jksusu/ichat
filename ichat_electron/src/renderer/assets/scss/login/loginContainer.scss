@@ -1,0 +1,59 @@
+:root {
+    --backgroundColor: #FFFFFF;
+    --windonWidth: 360px;
+    --windonHeight: 531px;
+    --windonBottomMessageHeight: 29px;
+}
+
+#login-window-container {
+    height: 531px;
+    display: flex;
+    flex-direction: column;
+    background: #FFFFFF;
+    border-radius: 12px 12px 0 0;
+
+    
+
+    img {
+        -webkit-user-drag: none;
+    }
+
+    .header_title {
+        -webkit-app-region: drag;
+    }
+
+
+    .el-input {
+        height: 48px;
+        border-radius: 8px;
+    }
+
+    .el-input__wrapper {
+        --el-input-bg-color: #F5F6F7;
+        box-shadow: 0 0 0 0;
+    }
+
+    .el-input__wrapper.is-focus {
+        box-shadow: 0 0 0 0;
+    }
+
+    .el-input__wrapper:hover {
+        box-shadow: 0 0 0 0;
+    }
+
+    .el-form-item {
+        margin-bottom: 12px;
+    }
+
+    .el-checkbox__inner {
+        border-radius: 12px 12px 12px 12px;
+    }
+
+    .el-checkbox {
+        --el-checkbox-checked-text-color: none;
+    }
+
+    .el-checkbox__label {
+        color: #666666
+    }
+}

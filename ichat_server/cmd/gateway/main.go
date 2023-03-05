@@ -4,6 +4,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"ichat"
 	"ichat/cmd/gateway/handler"
+	"ichat/cmd/gateway/store"
 	"ichat/internal/websocket"
 	"ichat/pkg/db"
 	"time"
@@ -28,6 +29,8 @@ func r() {
 	if err := ws.Run(); err != nil {
 		logrus.Error(err)
 	}
+	//初始化雪花id生成
+	store.NewIDGenerator(100)
 
 	db.InitMysql(ichat.MysqlConf)
 	db.InitRedis(ichat.RedisConf)

@@ -47,13 +47,14 @@ func DecodeMessageBody(buf []byte) (msg *BusinessMessage, err error) {
 
 // ChatMessage 公共消息字段
 type ChatMessage struct {
-	Msgv    string            `json:"msgv"`
-	MsgId   string            `json:"msgId"`
-	Seq     int64             `json:"seq"`
-	Route   string            `json:"route"`
-	From    string            `json:"from"`
-	To      string            `json:"to"`
-	Content string            `json:"content"`
-	Type    string            `json:"type"`
-	Extra   map[string]string `json:"extra"`
+	Msgv     string `json:"msgv"`
+	MsgId    int64  `json:"msgId"`
+	Seq      int64  `json:"seq"`
+	Route    string `json:"route"`
+	From     string `json:"from"`
+	To       string `json:"to"`
+	Content  string `json:"content"`
+	Type     int    `json:"type"`
+	SendTime int64  `json:"send_time"`
+	Extra    string `json:"extra"`
 }

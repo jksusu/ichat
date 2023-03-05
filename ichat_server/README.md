@@ -17,17 +17,16 @@
 	"type": "CHAT",
 	"data": {
 		"msgv": "1",
-		"msgId": "1212121",
-		"seq": "1",
-		"route": "cha.message",
+		"msgId": 0,
+		"seq": 0,
+		"route": "chat.user.message",
 		"from": "1212121",
 		"to": "1212121",
 		"content": "hello",
 		"type": 1,
-		"Extra": {}
+		"Extra": ""
 	}
 }
-
 3.消息ack
 ```
 

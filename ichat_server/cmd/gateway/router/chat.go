@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"ichat/cmd/gateway/store"
@@ -10,21 +11,29 @@ import (
 )
 
 func handlerSingleChat(message *websocket.ChatMessage) {
+	//验证消息完整性
+
+	sendTime := time.Now().UnixNano()
+	message.SendTime = sendTime
 	//消息入库
 	msgId, err := AddMessageContent(message)
 	if err != nil {
 		logrus.Error(err)
 		return
 	}
-	messageAck(message.To, message.Seq, message.MsgId, message.Route) //通知发送端已经发送成功了
+	//通知发送端已经发送成功了
+	fmt.Println(message.To)
+	messageAck(message.From, message.Seq, msgId, message.Route)
 
 	message.MsgId = msgId
 
-	//如果在线则发送给对方
+	//如果接收方在线，就推消息
 	connId, err := store.GetConnIdByUid(message.To)
 	if err := websocket.SendChatMessage(connId, message); err != nil {
 		return
 	}
+
+	//返回消息id和发送时间
 }
 
 func handlerGroupChat(message *websocket.ChatMessage) {
@@ -37,12 +46,11 @@ func handlerMessageAck(message *websocket.ChatMessage) {
 
 func AddMessageContent(message *websocket.ChatMessage) (msgId int64, err error) {
 	msgId = store.Gen.Node.Generate().Int64()
-	sendTime := time.Now().UnixNano()
 	content := store.ChatMessageContent{
 		ID:       msgId,
 		Type:     message.Type,
 		Content:  message.Content,
-		SendTime: sendTime,
+		SendTime: message.SendTime,
 		Extra:    message.Extra,
 	}
 	index := make([]store.ChatMessageIndex, 2)
@@ -52,7 +60,7 @@ func AddMessageContent(message *websocket.ChatMessage) (msgId int64, err error) 
 		B:        message.To,
 		ISend:    1,
 		MsgId:    msgId,
-		SendTime: sendTime,
+		SendTime: message.SendTime,
 	}
 	index[1] = store.ChatMessageIndex{
 		ID:       store.Gen.Node.Generate().Int64(),
@@ -60,7 +68,7 @@ func AddMessageContent(message *websocket.ChatMessage) (msgId int64, err error) 
 		B:        message.From,
 		ISend:    0,
 		MsgId:    msgId,
-		SendTime: sendTime,
+		SendTime: message.SendTime,
 	}
 
 	err = db.DB.Transaction(func(d *gorm.DB) (err error) {
@@ -72,7 +80,9 @@ func AddMessageContent(message *websocket.ChatMessage) (msgId int64, err error) 
 		}
 		return
 	})
-
+	if err != nil {
+		logrus.Error(err)
+	}
 	return
 }
 

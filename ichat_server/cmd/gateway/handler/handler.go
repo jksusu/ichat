@@ -27,7 +27,6 @@ func (h *HandlerImpl) Accept(conn *websocket.Connect, r *http.Request) (uint64, 
 	uid, _ := GetUidByToken(UrlDecodeToken(r))
 	AddConnBidirectionalBindingUid(conn.ID, uid)
 
-	fmt.Println("连接开始")
 	return 1, nil
 }
 
@@ -45,7 +44,6 @@ func (h *HandlerImpl) Disconnect(id string) error {
 
 	DeleteBindingRelationship(id)
 
-	fmt.Println("关机了")
 	return nil
 }
 

@@ -7,7 +7,7 @@ gateway:
   wsWriteTimeout: 200000 #写超时时间 毫秒
   wsWriteChannelSize: 1000 #通道最大消息数量
   wsReadChannelSize: 1000 #读通道最大数量
-  wsHeartbeatTimeout: 60 #心跳超时时间 秒
+  wsHeartbeatTimeout: 600 #心跳超时时间 秒
   #  tags:
   #    IDC: SH_ALI
   domain:

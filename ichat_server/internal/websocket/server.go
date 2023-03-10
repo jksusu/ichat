@@ -2,7 +2,8 @@ package websocket
 
 import (
 	"bytes"
-	"encoding/binary"
+	"encoding/gob"
+	json2 "encoding/json"
 	"errors"
 	"fmt"
 	"net"
@@ -60,10 +61,10 @@ func NewServer(path string) *Server {
 	return &Server{}
 }
 
-// 初始化websocket服务
+// Run 初始化websocket服务
 func (s *Server) Run() (err error) {
 	if s.Acceptor == nil || s.MessageListener == nil || s.StateListener == nil || s.BeforeAcceptor == nil {
-		return errors.New("Must be achieved Acceptor MessageListener StateListener BeforeAcceptor interface")
+		return errors.New("must be achieved Acceptor MessageListener StateListener BeforeAcceptor interface")
 	}
 
 	mux := http.NewServeMux()
@@ -96,9 +97,9 @@ func (s *Server) handleConnect(w http.ResponseWriter, r *http.Request) {
 	id := fmt.Sprintf("%d%s", time.Now().UnixNano(), "b")
 
 	conn := HttpUpgraderToWebsocket(id, websocket)
-
+	logrus.Infof("new connect id:%v", id)
+	defer conn.Close()
 	s.Accept(conn, r)
-
 	s.handler(conn)
 }
 
@@ -106,21 +107,23 @@ func (s *Server) handler(c *Connect) {
 	for {
 		data, err := c.ReadMsg()
 		if err != nil {
-			goto CLOSE
+			c.Close()
+			return
 		}
 		if data == nil || data.MsgType != 1 {
 			continue
 		}
 		msg, err := DecodeMessageBody(data.MsgData)
 		if err != nil {
-			goto CLOSE
+			c.Close()
+			return
 		}
-
 		switch msg.Type {
 		case PINGTYPE:
 			if err := c.Pong(); err != nil {
 				logrus.Error(err)
-				goto CLOSE
+				c.Close()
+				return
 			}
 		case CHATTYPE:
 			if msg.Data != nil {
@@ -128,9 +131,6 @@ func (s *Server) handler(c *Connect) {
 			}
 		}
 	}
-CLOSE:
-	c.Close()
-	return
 }
 
 func printStart() {
@@ -148,13 +148,18 @@ func printStart() {
 
 // SendChatMessage 发送聊天消息
 func SendChatMessage(connId string, chat *ChatMessage) error {
-	buf := &bytes.Buffer{}
-	if err := binary.Write(buf, binary.LittleEndian, chat); err != nil {
-		return err
+	buf := new(bytes.Buffer)
+	enc := gob.NewEncoder(buf)
+	if err := enc.Encode(chat); err != nil {
+		fmt.Println(err)
 	}
+
+	json, _ := json2.Marshal(chat)
+
 	conn, ok := GlobalConnManager.GetConn(connId)
 	if !ok {
-		return errors.New("SendChatMessage get conn error")
+		return errors.New("sendChatMessage get conn error")
 	}
-	return conn.Push(&WSMessage{MsgType: websocket.TextMessage, MsgData: buf.Bytes()})
+	//return conn.Push(&WSMessage{MsgType: websocket.BinaryMessage, MsgData: buf.Bytes()})
+	return conn.Push(&WSMessage{MsgType: websocket.TextMessage, MsgData: json})
 }

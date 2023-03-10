@@ -7,10 +7,16 @@ import (
 	"ichat/cmd/gateway/store"
 	"ichat/internal/websocket"
 	"ichat/pkg/db"
+	"net/http"
+	_ "net/http/pprof"
 	"time"
 )
 
 func main() {
+	go func() {
+		_ = http.ListenAndServe("localhost:6060", nil)
+	}()
+
 	r()
 }
 

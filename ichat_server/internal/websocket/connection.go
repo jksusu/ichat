@@ -24,42 +24,40 @@ type Connect struct {
 }
 
 // 读
-func (c *Connect) readloop() {
+func (c *Connect) readLoop() {
+	var (
+		messageType int
+		p           []byte
+		err         error
+		m           *WSMessage
+	)
 	for {
-		msgType, msgData, err := c.Conn.ReadMessage()
-		if err != nil {
-			goto ERROR
+		if messageType, p, err = c.Conn.ReadMessage(); err != nil {
+			c.Close()
 		}
-		msg := BuildWSMessage(msgType, msgData)
+		m = BuildWSMessage(messageType, p)
 		select {
-		case c.readChan <- msg:
+		case c.readChan <- m:
 		case <-c.closeChan:
-			goto CLOSED
+			return
 		}
 	}
-ERROR:
-	c.Close()
-CLOSED:
+	return
 }
 
 func (c *Connect) writeLoop() {
-
 	var message *WSMessage
-
 	for {
 		select {
 		case message = <-c.writeChan:
 			if err := c.Conn.WriteMessage(message.MsgType, message.MsgData); err != nil {
-				goto ERROR
+				c.Close()
 			}
 		case <-c.closeChan:
-			goto CLOSED
+			return
 		}
 	}
-
-ERROR:
-	c.Close()
-CLOSED:
+	return
 }
 
 // 初始化websocket连接 启动读写协程
@@ -76,7 +74,7 @@ func HttpUpgraderToWebsocket(ID string, conn *websocket.Conn) *Connect {
 
 	GlobalConnManager.AddConn(connect) //把当前连接加入到连接管理
 
-	go connect.readloop()
+	go connect.readLoop()
 	go connect.writeLoop()
 	go connect.heartbeatCheck()
 
@@ -100,24 +98,26 @@ func (c *Connect) ReadMsg() (message *WSMessage, err error) {
 	case message = <-c.readChan:
 		ReadMessageNumber_DEC()
 	case <-c.closeChan:
-		ReadMessageFailNumber_INC()
+		err = errors.New("connect close")
 	}
 	return
 }
 
 // Close  线程安全可重入关闭
 func (c *Connect) Close() {
+	c.Conn.Close()
+
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
-	logrus.Infof("close connect id: %v", c.ID)
 
-	GlobalConnManager.RemoveConn(c)
-	c.Conn.Close()
+	//GlobalConnManager.RemoveConn(c)
 	if !c.isClosed {
-		GlobalServer.Disconnect(c.ID)
+		logrus.Infof("connect close id:%v", c.ID)
+		//GlobalServer.Disconnect(c.ID)
 		c.isClosed = true
 		close(c.closeChan)
 	}
+	return
 }
 
 // 检测连接是否存活
@@ -156,6 +156,7 @@ func (c *Connect) heartbeatCheck() {
 			return
 		}
 	}
+	return
 }
 
 func (c *Connect) Pong() (err error) {

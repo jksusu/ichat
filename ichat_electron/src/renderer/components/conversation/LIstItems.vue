@@ -12,8 +12,9 @@
                 <div class="items" v-for="item in props.list" @click="select(item.uid)">
                     <Item :class="{ select: item.uid == index }" :nickname="item.nickname"
                         :headPortraitUrl="item.headPortraitUrl" :account="item.uid" :lastMessage="item.lastMessage"
-                        :lastMessageTime="item.lastMessageTime" :pattern="props.pattern"
-                        :unreadMessageNumber="item.unreadMessageNumber" v-bind="$attrs">
+                        :lastMessageTime="LastMessageTimeShow(item.lastMessageTime)" :pattern="props.pattern"
+                        :unreadMessageNumber="item.unreadMessageNumber" v-bind="$attrs"
+                        v-menus:right="menus">
                     </Item>
                 </div>
             </el-scrollbar>
@@ -26,16 +27,21 @@
 
 <script lang="ts" setup>
 import { computed } from "@vue/reactivity";
+import { ref } from "vue"
 import Item from '@/renderer/components/conversation/Item.vue';
 import Information from '@/renderer/components/personal/Information.vue';
 import { useSelectIndexStore } from '@/renderer/stores/modules/selectIndex'
 import DefaultNullValue from "../DefaultNullValue.vue";
+import { LastMessageTimeShow } from "@/renderer/module/socket";
+import { delSession, nodisturb, msgTopping } from "@/renderer/module/menu"
 
 const index = computed(() => useSelectIndexStore().getSessionIndex)
 const select = (uid: string) => {
     useSelectIndexStore().setSessionIndex(uid)
 }
 
+//右键菜单
+const menus = ref([delSession, nodisturb, msgTopping])
 /**
  * pattern 模式
  * 1.message 消息模式 会完全展示
@@ -52,7 +58,7 @@ const props = withDefaults(defineProps<{
 
 <style lang="scss" >
 .select {
-    background-color: #CAC7C6;
+    background-color: #EAEAEA;
 }
 
 .list_container {
@@ -80,6 +86,7 @@ const props = withDefaults(defineProps<{
     height: 44px;
     background: #FFFFFF;
     border-bottom: 1px solid #EAEAEA;
+
     span {
         padding-left: 18px;
         width: 56px;

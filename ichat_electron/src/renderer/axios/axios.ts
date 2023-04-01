@@ -1,8 +1,9 @@
 import axios from "axios";
+import { UserStore } from '@/renderer/stores/modules/user';
 
 const config = {
     //baseURL: import.meta.env.VITE_API_URL,
-    baseURL: 'https://localhost/',
+    baseURL: 'http://127.0.0.1',
     timeout: 10000,
 }
 
@@ -14,20 +15,16 @@ const config = {
  * @returns 
  */
 export const http = (api: string, params: any, method: string = 'POST') => {
-
-    console.log('打印配置')
-    console.log(config)
     if (method == 'POST') {
         return axios.post(api, params, config).then((res) => {
-            return res;
+            return res.data;
         }).catch((err) => {
-            console.log(err)
             return err;
         })
     }
     if (method == 'GET') {
         return axios({ method: method, url: api, params: params }).then((res) => {
-            return res;
+            return res.data;
         }).catch((err) => {
             console.log(err)
             return err;
@@ -38,6 +35,11 @@ export const http = (api: string, params: any, method: string = 'POST') => {
 // 添加请求拦截器
 axios.interceptors.request.use(function (config) {
     // 在发送请求之前做些什么
+    if (UserStore().getToken) {
+        const token = UserStore().getToken
+        config.headers.Authorization = `${token}`
+    }
+
     return config;
 }, function (error) {
     // 对请求错误做些什么

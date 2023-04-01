@@ -4,8 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/sirupsen/logrus"
+	"ichat/cmd/gateway/message"
 	"ichat/cmd/gateway/router"
+	"ichat/cmd/gateway/router/route"
 	"ichat/internal/websocket"
+	"ichat/pkg/ichat_cache/connect"
 	"net/http"
 	"net/url"
 )
@@ -17,33 +21,39 @@ func (h *HandlerImpl) BeforeAccept(r *http.Request) error {
 	if token = UrlDecodeToken(r); token == "" {
 		return errors.New("certification failed")
 	}
-	if _, err := GetUidByToken(token); err != nil {
+	if _, err := connect.GetUIDbyToken(token); err != nil {
 		return errors.New("certification failed")
 	}
 	return nil
 }
 
 func (h *HandlerImpl) Accept(conn *websocket.Connect, r *http.Request) (uint64, error) {
-	uid, _ := GetUidByToken(UrlDecodeToken(r))
-	AddConnBidirectionalBindingUid(conn.ID, uid)
+	uid, err := connect.GetUIDbyToken(UrlDecodeToken(r))
+	if err != nil {
+		logrus.Error(err)
+		return 0, err
+	}
+	//双向绑定
+	connect.AddConnBidirectionalBindingUid(conn.ID, uid)
+
+	//推送第一个包是用户信息
+	m := make(map[string]string)
+	m["connId"] = conn.ID
+	m["uid"] = uid
+
+	message.Push(conn.ID, &message.PushMessage{Route: route.RouteUserInfoUpdate, Data: m})
 
 	return 1, nil
 }
 
-func (h *HandlerImpl) Receive(conn *websocket.Connect, msg *websocket.ChatMessage) {
-
-	router.MessageRoute(msg)
-
-	//websocket.SendMsg(conn.ID, []byte("哈哈哈哈哈"))
-	//logrus.Infof("当前连接id:%v ,接收到消息:%v", conn.ID, MsgDecode(msg))
-
-	//conn.Push(&websocket.WSMessage{MsgType: 1, MsgData: []byte("你好，你好")})
+func (h *HandlerImpl) Receive(conn *websocket.Connect, msg *websocket.BusinessMessage) {
+	router.MessageRoute(&message.RequestMessage{From: msg.From, ReqId: msg.ReqId, Type: msg.Type, Route: msg.Route, Data: msg.Data})
 }
 
-func (h *HandlerImpl) Disconnect(id string) error {
-
-	DeleteBindingRelationship(id)
-
+func (h *HandlerImpl) Disconnect(connId string) error {
+	if err := connect.DeleteBindingRelationship(connId); err != nil {
+		logrus.Error(err)
+	}
 	return nil
 }
 

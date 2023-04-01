@@ -19,7 +19,7 @@
             <span style="margin-left: 3px;"><img width="12" height="12" :src="detail" /></span>
           </label>
         </div>
-        <el-button type="primary" @click="login(ruleFormRef)">{{ loginFrom.loginButtonName }}</el-button>
+        <el-button type="primary" @click="startLogin(ruleFormRef)">{{ loginFrom.loginButtonName }}</el-button>
       </div>
     </template>
     <template #container-bottom>
@@ -36,8 +36,6 @@
 import { reactive, ref } from 'vue'
 import { jump } from '@/renderer/tool/tool';
 import { router } from '@/renderer/router';
-//import { signin } from '@/renderer/api/signins';
-
 import { showHomeWindow } from '@/common/ipcRenderer';
 import LogoRegion from '@/renderer/views/login/components/LogoRegion.vue';
 import { optionConfigStore } from '@/renderer/stores/modules/optionConfig'
@@ -47,9 +45,9 @@ import { UserStore } from '@/renderer/stores/modules/user';
 import iconUrl from '@/renderer/assets/images/login_method_icon_qccode.png'
 import tripUrl from '@/renderer/assets/images/login_method_trip_qccode.png'
 import detail from '@/renderer/assets/images/detail.png'
-import { signin } from '@/renderer/api/signins';
+import { login } from '@/renderer/api/apis';
 import type { FormInstance, FormRules } from 'element-plus'
-
+import { ElLoading } from 'element-plus'
 
 const ruleFormRef = ref<FormInstance>()
 const rules = reactive<FormRules>({
@@ -57,7 +55,7 @@ const rules = reactive<FormRules>({
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
 })
 const loginFrom = reactive({
-  username: 'admin',
+  username: '13266503511',
   password: '123456',
   automaticLogin: false,
   rememberPassword: false,
@@ -66,7 +64,7 @@ const loginFrom = reactive({
   loginButtonName: "登录",
 })
 
-const login = (formEl: FormInstance | undefined) => {
+const startLogin = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate((valid) => {
     if (valid) {
@@ -74,18 +72,31 @@ const login = (formEl: FormInstance | undefined) => {
       optionConfigStore().setAutomaticLogin(loginFrom.automaticLogin)
       optionConfigStore().setRememberPassword(loginFrom.rememberPassword)
 
-      console.log('开始登录')
-
+      //登录加载框
+      const loading = ElLoading.service({
+        lock: true,
+        text: '登陆中',
+        background: 'rgba(0, 0, 0, 0.7)',
+      })
       loginFrom.loginButtonName = '登陆中'
-      signin({ 'username': loginFrom.username, password: loginFrom.password }).then((res) => {
-        res.code =200
-        if (res.code == 200) {
-          UserStore().setToken('fdafdasfds')
-          showHomeWindow()
-          router.push('/session')
+
+      login({ username: loginFrom.username, password: loginFrom.password }).then( (res) => {
+        if (res.code == 0) {
+          let data = res.data
+          UserStore().setToken(data.token)
+          UserStore().setUserInfo(data.uid, data.nickname, data.head_portrait, "")
+
+          setTimeout(() => {
+            loading.close()
+            //登录初始化
+            showHomeWindow()
+            router.push('/session')
+          }, 2000)
+
         } else {
+          loading.close()
           loginFrom.status = true
-          loginFrom.message = '错误'
+          loginFrom.message = res.message ? res.message : res.data.message
           loginFrom.loginButtonName = '登陆'
         }
       })

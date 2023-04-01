@@ -1,271 +1,128 @@
 <template>
     <div class="session_container">
-        <LIstItems titlename="全部会话" @clickEvent="sessionItemSelect" :list="state.list"></LIstItems>
+        <LIstItems titlename="全部会话" @clickEvent="sessionItemSelect" :list="SessionStore().getSessionLists"></LIstItems>
         <div>
-            <SessionTitle :name="nickname" @clickEvent="open()">
-                <template #titleRight>
-                    <span id="diandiandian" @click="open()">
-                        <SvgIcon color="#808899" name="dian"></SvgIcon>
-                    </span>
-                </template>
-            </SessionTitle>
-            <div>
-                <el-scrollbar id="chat_message_container" ref="scrollbarRef">
-                    <div ref="innerRef">
-                        <ChatBubble style="margin: 0 23px 0 23px;" v-for="item in record" :content="item.content"
-                            :is-self="item.isSelf"></ChatBubble>
-                    </div>
-                </el-scrollbar>
-                <ChatInputContaineri @sendMessage="sendMessage"></ChatInputContaineri>
+            <div v-if="selectSession">
+                <SessionTitle :name="nickname" @sessionTitleClickEvent="open()">
+                    <template #titleRight>
+                        <div id="diandiandian">
+                            <SvgIcon @click="open()" color="#808899" name="dian"></SvgIcon>
+                        </div>
+                    </template>
+                </SessionTitle>
+                <div>
+                    <el-scrollbar id="chat_message_container" ref="scrollbarRef">
+                        <div ref="innerRef">
+                            <ChatBubble style="margin: 0 23px 0 23px;" v-for="item in record" :content="item.content"
+                                :is-self="item.i_send" :send-time="formatWechatTime(item.send_time)"></ChatBubble>
+
+                        </div>
+                    </el-scrollbar>
+                    <ChatInputContaineri @sendMessage="sendMessage"></ChatInputContaineri>
+                </div>
+            </div>
+            <div v-else>
+                <SessionTitle style="background:rgb(255, 255, 255);border-bottom:none"></SessionTitle>
+                <div style="display: flex;justify-content: center;height: calc(100vh - 240px);">
+                    <DefaultNullValue
+                        style="display: flex;align-items: center;height: 100%;flex-direction: column;justify-content: center;">
+                    </DefaultNullValue>
+                </div>
             </div>
             <div>
-                <Drawer @close="close" :status="state.status" type="person"></Drawer>
+                <Drawer @close="close" :status="state.drawerStatus" type="person"></Drawer>
             </div>
         </div>
-</div>
+    </div>
 </template>
 
 <script lang="ts" setup>
 import { computed } from "@vue/reactivity"
 import Drawer from '@/renderer/components/Drawer.vue'
 import SvgIcon from '@/renderer/components/SvgIcon.vue'
-import { ElScrollbar as ElScrollbarType } from 'element-plus';
-import { getSessionList, getChatRecord } from "@/renderer/api/chat"
-import { reactive, ref, onMounted, onUpdated, nextTick } from "vue"
+import { ElScrollbar as ElScrollbarType } from 'element-plus'
+import { SessionStore } from "@/renderer/stores/modules/sessionList"
 import SessionTitle from "@/renderer/components/title/SessionTitle.vue"
 import LIstItems from '@/renderer/components/conversation/LIstItems.vue'
 import ChatBubble from '@/renderer/components/conversation/ChatBubble.vue'
+import { reactive, ref, onMounted, nextTick, watch } from "vue"
 import { useSelectIndexStore } from '@/renderer/stores/modules/selectIndex'
 import ChatInputContaineri from "@/renderer/components/conversation/ChatInputContaineri.vue"
+import { singleChatRecord } from '@/renderer/api/apis'
+import DefaultNullValue from "@/renderer/components/DefaultNullValue.vue"
+import { formatWechatTime } from "@/renderer/module/tool"
 
 //控制滚动条在最下面
 onMounted(() => {
     updateScrollTop()
+    Init()
 })
 
 const state = reactive({
-    status: false,
-    list: [],
+    drawerStatus: false,
+    chatPageShow: false,
+    page: 1,
+    total: 0,
 })
 
-const record = ref([
-    {
-        'fromUid': '123',
-        'targetUid': '好啊有',
-        'targetType': '123',//接收者类型
-        'msgType': '1',//消息内容类型
-        'msgUID': '123',
-        'content': '功能层面上，我们将通过提供语音的暂停和进度拖拽能力，并可视化音量，以满足语音接收者的使用效率需求。在体验层面上，语音作为用户的高频沟通操作，其设计必须满足QQ8.0中精致这一设计原则，给用户带来极致体验。',
-        'dateTime': '123',
-        'source': '123',
-        'isSelf': true,
-    }, {
-        'fromUid': '123',
-        'targetUid': '123',
-        'targetType': '123',//接收者类型
-        'msgType': '1',//消息内容类型
-        'msgUID': '123',
-        'content': '你今天吃饭了吗',
-        'dateTime': '123',
-        'source': '123',
-        'isSelf': false,
-    }, {
-        'fromUid': '123',
-        'targetUid': '好啊有',
-        'targetType': '123',//接收者类型
-        'msgType': '1',//消息内容类型
-        'msgUID': '123',
-        'content': '功能层面上，我们将通过提供语音的暂停和进度拖拽能力，并可视化音量，以满足语音接收者的使用效率需求。在体验层面上，语音作为用户的高频沟通操作，其设计必须满足QQ8.0中精致这一设计原则，给用户带来极致体验。',
-        'dateTime': '123',
-        'source': '123',
-        'isSelf': true,
-    }, {
-        'fromUid': '123',
-        'targetUid': '123',
-        'targetType': '123',//接收者类型
-        'msgType': '1',//消息内容类型
-        'msgUID': '123',
-        'content': '你今天吃饭了吗',
-        'dateTime': '123',
-        'source': '123',
-        'isSelf': false,
-    }, {
-        'fromUid': '123',
-        'targetUid': '好啊有',
-        'targetType': '123',//接收者类型
-        'msgType': '1',//消息内容类型
-        'msgUID': '123',
-        'content': '功能层面上，我们将通过提供语音的暂停和进度拖拽能力，并可视化音量，以满足语音接收者的使用效率需求。在体验层面上，语音作为用户的高频沟通操作，其设计必须满足QQ8.0中精致这一设计原则，给用户带来极致体验。',
-        'dateTime': '123',
-        'source': '123',
-        'isSelf': true,
-    }, {
-        'fromUid': '123',
-        'targetUid': '123',
-        'targetType': '123',//接收者类型
-        'msgType': '1',//消息内容类型
-        'msgUID': '123',
-        'content': '你今天吃饭了吗',
-        'dateTime': '123',
-        'source': '123',
-        'isSelf': false,
-    }, {
-        'fromUid': '123',
-        'targetUid': '好啊有',
-        'targetType': '123',//接收者类型
-        'msgType': '1',//消息内容类型
-        'msgUID': '123',
-        'content': '功能层面上，我们将通过提供语音的暂停和进度拖拽能力，并可视化音量，以满足语音接收者的使用效率需求。在体验层面上，语音作为用户的高频沟通操作，其设计必须满足QQ8.0中精致这一设计原则，给用户带来极致体验。',
-        'dateTime': '123',
-        'source': '123',
-        'isSelf': true,
-    }, {
-        'fromUid': '123',
-        'targetUid': '123',
-        'targetType': '123',//接收者类型
-        'msgType': '1',//消息内容类型
-        'msgUID': '123',
-        'content': '你今天吃饭了吗',
-        'dateTime': '123',
-        'source': '123',
-        'isSelf': false,
-    }, {
-        'fromUid': '123',
-        'targetUid': '好啊有',
-        'targetType': '123',//接收者类型
-        'msgType': '1',//消息内容类型
-        'msgUID': '123',
-        'content': '功能层面上，我们将通过提供语音的暂停和进度拖拽能力，并可视化音量，以满足语音接收者的使用效率需求。在体验层面上，语音作为用户的高频沟通操作，其设计必须满足QQ8.0中精致这一设计原则，给用户带来极致体验。',
-        'dateTime': '123',
-        'source': '123',
-        'isSelf': true,
-    }, {
-        'fromUid': '123',
-        'targetUid': '123',
-        'targetType': '123',//接收者类型
-        'msgType': '1',//消息内容类型
-        'msgUID': '123',
-        'content': '你今天吃饭了吗',
-        'dateTime': '123',
-        'source': '123',
-        'isSelf': false,
-    }, {
-        'fromUid': '123',
-        'targetUid': '好啊有',
-        'targetType': '123',//接收者类型
-        'msgType': '1',//消息内容类型
-        'msgUID': '123',
-        'content': '功能层面上，我们将通过提供语音的暂停和进度拖拽能力，并可视化音量，以满足语音接收者的使用效率需求。在体验层面上，语音作为用户的高频沟通操作，其设计必须满足QQ8.0中精致这一设计原则，给用户带来极致体验。',
-        'dateTime': '123',
-        'source': '123',
-        'isSelf': true,
-    }, {
-        'fromUid': '123',
-        'targetUid': '123',
-        'targetType': '123',//接收者类型
-        'msgType': '1',//消息内容类型
-        'msgUID': '123',
-        'content': '你今天吃饭了吗',
-        'dateTime': '123',
-        'source': '123',
-        'isSelf': false,
-    }, {
-        'fromUid': '123',
-        'targetUid': '好啊有',
-        'targetType': '123',//接收者类型
-        'msgType': '1',//消息内容类型
-        'msgUID': '123',
-        'content': '功能层面上，我们将通过提供语音的暂停和进度拖拽能力，并可视化音量，以满足语音接收者的使用效率需求。在体验层面上，语音作为用户的高频沟通操作，其设计必须满足QQ8.0中精致这一设计原则，给用户带来极致体验。',
-        'dateTime': '123',
-        'source': '123',
-        'isSelf': true,
-    }, {
-        'fromUid': '123',
-        'targetUid': '123',
-        'targetType': '123',//接收者类型
-        'msgType': '1',//消息内容类型
-        'msgUID': '123',
-        'content': '你今天吃饭了吗',
-        'dateTime': '123',
-        'source': '123',
-        'isSelf': false,
-    }, {
-        'fromUid': '123',
-        'targetUid': '好啊有',
-        'targetType': '123',//接收者类型
-        'msgType': '1',//消息内容类型
-        'msgUID': '123',
-        'content': '功能层面上，我们将通过提供语音的暂停和进度拖拽能力，并可视化音量，以满足语音接收者的使用效率需求。在体验层面上，语音作为用户的高频沟通操作，其设计必须满足QQ8.0中精致这一设计原则，给用户带来极致体验。',
-        'dateTime': '123',
-        'source': '123',
-        'isSelf': true,
-    }, {
-        'fromUid': '123',
-        'targetUid': '123',
-        'targetType': '123',//接收者类型
-        'msgType': '1',//消息内容类型
-        'msgUID': '123',
-        'content': '你今天吃饭了吗',
-        'dateTime': '123',
-        'source': '123',
-        'isSelf': false,
-    }, {
-        'fromUid': '123',
-        'targetUid': '好啊有',
-        'targetType': '123',//接收者类型
-        'msgType': '1',//消息内容类型
-        'msgUID': '123',
-        'content': '功能层面上，我们将通过提供语音的暂停和进度拖拽能力，并可视化音量，以满足语音接收者的使用效率需求。在体验层面上，语音作为用户的高频沟通操作，其设计必须满足QQ8.0中精致这一设计原则，给用户带来极致体验。',
-        'dateTime': '123',
-        'source': '123',
-        'isSelf': true,
-    }, {
-        'fromUid': '123',
-        'targetUid': '123',
-        'targetType': '123',//接收者类型
-        'msgType': '1',//消息内容类型
-        'msgUID': '123',
-        'content': '你今天吃饭了吗',
-        'dateTime': '123',
-        'source': '123',
-        'isSelf': false,
-    },
-])
-
-const nickname = ref('')
-
-getSessionList({ 'username': '' }).then((res) => {
-    console.log('sessionlist')
-    if (res.data.code == 200) {
-        state.list = res.data.data
-        init()
-    }
-})
-
+const selectSession = computed(() => SessionStore().getSelectSessionUID)
 const index = computed(() => useSelectIndexStore().getSessionIndex)
+// watch(index, (newQuestion, oldQuestion) => {
+// })
 
-//初始化
-const init = () => {
-    state.list.filter((item) => {
-        if (item.uid == index.value) {
-            nickname.value = item.nickname
-            //加载聊天记录
-            sessionItemSelect({ uid: item.uid, nickname: item.nickname })
-        }
-    })
+
+const Init = async () => {
+    console.log('开始同步会话列表')
+
+    // let resp = await Connect().sessionList
+    // if (resp.success) {
+    //     console.log(resp.message)
+    // }
 }
 
-const open = () => { state.status = true }
-const close = () => { state.status = false }
+const record = ref([])
+// {
+//         'fromUid': '123',
+//         'targetUid': '123',
+//         'targetType': '123',//接收者类型
+//         'msgType': '1',//消息内容类型
+//         'msgUID': '123',
+//         'content': '你今天吃饭了吗',
+//         'dateTime': '123',
+//         'source': '123',
+//         'isSelf': false,
+//     }
+const nickname = ref('')
+// getSessionList({ 'username': '' }).then((res) => {
+//     console.log('sessionlist')
+//     if (res.data.code == 200) {
+//         state.list = res.data.data
+//         init()
+//     }
+// })
 
+
+
+const open = () => {
+    console.log("详情开关")
+    state.drawerStatus = true
+}
+const close = () => { state.drawerStatus = false }
+
+//item切换
 const sessionItemSelect = (item: any) => {
     nickname.value = item.nickname
     useSelectIndexStore().setSessionIndex(item.uid)
-    getChatRecord({ 'uid': item.uid }).then((res) => {
-        if (res.data.code == 200) {
-            record.value = res.data.data
-        }
-    })
+    SessionStore().setSelectSession(item.account, item.nickname, item.headPortraitUrl, item.type)
+    chatRecord(item.account)
+    state.page = 1
+    //更新子组件数据
+
+    // getChatRecord({ 'uid': item.uid }).then((res) => {<span id="diandiandian">
+    //     if (res.data.code == 200) {
+    //         record.value = res.data.data
+    //     }
+    // })
 }
 
 const sendMessage = (content: any) => {
@@ -283,6 +140,25 @@ const updateScrollTop = () => {
         // }
     })
 }
+
+
+const chatRecord = (to: string) => {
+    console.log("请求聊天记录kaishi ")
+    singleChatRecord({ to: to, page: state.page }).then((res) => {
+        if (res.code == 0) {
+            if (res.data.total > 0) {
+                state.page++
+            }
+            state.total = res.data.total
+            record.value = res.data.list
+        } else {
+
+        }
+    })
+}
+
+
+
 
 </script>
 

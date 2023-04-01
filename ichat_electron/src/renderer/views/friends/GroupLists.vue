@@ -4,9 +4,12 @@
             <template #list>
                 <el-scrollbar max-height="823px">
                     <div class="group_lists">
-                        <Items style="height: 62px; width: 356px;" v-for="item in groupLists" :is-name-center="true"
-                            :username="item.name" @click="select(item.groupNumber)"
-                            :class="{ friends_select_style: index == item.groupNumber }" />
+                        <div v-for="item in groupLists" @click="select(item.groupNumber)">
+                            <Item :class="{ select: index == item.groupNumber }"
+                                style="height: 62px; width: 356px; margin-top: 5px;" :nickname="item.groupName"
+                                :headPortraitUrl="item.headPortraitUrl" :account="item.groupNumber" v-bind="$attrs">
+                            </Item>
+                        </div>
                     </div>
                 </el-scrollbar>
             </template>
@@ -15,7 +18,7 @@
                     <div class="box_card" v-if="index != ''">
                         <div style="margin: 0 18px 0 18px;">
                             <div class="title">
-                                <img :src="state.src" />
+                                <img :src="state.headPortraitUrl" />
                                 <span>{{ state.groupName }}</span>
                             </div>
                             <hr />
@@ -40,7 +43,6 @@
 <script lang="ts" setup>
 import { reactive } from "vue"
 import { computed } from "@vue/reactivity";
-import Items from '@/renderer/components/conversation/Items.vue';
 import SecondLevelContainer from "../layout/SecondLevelContainer.vue";
 import DefaultNullValue from "@/renderer/components/DefaultNullValue.vue";
 import { useSelectIndexStore } from '@/renderer/stores/modules/selectIndex'
@@ -52,18 +54,24 @@ const select = (groupNumber: string) => {
 }
 
 const titleName = '群聊';
-
 const groupLists = [
     {
         'groupNumber': '12365',
-        'name': '群聊名',
+        'groupName': '群聊名',
         'message': '接收来自新的好友的申请',
         'headPortraitUrl': '',
+        'groupMember': [
+            {
+                uid: '',
+                nickname: '你好',
+                headPortraitUrl: '',
+            }
+        ]
     }
 ]
 
 const state = reactive({
-    src: '',
+    headPortraitUrl: '',
     groupName: 'NIEK官方旗舰店',
     groupMember: [
         {

@@ -19,8 +19,8 @@
                         <div class="setting_item" style="margin-top: 8px;">
                             <div><span class="value" style="line-height: 32px;">点击设置群公告</span></div>
                             <div style="display: flex;">
-                                <div style="line-height: 29px;"><span class="trip"
-                                        style="font-size: 12px;">仅群主可编辑</span></div>
+                                <div style="line-height: 29px;"><span class="trip" style="font-size: 12px;">仅群主可编辑</span>
+                                </div>
                                 <el-icon style="margin-top: 9px;">
                                     <ArrowRightBold color="#C4C4C4" size="4" />
                                 </el-icon>
@@ -117,7 +117,7 @@
                 <div class="margin_">
                     <div class="person_image_and_nickname">
                         <div><el-avatar shape="square" :size="42" /></div>
-                        <div class="person_nickname"><span>好友昵称</span></div>
+                        <div class="person_nickname"><span>{{ personInfo.nickname }}</span></div>
                     </div>
                     <hr style="border-color: rgb(255 255 255 / 24%);" />
                     <div class="setting_item" style="margin-top: 8px;">
@@ -148,13 +148,13 @@
 <script lang="ts" setup>
 import { Search } from '@element-plus/icons-vue'
 import type { TabsPaneContext } from 'element-plus'
-import { reactive, watch, ref } from "vue"
+import { reactive, watch, ref, computed } from "vue"
 import Item from '@/renderer/components/conversation/Item.vue';
+import { SessionStore } from '../stores/modules/sessionList';
 
 //要传给父组件的方法
 const emits = defineEmits(["close"])
 const props = withDefaults(defineProps<{ status: boolean, type: string }>(), { status: false, type: 'person' })
-
 watch(props, (newValue, oldValue) => {
     state.status = newValue.status
     if (props.type == 'person') {
@@ -162,7 +162,18 @@ watch(props, (newValue, oldValue) => {
     } else {
         state.show = 'group'
     }
-});
+})
+//当前选择数据
+const personInfo = computed(() => SessionStore().getSelectSession)
+
+
+// const personInfo = reactive({
+//     uid: "",
+//     nickname: "",
+//     headPortraitUrl: '',
+//     lable: '',
+//     type: ''
+// })
 
 const state = reactive({
     status: false,
@@ -176,54 +187,6 @@ const state = reactive({
     InviteFriends: false,
     groupList: [{
         uid: '12345',
-        nickname: '芝士蛋糕',
-        headPortraitUrl: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        lastMessage: '',
-        lastMessageTime: '15:20',
-        unreadMessageNumber: 10,
-        lable: ''
-    }, {
-        uid: '12345fdafd',
-        nickname: '芝士蛋糕',
-        headPortraitUrl: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        lastMessage: '',
-        lastMessageTime: '15:20',
-        unreadMessageNumber: 10,
-        lable: ''
-    }, {
-        uid: '123fdas45',
-        nickname: '芝士蛋糕',
-        headPortraitUrl: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        lastMessage: '',
-        lastMessageTime: '15:20',
-        unreadMessageNumber: 10,
-        lable: ''
-    }, {
-        uid: '123fda45',
-        nickname: '芝士蛋糕',
-        headPortraitUrl: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        lastMessage: '',
-        lastMessageTime: '15:20',
-        unreadMessageNumber: 10,
-        lable: ''
-    }, {
-        uid: '12fdfgfs345',
-        nickname: '芝士蛋糕',
-        headPortraitUrl: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        lastMessage: '',
-        lastMessageTime: '15:20',
-        unreadMessageNumber: 10,
-        lable: ''
-    }, {
-        uid: '12345hgdhjg',
-        nickname: '芝士蛋糕',
-        headPortraitUrl: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        lastMessage: '',
-        lastMessageTime: '15:20',
-        unreadMessageNumber: 10,
-        lable: ''
-    }, {
-        uid: '1jhjh2345',
         nickname: '芝士蛋糕',
         headPortraitUrl: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
         lastMessage: '',
@@ -492,6 +455,4 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 </style>
 
 
-<style lang="scss" >
-
-</style>
+<style lang="scss" ></style>

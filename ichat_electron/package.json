@@ -28,6 +28,7 @@
     "vue": "^3.2.45",
     "vue-router": "^4.1.6",
     "vue3-discordpicker": "^1.1.0",
+    "vue3-menus": "^1.1.2",
     "websocket": "^1.0.34"
   },
   "devDependencies": {

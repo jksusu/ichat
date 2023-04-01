@@ -1,9 +1,11 @@
 <template>
     <div class="session_title">
-        <div class="title_name" @click="$emit('clickEvent', props)">{{ props.name }}</div>
+        <div class="title_name">
+            <label v-if="route == '/session'" @click="$emit('sessionTitleClickEvent')">{{ select.nickname }}</label>
+        </div>
         <div class="menu">
             <RightTitle :show-max="true" />
-            <div class="slot">
+            <div class="session_slot">
                 <slot name="titleRight"></slot>
             </div>
         </div>
@@ -11,8 +13,12 @@
 </template>
   
 <script lang="ts" setup>
+import { computed } from "vue"
 import RightTitle from './RightTitle.vue';
-const props = withDefaults(defineProps<{ name?: string }>(), { name: "" })
+import { SessionStore } from '@/renderer/stores/modules/sessionList'
+import { useSelectIndexStore } from '@/renderer/stores/modules/selectIndex'
+const select = computed(() => SessionStore().getSelectSession)
+const route = computed(() => useSelectIndexStore().getAsideMenuIndex)
 </script>
   
 <style lang="scss">
@@ -31,16 +37,13 @@ const props = withDefaults(defineProps<{ name?: string }>(), { name: "" })
         display: flex;
         flex-direction: column;
 
-        .slot {
+        .session_slot {
             margin-top: 7px;
             height: 17px;
             width: 132px;
-            background: #F5F6F7;
             -webkit-app-region: no-drag
         }
     }
-
-
     .title_name {
         height: 22px;
         max-width: 150px;
@@ -50,6 +53,10 @@ const props = withDefaults(defineProps<{ name?: string }>(), { name: "" })
         font-weight: 500;
         color: #333333;
         line-height: 19px;
+
+        label {
+            -webkit-app-region: no-drag
+        }
     }
 }
 </style>

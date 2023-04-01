@@ -22,7 +22,7 @@ type Acceptor interface {
 	Accept(*Connect, *http.Request) (uint64, error)
 }
 type MessageListener interface {
-	Receive(*Connect, *ChatMessage)
+	Receive(*Connect, *BusinessMessage)
 }
 type StateListener interface {
 	Disconnect(id string) error
@@ -119,20 +119,20 @@ func (s *Server) handler(c *Connect) {
 			return
 		}
 		switch msg.Type {
-		case PINGTYPE:
+		case REQUESTPING:
+			logrus.Info("ping")
 			if err := c.Pong(); err != nil {
 				logrus.Error(err)
 				c.Close()
 				return
 			}
-		case CHATTYPE:
+		case REQUEST:
 			if msg.Data != nil {
-				s.Receive(c, msg.Data)
+				s.Receive(c, msg)
 			}
 		}
 	}
 }
-
 func printStart() {
 
 	listenAddr := fmt.Sprintf(":%d", GlobalConfig.WsPort)
@@ -146,20 +146,20 @@ func printStart() {
 	fmt.Printf("listen       : %s\n", listenAddr)
 }
 
-// SendChatMessage 发送聊天消息
-func SendChatMessage(connId string, chat *ChatMessage) error {
+// Send 发送聊天消息
+func Send(connId string, msg *BusinessMessage) error {
+	return Response(connId, msg)
+}
+
+func Response(connId string, msg interface{}) error {
 	buf := new(bytes.Buffer)
-	enc := gob.NewEncoder(buf)
-	if err := enc.Encode(chat); err != nil {
+	if err := gob.NewEncoder(buf).Encode(msg); err != nil {
 		fmt.Println(err)
 	}
-
-	json, _ := json2.Marshal(chat)
-
+	jsonData, _ := json2.Marshal(msg)
 	conn, ok := GlobalConnManager.GetConn(connId)
 	if !ok {
-		return errors.New("sendChatMessage get conn error")
+		return errors.New("send get conn error")
 	}
-	//return conn.Push(&WSMessage{MsgType: websocket.BinaryMessage, MsgData: buf.Bytes()})
-	return conn.Push(&WSMessage{MsgType: websocket.TextMessage, MsgData: json})
+	return conn.Push(&WSMessage{MsgType: websocket.TextMessage, MsgData: jsonData})
 }

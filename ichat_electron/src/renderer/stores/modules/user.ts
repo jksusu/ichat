@@ -26,6 +26,9 @@ export const UserStore = defineStore({
         },
         getNickname(): string {
             return this.nickname
+        },
+        getUserInfo() {
+            return this.userInfo
         }
     },
     actions: {
@@ -35,5 +38,12 @@ export const UserStore = defineStore({
         deleteToken() {
             this.token = ''
         },
-    }
+        setUserInfo(uid: string, nickname: string, headPortrait: string, signature: string) {
+            this.userInfo.userNumber = uid
+            this.userInfo.nickname = nickname
+            this.userInfo.headPortrait = headPortrait
+            this.userInfo.signature = signature
+        }
+    },
+    persist: true,
 })

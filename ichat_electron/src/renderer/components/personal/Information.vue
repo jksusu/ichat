@@ -1,7 +1,7 @@
 <template>
     <div id="infomation_container">
         <div class="name">
-            {{ "Hi!"+ props.name }}
+            {{ "Hi!" + props.nickname }}
         </div>
         <div class="autograph">
             {{ props.autograph }}
@@ -13,13 +13,18 @@
 </template>
 
 <script lang="ts" setup>
-const props = withDefaults(defineProps<{
-    name?: string,
-    autograph?: string,
-}>(), {
-    name: 'im',
-    autograph: '祝你有一个愉快的一天!'
-})
+import { computed } from "@vue/reactivity"
+import { UserStore } from '@/renderer/stores/modules/user';
+
+const props = computed(() => UserStore().getUserInfo)
+
+// const props = withDefaults(defineProps<{
+//     name?: string,
+//     autograph?: string,
+// }>(), {
+//     name: 'im',
+//     autograph: '祝你有一个愉快的一天!'
+// })
 </script>
 <style lang="scss">
 .slot {

@@ -2,7 +2,7 @@
     <div id="message_input_container" class="message_input_container">
         <div class="tool_list">
             <span id="emoji-chat">
-                <discord-picker style="" gif-format="md" @emoji="setEmoji" />
+                <!-- <discord-picker style="" gif-format="md" @emoji="setEmoji" /> -->
             </span>
             <span>
                 <el-upload style="padding-top: 6px" accept="image/*" :show-file-list="false">

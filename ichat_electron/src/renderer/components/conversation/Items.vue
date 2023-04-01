@@ -1,16 +1,16 @@
 <template>
-    <div class="items_container" :class="selectStyle" @click="$emit('clickEvent')" v-on:click="selectEvent(props.account)">
+    <div class="items_container" :class="state.selectStyle" @click="$emit('clickEvent')" v-on:click="selectEvent(props.account)">
         <img :height="headPortraitSize" :width="headPortraitSize"
-            style="margin: 10px 0 10px 10px;border-radius: 4px 4px 4px 4px;" :src="headPortraitUrl" />
+            style="margin: 10px 0 10px 10px;border-radius: 4px 4px 4px 4px;" :src="state.headPortraitUrl" />
         <div class="info">
             <div class="top">
-                <span class="username">{{ username }}</span>
-                <span class="last_time is_hiddle" :class="isHiddle">{{ lastTime }}</span>
+                <span class="username">{{ state.username }}</span>
+                <span class="last_time is_hiddle" :class="state.isHiddle">{{ state.lastTime }}</span>
             </div>
-            <div class="bottom" :class="isHiddle">
-                <span class="last_message">{{ lastMessage }}</span>
-                <div class="message_number" :class="isHiddle"><sup style="--num:100" :style="messageNumber">{{
-                    messageNumber
+            <div class="bottom" :class="state.isHiddle">
+                <span class="last_message">{{ state.lastMessage }}</span>
+                <div class="message_number" :class="state.isHiddle"><sup style="--num:100" :style="state.messageNumber">{{
+                    state.messageNumber
                 }}</sup></div>
             </div>
         </div>
@@ -79,7 +79,6 @@ const selectEvent = (index)=> {
     state.selectStyle = 'select'
 }
 
-const { username, headPortraitUrl, lastTime, lastMessage, messageNumber, selectStyle, isHiddle } = toRefs(state)
 </script>
 
 <style lang="scss" scoped>

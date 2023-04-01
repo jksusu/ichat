@@ -35,6 +35,7 @@ func (c *Connect) readLoop() {
 		if messageType, p, err = c.Conn.ReadMessage(); err != nil {
 			c.Close()
 		}
+
 		m = BuildWSMessage(messageType, p)
 		select {
 		case c.readChan <- m:
@@ -109,11 +110,10 @@ func (c *Connect) Close() {
 
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
-
-	//GlobalConnManager.RemoveConn(c)
+	GlobalConnManager.RemoveConn(c)
 	if !c.isClosed {
 		logrus.Infof("connect close id:%v", c.ID)
-		//GlobalServer.Disconnect(c.ID)
+		GlobalServer.Disconnect(c.ID)
 		c.isClosed = true
 		close(c.closeChan)
 	}
@@ -165,7 +165,7 @@ func (c *Connect) Pong() (err error) {
 	}
 	c.Saveheartbeat()
 	var buf []byte
-	pong := &PONGMessage{Type: PONGTYPE}
+	pong := &BusinessMessage{Type: REQUESTPING}
 
 	if buf, err = json.Marshal(pong); err != nil {
 		return
@@ -173,5 +173,6 @@ func (c *Connect) Pong() (err error) {
 	if err = c.Push(&WSMessage{MsgType: websocket.TextMessage, MsgData: buf}); err != nil {
 		return
 	}
+	logrus.Info("pong")
 	return
 }

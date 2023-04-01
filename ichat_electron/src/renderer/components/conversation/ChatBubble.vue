@@ -1,9 +1,10 @@
 <template>
     <div class="chat_bubble_container" :class="direction">
         <div class="img_container">
-            <img :src="headPortraitUrl" />
+            <el-avatar shape="square" :size="42" :src="headPortraitUrl" />
         </div>
         <div class="message_container">
+            <div :style="state.chatTime" class="chat-time">{{ sendTime }}</div>
             <!-- <div class="name_role" :class="direction" v-if="isShowNicknameRole">
                 <span>飞天瞎子</span>
                 <div><span>群主</span></div>
@@ -62,6 +63,7 @@ const props = withDefaults(defineProps<{
     messageType?: string,
     isSelf?: boolean,
     quote?: string,//引用内容
+    sendTime?: string,
 }>(), {
     headPortrait: "",
     nickname: "",
@@ -71,11 +73,13 @@ const props = withDefaults(defineProps<{
     messageType: "",
     isSelf: false,
     quote: "",
+    sendTime: "",
 })
 
 
 const state = reactive({
     direction: "",
+    chatTime: "",
     isShowNicknameRole: true,
     content: "",
     messageStatus: ""
@@ -87,9 +91,11 @@ state.content = props.content
 
 if (props.isSelf) {
     state.direction = 'right'
+    state.chatTime = 'justify-content: flex-end'
     state.isShowNicknameRole = false//不显示昵称和角色
 } else {
     state.direction = 'left'
+    state.chatTime = 'justify-content: flex-start'
     state.isShowNicknameRole = true//不显示昵称和角色
 }
 
@@ -109,6 +115,12 @@ const { direction, isShowNicknameRole, messageStatus, content } = toRefs(state)
 :root {
     --chatMessageMaxWidth: 464px;
     --chatNameMaxWidth: 464px;
+}
+
+.chat-time {
+    display: flex;
+    font-size: 12px;
+    color: #999;
 }
 
 .file_message {
@@ -251,6 +263,7 @@ const { direction, isShowNicknameRole, messageStatus, content } = toRefs(state)
     .font_content {
         background: #FFFFFF;
         word-break: break-all;
+
         :before {
             right: 100%;
             border-right: 6px solid #FFFFFF;
@@ -272,6 +285,7 @@ const { direction, isShowNicknameRole, messageStatus, content } = toRefs(state)
     .font_content {
         background: #0652EE;
         word-break: break-all;
+
         span {
             color: #FFFFFF !important;
         }
@@ -285,6 +299,7 @@ const { direction, isShowNicknameRole, messageStatus, content } = toRefs(state)
 
 .chat_bubble_container {
     display: flex;
+
 
     .img_container {
         width: 44px;

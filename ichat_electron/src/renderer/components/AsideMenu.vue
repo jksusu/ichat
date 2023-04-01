@@ -39,7 +39,8 @@ const select = (route: string) => {
 }
 
 watch(index, async (newQuestion, oldQuestion) => {
-    console.log('监听到数据变化')
+    console.log('监听到菜单路由变化')
+    console.log(index.value)
     console.log(newQuestion)
 })
 

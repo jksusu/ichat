@@ -10,11 +10,12 @@
         <div class="item_container">
             <el-scrollbar v-if="props.list">
                 <div class="items" v-for="item in props.list" @click="select(item.uid)">
-                    <Item :class="{ select: item.uid == index }" :nickname="item.nickname"
+                    <Item :class="{ select: item.uid == index }" :nickname="item.nickname" :uid="item.uid"
                         :headPortraitUrl="item.headPortraitUrl" :account="item.uid" :lastMessage="item.lastMessage"
                         :lastMessageTime="LastMessageTimeShow(item.lastMessageTime)" :pattern="props.pattern"
-                        :unreadMessageNumber="item.unreadMessageNumber" v-bind="$attrs"
-                        v-menus:right="menus">
+                        :unreadMessageNumber="item.unreadMessageNumber" v-bind="$attrs" :data="item"
+                        @contextmenu.prevent="handleRightClick(item)" 
+                        @contextmenu="sessionListRightClick">
                     </Item>
                 </div>
             </el-scrollbar>
@@ -27,13 +28,14 @@
 
 <script lang="ts" setup>
 import { computed } from "@vue/reactivity";
-import { ref } from "vue"
+import { ref, reactive } from "vue"
 import Item from '@/renderer/components/conversation/Item.vue';
 import Information from '@/renderer/components/personal/Information.vue';
 import { useSelectIndexStore } from '@/renderer/stores/modules/selectIndex'
 import DefaultNullValue from "../DefaultNullValue.vue";
-import { LastMessageTimeShow } from "@/renderer/module/socket";
-import { delSession, nodisturb, msgTopping } from "@/renderer/module/menu"
+import { LastMessageTimeShow } from "@/renderer/module/tool";
+import { delSession, nodisturb, msgTopping, disturb, cancelTopping } from "@/renderer/module/menu"
+import { menusEvent } from 'vue3-menus';
 
 const index = computed(() => useSelectIndexStore().getSessionIndex)
 const select = (uid: string) => {
@@ -41,7 +43,21 @@ const select = (uid: string) => {
 }
 
 //右键菜单
-const menus = ref([delSession, nodisturb, msgTopping])
+const rightSelect = reactive({
+    item: ''
+})
+const handleRightClick = (item: any) => {
+    rightSelect.item = item
+}
+//组装按钮
+const sessionListRightClick = (event) => {
+    if (rightSelect.item) {
+        menusEvent(event, [delSession, nodisturb, msgTopping], rightSelect.item)
+    } else {
+        menusEvent(event, [delSession, disturb, cancelTopping], rightSelect.item)
+    }
+}
+
 /**
  * pattern 模式
  * 1.message 消息模式 会完全展示

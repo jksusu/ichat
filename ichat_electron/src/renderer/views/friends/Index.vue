@@ -5,6 +5,9 @@
                 <template #default>
                     <div class="friends_top_feature">
                         <div class="friends_top_title"><span>通讯录</span></div>
+                        <div class="friends_end_">
+                            <Dropdown></Dropdown>
+                        </div>
                     </div>
                 </template>
             </Information>
@@ -19,7 +22,6 @@
                 </div>
             </div>
         </div>
-
         <RouterView v-if="index"></RouterView>
         <div v-else>
             <SessionTitle></SessionTitle>
@@ -30,22 +32,30 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { computed } from "@vue/reactivity";
-import { jump } from "@/renderer/tool/tool";
-import SessionTitle from "@/renderer/components/title/SessionTitle.vue";
-import Information from '@/renderer/components/personal/Information.vue';
-import DefaultNullValue from "@/renderer/components/DefaultNullValue.vue";
+import { computed } from "@vue/reactivity"
+import { jump } from "@/renderer/tool/tool"
+import SessionTitle from "@/renderer/components/title/SessionTitle.vue"
+import Information from '@/renderer/components/personal/Information.vue'
+import DefaultNullValue from "@/renderer/components/DefaultNullValue.vue"
 import { useSelectIndexStore } from '@/renderer/stores/modules/selectIndex'
 import newFriends from '@/renderer/assets/images/new_friends.png'
 import groupChat from '@/renderer/assets/images/group_chat.png'
 import friends from '@/renderer/assets/images/friends.png'
+import Dropdown from "./components/Dropdown.vue";
+import { ref } from "vue"
 
 const index = computed(() => useSelectIndexStore().getMaillistIndex)
 const select = (route: string) => {
     useSelectIndexStore().setMaillistIndex(route)
     jump(route)
 }
-
+// {
+//         'name': '群聊',
+//         'message': '多人聊天、沟通',
+//         'iconUrl': groupChat,
+//         'route': '/maillist/groups',
+//         'style': 'background: rgba(21,96,250,0.1);',
+//     }
 const featureButtonList = [
     {
         'name': '新的朋友',
@@ -53,12 +63,6 @@ const featureButtonList = [
         'iconUrl': newFriends,
         'route': '/maillist/new_friends',
         'style': 'background: rgba(5,184,66,0.1);',
-    }, {
-        'name': '群聊',
-        'message': '多人聊天、沟通',
-        'iconUrl': groupChat,
-        'route': '/maillist/groups',
-        'style': 'background: rgba(21,96,250,0.1);',
     }, {
         'name': '联系人',
         'message': '记录同事、朋友的联系方式',
@@ -87,6 +91,7 @@ const featureButtonList = [
     display: flex;
     background: #FFFFFF;
     border-bottom: 1px solid #EAEAEA;
+    justify-content: space-between;
 
     span {
         padding-left: 18px;
@@ -96,6 +101,12 @@ const featureButtonList = [
         color: #333333;
         line-height: 44px;
     }
+}
+
+.friends_end_ {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
 }
 
 .mail_container {

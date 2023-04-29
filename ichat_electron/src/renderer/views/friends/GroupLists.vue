@@ -18,7 +18,7 @@
                     <div class="box_card" v-if="index != ''">
                         <div style="margin: 0 18px 0 18px;">
                             <div class="title">
-                                <img :src="state.headPortraitUrl" />
+                                <el-avatar shape="square" :size="42" :src="state.headPortraitUrl" />
                                 <span>{{ state.groupName }}</span>
                             </div>
                             <hr />
@@ -123,7 +123,7 @@ const state = reactive({
             }
 
             span {
-                margin-left: 10px;
+                padding-left: 10px;
                 max-width: 200px;
                 height: 42px;
                 font-size: 14px;

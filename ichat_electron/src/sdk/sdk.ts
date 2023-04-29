@@ -1,84 +1,11 @@
 import log from 'loglevel-es';
+import { pack } from './pack/pack';
+import { Request } from './request/request';
+import { Response } from './request/response';
+import { Message, ChatMessage } from './format/base';
+import { RouteHandler, ContentType, ICahtClientStatus, MessageType } from './enum/enum';
 
-//日志处理
-// const log = (log: any) => {
-//     console.log(log)
-// }
-const sendTimeout = 5 * 1000 // 10 seconds
-
-enum ICahtClientStatus {
-    INIT,
-    CONNECTING,
-    CONNECTED,
-    RECONNECTING,
-    CLOSEING,
-    CLOSED,
-}
-
-// enum MsgType {
-//     TextMessage = 1,
-//     BinaryMessage = 2,
-//     CloseMessage = 8,
-//     PingMessage = 9,
-//     PongMessag = 10,
-// }
-
-enum ContentType {
-    text = 1,
-    image = 2,
-    video = 3,
-}
-
-//路由处理器
-enum RouteHandler {
-    RouteConnectPingMessage = 'connect.ping',
-    RouteConnectPongMessage = 'connect.pong',
-
-    //业务
-    RouteChatUserMessage = 'chat.user.message',
-    RouteChatGroupMessage = 'chat.group.message',
-    RouteChatMessageAck = 'chat.message.ack',
-
-    //session
-    RouteSessionLists = 'chat.session.lists',
-
-    //信息修改
-    RouteUserInfoUpdate = 'chat.user.info.update',
-}
-
-//基础消息格式
-// const Message = {
-//     MsgType: MsgType,
-//     MsgData: ""
-// }
-
-//业务消息格式
-interface BusinessMessage {
-    seq: 1
-    type: MessageType,
-    data: ChatMessage
-}
-
-//消息格式
-interface ChatMessage {
-    msgId: number;
-    route: RouteHandler;
-    from: string;
-    to: string;
-    content: string;
-    type: ContentType;
-    send_time: number;
-    extra: string;
-}
-
-//消息包类型
-enum MessageType {
-    REQUEST = 1,
-    RESPONSE = 2,
-    NOTICE = 3,
-    REQUESTPING = 4,
-    RESPONSEPOMG = 5
-}
+const sendTimeout = 5 * 1000 // 5 seconds 没有回复则超时
 
 export class Seq {
     static num: number = 0
@@ -86,36 +13,6 @@ export class Seq {
         Seq.num++
         Seq.num = Seq.num % 65536
         return Seq.num
-    }
-}
-
-//消息 对应服务端 reqeust数据
-export class Message {
-    reqId: number = 0
-    type: MessageType = MessageType.REQUEST
-    from: string
-    route: RouteHandler
-    data?: any
-    constructor(message?: any) {
-        this.data = message
-        this.reqId = Seq.Next()
-    }
-}
-
-export class Request {
-    sendTime: number
-    callback: (response: Message) => void
-    constructor(callback: (response: Message) => void) {
-        this.sendTime = Date.now()
-        this.callback = callback
-    }
-}
-export class Response {
-    success: boolean = false
-    message?: Message
-    constructor(success: boolean, message?: Message) {
-        this.success = success;
-        this.message = message;
     }
 }
 
@@ -130,46 +27,94 @@ export class IChatClient {
     account: string
     status: ICahtClientStatus = ICahtClientStatus.INIT
     timerMap = {}//定时器
-    private sendq = new Map<number, Request>()
-    private funcTree//方法树
+    private sendq = new Map<number, Request>()//请求队列
+    eventTree = {}//事件树
+
     private onMessageCallback: (e: Message) => void
     private onOpenCallback: () => void
     private onCloseCallback?: () => void
     constructor(gateway: string) {
         this.gateway = gateway
-        this.initFucTree()
+        this.registerEvent(RouteHandler.RouteUserInfoUpdate, this.noticeUpdateUserInfo)
+        //this.registerEvent(RouteHandler.RouteIchatTalkToUser, this.noticeTalkToUser)
     }
+
     bindOnMessageCallback(callback: (message: Message) => void) { this.onMessageCallback = callback }
     bindOnOpenCallback(callback: () => void) { this.onOpenCallback = callback }
     bindOnCloseCallback(callback: () => void) { this.onCloseCallback = callback }
 
+    /**
+     * 注册事件
+     * @param eventName 
+     * @param callback 
+     */
+    registerEvent(eventName: string, callback: Function): { status: boolean, err?: string } {
+        if (this.eventTree[eventName]) {
+            return { status: false, err: '事件已经存在' }
+        }
+        this.eventTree[eventName] = callback
+
+        log.info(this.eventTree)
+
+        return { status: true }
+    }
+
+    /**
+     * 批量注册
+     * @param eventAll 
+     * @returns 
+     */
+    registerEventAll = (eventAll): { status: boolean, err?: string } => {
+        for (const key in eventAll) {
+            if (Object.hasOwnProperty.call(eventAll, key)) {
+                let { status, err } = this.registerEvent(key, eventAll[key])
+                if (!status) {
+                    return { status, err }
+                }
+            }
+        }
+        return { status: true }
+    }
+
+    /**
+     * 分发服务端下发消息
+     * @param message 
+     * @returns 
+     */
+    private route(message: Message) {
+        log.info(this.eventTree)
+        let f = this.eventTree[message.route]
+        if (!f) {
+            log.debug('DEBUG:暂不支持此功能:' + message.route)
+            return
+        }
+        f(message)
+    }
+    /**
+     * 开始websocket连接
+     * @returns 
+     */
     async auth(): Promise<{ ok: boolean, err?: Error }> {
         if (this.status == ICahtClientStatus.CONNECTED) {
             return { ok: false, err: new Error("connection has been created") }
         }
         this.status = ICahtClientStatus.CONNECTING
-
-        let { ok, err, conn, connId } = await this.connect()
+        let { ok, err, conn } = await this.connect()
         if (!ok) {
             this.status = ICahtClientStatus.INIT
             return { ok: false, err: err }
         }
-        log.info("connect success connId:" + connId)
-
         conn.onmessage = (evt) => {
-            let msg = new Message();
-            Object.assign(msg, JSON.parse(<string>evt.data))
-
-            console.log(msg)
-
-            if (msg.type == MessageType.RESPONSE) {
-                let req = this.sendq.get(msg.reqId)
-                if (req) {
-                    req.callback(msg)
-                    return
-                }
-            } else if (msg.type == MessageType.NOTICE) {
-                this.route(msg)
+            let message = new Message()
+            Object.assign(message, JSON.parse(<string>evt.data))
+            log.info(JSON.parse(<string>evt.data))
+            if (this.onMessageCallback) { this.onMessageCallback(message) }
+            if (message.type == MessageType.RESPONSE || message.type == MessageType.RESPONSEPOMG) {
+                let req = this.sendq.get(message.reqId)
+                if (req) { req.callback(message); return }
+            } else if (message.type == MessageType.NOTICE) {
+                //通知消息，需要路由分发
+                this.route(message)
             }
         }
         conn.onclose = (e) => {
@@ -177,172 +122,213 @@ export class IChatClient {
             this.clearTimer("heartbeat")
             if (this.status == ICahtClientStatus.CLOSEING) {
                 //调用关闭方法
+                this.errHandler()
                 return
             }
         }
         this.status = ICahtClientStatus.CONNECTED
         this.conn = conn
-        this.connId = connId
 
+        //增加定时器
         this.setTimer("heartbeat", () => {
-            log.info("heartbeat:" + this.heartbeatNumber++)
-            //this.heartbeat()
-        }, 20000)
+            this.heartbeat()
+        }, 30000)
+        log.info("INFO: ichat connect success")
         return { ok: true, err }
     }
-    private async connect(): Promise<{ ok: boolean, err?: Error, conn?: WebSocket, connId?: string }> {
+    /**
+     * ichat连接方法
+     * @returns 
+     */
+    private async connect(): Promise<{ ok: boolean, err?: Error, conn?: WebSocket }> {
         return new Promise((resolve, _) => {
             let conn = new WebSocket(this.gateway)
-
-            //设置定期器，超过时间
             this.setTimer("connect", () => {
                 this.status = ICahtClientStatus.INIT
-                log.info("connect timer out")
                 resolve({ ok: false, err: new Error("connect timer out") })
             }, 10000)
-
             conn.onerror = (error) => {
-                log.error(error)
+                log.error("ERROR:", error)
                 this.clearTimer("connect")
                 resolve({ ok: false, err: new Error("connect close"), conn: conn })
             }
             conn.onopen = () => {
-                log.info("websocket 连接成功")
+                if (this.onOpenCallback) { this.onOpenCallback() }
                 this.status = ICahtClientStatus.CONNECTED
                 this.clearTimer("connect")
-
                 resolve({ ok: true, conn: conn })
             }
         })
     }
-    private route(message: Message) {
-        let f = this.funcTree[message.route]
-        if (!f) {
-            log.debug('方法数 方法:' + message.route + ";不存在")
+
+    /**
+     * 设置定时器
+     * @param id 定时器ID
+     * @param callback 定时器执行回调函数
+     * @param time 定时器执行间隔时间，格式传毫秒 如5秒执行一次 5000
+     * @returns 
+     */
+    setTimer = (id: string, callback: Function, time: number) => { if (this.timerMap[id]) { return }; this.timerMap[id] = setInterval(function () { callback() }, time) }
+    /**
+     * 清除定时器
+     * @param id 定时器ID
+     * @returns 
+     */
+    clearTimer = (id: string) => { if (!this.timerMap[id]) { log.info("INFO:timer not exist"); return }; clearInterval(this.timerMap[id]) }
+
+    /**
+     * 获取会话列表
+     * @returns 
+     */
+    getSessionList = async (): Promise<Response> => { return await this.request(new Message(this.account, RouteHandler.RouteSessionLists)) }
+
+    //更新缓存数据
+    noticeUpdateUserInfo = async (message: Message) => {
+        log.info('INFO: save account ' + message.data.uid)
+        const data = message.data
+        if (data.uid && data.connId) {
+            this.account = data.uid
+            this.connId = data.connId
             return
         }
-        f(message)
+        log.error("ERROR:" + message.route + " data is null")
     }
-    private initFucTree() {
-        this.funcTree = {
-            [RouteHandler.RouteSessionLists]: this.sessionList,
-            [RouteHandler.RouteUserInfoUpdate]: this.updateUserInfo,
-        }
-        console.log(this.funcTree)
+    //收到好友添加申请信息
+    noticeContactsApply = async (message: Message) => {
+        //增加一条消息，回复ack
+        const data = message.data
+    }
+    noticeTalkToUser = async (message: Message) => {
+        //更新最后一条收到的消息ID
+        //ack已收到
+        this.talkReceive(message.data.msgId, 2, message.route)
+    }
+    /**
+     * 用户搜索
+     * @param to 所有用户id
+     * @param target 类型，用户|群聊 默认用户 1用户 2群聊
+     * @returns 
+     */
+    async targetSearch(to: string, target?: number): Promise<{ status: boolean, res?: Response }> {
+        let route = target == 1 ? RouteHandler.RouteUserInfoSearch : RouteHandler.RouteUserInfoSearch
+        const message = new Message(this.account, route, { 'to': to })
+        let resp = await this.request(message)
+        return resp.success ? { status: true, res: resp } : { status: false, res: resp }
     }
 
-    setTimer = (id: string, callback: Function, time: number) => {
-        if (this.timerMap[id]) { return }
-        var timerId = setInterval(function () { callback() }, time)
-        this.timerMap[id] = timerId
+    /**
+     * 联系人添加
+     * @param to 
+     * @param remark 
+     * @returns 
+     */
+    async contactsApply(to: string, remark?: string): Promise<{ status: boolean, res?: Response }> {
+        const message = new Message(this.account, RouteHandler.RouteRelationFriendsApply, { 'to': to, 'remark': remark })
+        let resp = await this.request(message)
+        return resp.success ? { status: true, res: resp } : { status: false, res: resp }
     }
-    clearTimer = (id: string) => {
-        if (!this.timerMap[id]) {
-            log.debug(id + " timer not exist")
-            return
-        }
-        clearTimeout(this.timerMap[id])
-    }
-    async chatUserMsg(to: string, content: string, type: ContentType): Promise<{ status: boolean, res?: Response }> {
-        const message: ChatMessage = {
-            msgId: 1234,
-            route: RouteHandler.RouteChatUserMessage,
-            from: this.account,
-            to: to,
-            content: content,
-            type: type,
-            send_time: new Date().getTime(),
-            extra: "",
-        }
-        return this.to(message)
-    }
-    updateUserInfo = async (uid: string, connId: string) => {
-        this.account = uid
-        this.connId = connId
-        log.info('执行成功了')
-    }
-    chatGroupMsg() {
 
+    async contactsEdit(to: string, remark?: string): Promise<{ status: boolean, res?: Response }> {
+        return
     }
-    async sessionList(): Promise<Response> {
-        let m = new Message()
-        m.route = RouteHandler.RouteSessionLists
-        m.from = this.account
-        return await this.request(m)
+
+    /**
+     * 好友申请答复
+     * @param to 
+     * @param status 
+     * @param remark 
+     */
+    async contactsApplyReply(to: string, status: number, remark?: string): Promise<{ status: boolean, res?: Response }> {
+        const message = new Message(this.account, RouteHandler.RouteRelationFriendsApplyReply, { 'to': to, 'status': status, 'remark': remark ?? '' })
+        let resp = await this.request(message)
+        return resp.success ? { status: true, res: resp } : { status: false, res: resp }
     }
-    private async to(chat: ChatMessage): Promise<{ status: boolean, res?: Response }> {
-        if (this.conn.readyState == 1) {
-            let m = new Message(chat)
-            let resp = await this.request(m)
-            if (resp.success) {
-                return { status: true, res: resp }
-            }
-            return { status: false }
-        }
-        log.info("websocket 未准备好")
-        return { status: false }
+
+    /**
+     * 给USER发消息
+     * @param to 用户UID
+     * @param content 内容
+     * @param type 内容类型
+     */
+    async talkToUser(to: string, content: string, type: ContentType): Promise<{ status: boolean, res?: Response }> {
+        const chatMessage: ChatMessage = { to: to, content: content, type: type }
+        const message = new Message(this.account, RouteHandler.RouteIchatTalkToUser, chatMessage)
+        let resp = await this.request(message)
+        return resp.success ? { status: true, res: resp } : { status: false, res: resp }
     }
+
+
+    /**
+     * 给群聊发消息
+     * @param to 群聊ID
+     * @param content 内容
+     * @param type 内容类型
+     */
+    // async talkToGroup(to: string, content: string, type: ContentType): Promise<{ status: boolean, res?: Response }> {
+
+    // }
+
+    async talkReceive(msgId: number, status: number, type?: string): Promise<{ status: boolean, res?: Response }> {
+        const message = new Message(this.account, RouteHandler.RouteIchatTalkAckReceive, { msgId: msgId, status: status, type: type })
+        let resp = await this.request(message)
+        return resp.success ? { status: true, res: resp } : { status: false, res: resp }
+    }
+
     //关闭方法
-    private connClose(info: string) {
-        if (this.status == ICahtClientStatus.CLOSED) {
-            return
-        }
+    private ichatClose(info: string) {
+        if (this.status == ICahtClientStatus.CLOSED) { return }
         this.status = ICahtClientStatus.CLOSED
-        log.info("conn close:" + info)
+        log.info("INFO: conn close" + info)
         this.conn = null
-        if (this.onCloseCallback) {
-            this.onCloseCallback()
-        }
+        if (this.onCloseCallback) { this.onCloseCallback() }
     }
-    async request(data: Message): Promise<Response> {
+    /**
+     * Ichat websocket 请求方法
+     * @param data
+     * @returns 
+     */
+    private async request(data: Message): Promise<Response> {
         return new Promise((resolve, _) => {
-            //设置发送消息超时时间
             let tr = setTimeout(() => {
-                log.info("request reqId:" + data.reqId + "timeout")
+                log.info("INFO:" + "request reqId:" + data.reqId + " timeout")
                 this.sendq.delete(data.reqId)
                 resolve(new Response(false))
             }, sendTimeout)
-
             let callback = (msg: Message) => {
                 clearTimeout(tr)
                 this.sendq.delete(data.reqId)
                 resolve(new Response(true, msg))
             }
-
-            log.info("request reqId:" + data.reqId + " data:" + data.data)
-
             //请求队列
             this.sendq.set(data.reqId, new Request(callback))
-            let m = (new pack).balePack(data)
-            log.info(m)
-            if (!this.send(m)) {
+            let balepacked = (new pack).balePack(data)
+            log.info(balepacked)
+            try {
+                if (this.conn == null) { resolve(new Response(false)) }
+                this.conn.send(balepacked)
+            } catch (error) {
                 resolve(new Response(false))
             }
         })
     }
-    private send(data: string): boolean {
-        try {
-            if (this.conn == null) {
-                return false
-            }
-            this.conn.send(data)
-        } catch (error) {
-            return false
-        }
-        return true
-    }
-    async heartbeat() {
-        let m = new Message()
-        m.type = MessageType.REQUESTPING
-        let resp = await this.request(m)
+    /**
+     * 发送心跳包
+     * @returns 
+     */
+    private async heartbeat() {
+        let message = new Message()
+        message.type = MessageType.REQUESTPING
+        let resp = await this.request(message)
         if (!resp.success) {
-            log.info("heartbeat ping error")
+            log.info("INFO:heartbeat ping error")
             this.reconnectionNumber++
+            return
         }
-        //this.clearTimer("heartbeat")
+        log.info("INFO:heartbeat-" + this.heartbeatNumber++)
     }
     //短线重连
     private async errHandler() {
+        log.info("errhandler")
         if (this.status == ICahtClientStatus.CLOSED || this.status == ICahtClientStatus.CLOSEING) {
             return
         }
@@ -361,35 +347,22 @@ export class IChatClient {
             }
         }
 
-        this.connClose("timer out close")
+        this.ichatClose("timer out close")
     }
+    /**
+     * 退出登录，关闭websocket连接
+     * @returns 
+     */
     logout() {
-        if (this.status == ICahtClientStatus.CLOSEING) {
-            return
-        }
+        if (this.status == ICahtClientStatus.CLOSEING) { return }
         this.status = ICahtClientStatus.CLOSEING
         if (!this.conn) { return }
-
         try {
-            log.info("websocket closeing")
+            log.info("INFO: websocket closeing")
             this.conn.close()
         } catch (error) {
-            log.error(error)
+            log.error("ERROR:", error)
         }
-    }
-}
-
-//包处理
-export class pack {
-    route: string
-    sequence: number = 0
-    status: number = 1
-
-    unpacking(data: any) {
-        return JSON.stringify(data)
-    }
-    balePack(data: any) {
-        return JSON.stringify(data)
     }
 }
 

@@ -14,17 +14,20 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-import { UserStore } from './stores/modules/user';
-import { showLoginWindow } from '@/common/ipcRenderer';
-import AsideMenu from '@/renderer/components/AsideMenu.vue';
+import { useRouter } from 'vue-router'
+import { UserStore } from './stores/modules/user'
+import { showLoginWindow } from '@/common/ipcRenderer'
+import AsideMenu from '@/renderer/components/AsideMenu.vue'
+import { computed, watchEffect, watch, onMounted } from 'vue'
+import { Connect, Socket } from './module/socket'
+import log from 'loglevel-es'
 
 let router = useRouter()
 router.beforeEach((to, from) => {
   const token = UserStore().getToken
   //读取本地token
   if (to.meta.auth && token == '') {
-    showLoginWindow()
+    //showLoginWindow()
     return {
       path: '/login',
       // 保存我们所在的位置，以便以后再来
@@ -32,10 +35,12 @@ router.beforeEach((to, from) => {
     }
   }
 })
-
-// if (!router) {
-//   jump('/login')
-// }
+onMounted(() => {
+  let token = UserStore().getToken
+  if (token) {
+    Connect()
+  }
+})
 </script>
 <style lang="scss">
 :root {

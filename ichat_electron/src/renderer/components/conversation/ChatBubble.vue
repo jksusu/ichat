@@ -5,42 +5,16 @@
         </div>
         <div class="message_container">
             <div :style="state.chatTime" class="chat-time">{{ sendTime }}</div>
-            <!-- <div class="name_role" :class="direction" v-if="isShowNicknameRole">
-                <span>飞天瞎子</span>
-                <div><span>群主</span></div>
-            </div> -->
             <div class="message_content">
                 <div class="font_message">
                     <div class="font_content">
                         <span>{{ content }}</span>
                     </div>
-                    <!-- <div class="quote_message">
-                        <span>{{ content }}</span>
-                    </div> -->
                 </div>
-                <!-- <div class="file_message">
-                    <div>
-                        <img />
-                    </div>
-                    <div class="file_message_font">
-                        <span>文件名</span>
-                        <img />
-                        <span>350kb</span>
-                    </div>
-                </div> -->
-                <!-- <div class="video_message"></div> -->
-                <!-- <div v-if="!isShowNicknameRole" class="message_status" :style="messageStatus"><span>已读</span></div> -->
-
-                <!-- <div class="record_message">
-                    <div class="record_message_title">与“芝士蛋糕”的聊天记录<span></span></div>
-                    <div class="record_message_content">
-                        ：导航菜单是一个网站的灵魂，用户依赖导航在各个页面中进行跳转。一般分为顶部导航和侧边导航，顶部导航提供全局性的类目和功能，侧边导航提供多级结构来收纳和排列...<span></span>
-                    </div>
-                    <el-divider />
-                    <div class="record_message_end"><span>聊天记录</span></div>
-                </div> -->
             </div>
-            <!-- <div class="withdraw_message"><span>“芝士蛋糕”撤回了一条信息</span></div> -->
+        </div>
+        <div v-if="isSelf" class="message-status">
+            <div class="status">已送达</div>
         </div>
     </div>
 </template>
@@ -257,6 +231,7 @@ const { direction, isShowNicknameRole, messageStatus, content } = toRefs(state)
     flex-direction: row;
 
     .message_container {
+        position: relative;
         margin-left: 10px;
     }
 
@@ -271,8 +246,26 @@ const { direction, isShowNicknameRole, messageStatus, content } = toRefs(state)
     }
 }
 
+
 .right {
     flex-direction: row-reverse;
+
+    .message-status {
+        width: 42px;
+        position: relative;
+
+        .status {
+            position: absolute;
+            bottom: 5px;
+            right: 4px;
+            color: #999;
+            font-size: 12px;
+            // border-radius: 50%;
+            // border: 2px solid #ccc;
+            // border-top-color: #007bff;
+            // animation: spinner 0.6s linear infinite;
+        }
+    }
 
     .message_container {
         margin-right: 14px;

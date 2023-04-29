@@ -30,14 +30,13 @@
             </span>
         </div>
         <div class="text">
-            <!-- <div>
-                                                <el-scrollbar height="86px">
-                                                    <div id="text_input" title="Enter发送，Ctrl+Enter换行" contenteditable="true" @paste="handlePaste"
-                                                        @keyup.enter.native="send">
-                                                    </div>
-                                                </el-scrollbar>
-                                            </div> -->
-            <textarea id="text_input" placeholder="Enter" v-model="content" @keyup="send"></textarea>
+            <div>
+                <el-scrollbar height="86px">
+                    <!-- <div id="text_input" title="Enter发送，Ctrl+Enter换行" @keyup.enter.native="send">
+                    </div> -->
+                    <textarea id="text_input" placeholder="Enter" v-model="content" @keyup.enter.native="send"></textarea>
+                </el-scrollbar>
+            </div>
             <div class="btn_container">
                 <div class="send_btn" @click="send({ keyCode: 13 })">发送</div>
             </div>
@@ -50,95 +49,17 @@ import { reactive, ref } from "vue"
 import DiscordPicker from "vue3-discordpicker"
 
 const emits = defineEmits(["sendMessage"])
-
 const state = reactive({ contentType: 1 })
 const content = ref("")
 
 const send = async (e: any) => {
-    if (e.keyCode === 13 && content.value.length) {
-        messageSend('2', content.value)
-        content.value = "";
+    let value = content.value.replace(/\r|\n/g, "")
+    if (value == "") {
+        return false
     }
-
-
-    //支持的节点类型
-    //const nodess = []
-    //判断节点，分段发送
-    // const nodes = document.getElementById('text_input').childNodes
-    // if (nodes.length > 1) {
-    //     nodes.forEach(function (item, index, nodes) {
-    //         //多节点数据处理
-    //         if (item.nodeType == 1) {
-    //             //目前支持图片，如果不是图片直接抛弃
-    //             if (document.getElementById('text_input').querySelector('img')) {
-    //                 const src = document.getElementById('text_input').querySelector('img').src
-    //                 //发送图片类型
-    //                 messageSend('2', src)
-    //             }
-    //         }
-    //         //文本
-    //         if (item.nodeType == 3) {
-    //             messageSend('1', item.nodeValue)
-    //         }
-    //     })
-    // }
+    emits('sendMessage', { content: value, msgType: 2 })
+    content.value = ""
 }
-
-const messageSend = (messageType: string, content: string) => {
-    emits('sendMessage', {
-        content: content,
-        dateTime: new Date(),
-        fromUid: 1,
-        targetUid: 2,
-        isSelf: true,
-        msgType: messageType,
-        msgUID: 2121323232,
-        source: 2121323232,
-        targetType: 2121323232,
-    })
-    //清空输入框
-
-}
-
-const setEmoji = (emoji) => {
-
-}
-
-
-// 粘贴图片并自动提交至接口
-const handlePaste = async (e: any) => {
-    const { items } = e.clipboardData; // 获取粘贴板文件对象
-
-    var text = document.getElementById('#text_input').innerText
-
-    if ((e.clipboardData || e.originalEvent.clipboardData) && (e.clipboardData || e.originalEvent.clipboardData).getData) {
-        var pastedText = (e.originalEvent || e).clipboardData.getData('text/plain')
-
-        console.log(pastedText)
-    }
-
-
-    // if (items.length) {
-    //     for (const item of items) {
-    //         if (item.kind === 'string') {
-    //         }
-    //         if (item.kind === 'file') {
-    //             //图片还是视频还是其他文件
-    //             const file = item.getAsFile(); // 获取图片文件
-    //             if (file) {
-    //                 if (item.type.substr(0, 5) === 'video') {
-
-    //                 }
-    //                 if (item.type.substr(0, 5) === 'image') {
-
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-}
-
-
 </script>
 
 <style lang="scss">
@@ -199,15 +120,6 @@ const handlePaste = async (e: any) => {
     }
 }
 
-#text_input {
-    display: flex;
-    flex-direction: row;
-
-    img {
-        max-width: 100px;
-        max-height: 100px;
-    }
-}
 
 #message_input_container {
     min-width: 1080px;
@@ -221,13 +133,15 @@ const handlePaste = async (e: any) => {
         display: flex;
         align-items: center;
 
-
         span {
             margin-left: 21px;
         }
     }
 
     #text_input {
+        display: flex;
+        flex-direction: row;
+        background: #F5F6F7;
         min-height: 86px;
         max-height: 86px;
         width: 95%;

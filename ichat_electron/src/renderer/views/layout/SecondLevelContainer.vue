@@ -37,7 +37,7 @@ const index = computed(() => indexStore.getMaillistIndex)
     }
 
     .right_item {
-        width: calc(100vw - 735px);
+        width: calc(100vw - 732px);
         background: #F5F6F7;
     }
 }

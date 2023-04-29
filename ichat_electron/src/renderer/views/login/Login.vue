@@ -48,6 +48,7 @@ import detail from '@/renderer/assets/images/detail.png'
 import { login } from '@/renderer/api/apis';
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElLoading } from 'element-plus'
+import { Connect } from '@/renderer/module/socket';
 
 const ruleFormRef = ref<FormInstance>()
 const rules = reactive<FormRules>({
@@ -88,8 +89,7 @@ const startLogin = (formEl: FormInstance | undefined) => {
 
           setTimeout(() => {
             loading.close()
-            //登录初始化
-            showHomeWindow()
+            //showHomeWindow()
             router.push('/session')
           }, 2000)
 

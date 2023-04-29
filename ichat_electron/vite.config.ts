@@ -3,10 +3,22 @@ import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import { fileURLToPath, URL } from 'node:url'
 import { viteMockServe } from 'vite-plugin-mock'
-import { svgBuilder } from './src/renderer/plugins/svgBuilder';
+import { svgBuilder } from './src/renderer/plugins/svgBuilder'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  server: {
+    host: '0.0.0.0',
+    port: 8080,
+    proxy: {
+      '/v1': {
+        target: 'http://localhost',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/v1/, ''),
+      },
+    }
+  },
   base: './',
   plugins: [
     vue(),

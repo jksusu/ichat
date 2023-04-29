@@ -7,6 +7,7 @@ export const UserStore = defineStore({
             token: '',
             menus: '',
             userInfo: {
+                uid: '',
                 userNumber: '',
                 nickname: '',
                 headPortrait: '',
@@ -17,6 +18,9 @@ export const UserStore = defineStore({
     getters: {
         getToken(): string {
             return this.token
+        },
+        getUid(): string {
+            return this.userInfo.uid
         },
         getUserNumber(): string {
             return this.userInfo.userNumber
@@ -39,6 +43,7 @@ export const UserStore = defineStore({
             this.token = ''
         },
         setUserInfo(uid: string, nickname: string, headPortrait: string, signature: string) {
+            this.userInfo.uid = uid
             this.userInfo.userNumber = uid
             this.userInfo.nickname = nickname
             this.userInfo.headPortrait = headPortrait

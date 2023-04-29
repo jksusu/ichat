@@ -20,9 +20,7 @@ func (f *Friends) PageQuery(userUid string, page, pageSize int) ([]Friends, int6
 	if err := ichat_model.DB.Model(&Friends{}).Where("user_uid = ?", userUid).Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
-
 	err = ichat_model.DB.Model(&Friends{}).Where("user_uid= ?", userUid).Limit(pageSize).Offset(offset).Find(&friends).Error
-
 	return friends, total, err
 }
 

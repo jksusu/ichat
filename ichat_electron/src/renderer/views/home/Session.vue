@@ -3,7 +3,7 @@
         <LIstItems titlename="全部会话" @clickEvent="sessionItemSelect" :list="SessionStore().getSessionLists"></LIstItems>
         <div>
             <div v-if="selectSession">
-                <SessionTitle :name="nickname" @sessionTitleClickEvent="open()">
+                <SessionTitle :name="state.nickname" @sessionTitleClickEvent="open()">
                     <template #titleRight>
                         <div id="diandiandian">
                             <SvgIcon @click="open()" color="#808899" name="dian"></SvgIcon>
@@ -12,10 +12,9 @@
                 </SessionTitle>
                 <div>
                     <el-scrollbar id="chat_message_container" ref="scrollbarRef">
-                        <div ref="innerRef">
+                        <div id="content_container" ref="innerRef">
                             <ChatBubble style="margin: 0 23px 0 23px;" v-for="item in record" :content="item.content"
-                                :is-self="item.i_send" :send-time="formatWechatTime(item.send_time)"></ChatBubble>
-
+                                :is-self="Boolean(item.i_send)" :send-time="formatWechatTime(item.send_time)"></ChatBubble>
                         </div>
                     </el-scrollbar>
                     <ChatInputContaineri @sendMessage="sendMessage"></ChatInputContaineri>
@@ -37,6 +36,7 @@
 </template>
 
 <script lang="ts" setup>
+import log from 'loglevel-es'
 import { computed } from "@vue/reactivity"
 import Drawer from '@/renderer/components/Drawer.vue'
 import SvgIcon from '@/renderer/components/SvgIcon.vue'
@@ -47,20 +47,24 @@ import LIstItems from '@/renderer/components/conversation/LIstItems.vue'
 import ChatBubble from '@/renderer/components/conversation/ChatBubble.vue'
 import { reactive, ref, onMounted, nextTick, watch } from "vue"
 import { useSelectIndexStore } from '@/renderer/stores/modules/selectIndex'
-import ChatInputContaineri from "@/renderer/components/conversation/ChatInputContaineri.vue"
 import { singleChatRecord } from '@/renderer/api/apis'
 import DefaultNullValue from "@/renderer/components/DefaultNullValue.vue"
 import { formatWechatTime } from "@/renderer/module/tool"
+import { Socket } from "@/renderer/module/socket"
+import ChatInputContaineri from "@/renderer/components/conversation/ChatInputContaineri.vue"
+import { ChatRecordStore } from '@/renderer/stores/modules/chatRecord'
+import { UserStore } from '@/renderer/stores/modules/user'
+import { fr } from 'element-plus/es/locale'
 
 //控制滚动条在最下面
 onMounted(() => {
     updateScrollTop()
-    Init()
 })
 
 const state = reactive({
     drawerStatus: false,
     chatPageShow: false,
+    nickname: '',
     page: 1,
     total: 0,
 })
@@ -70,99 +74,86 @@ const index = computed(() => useSelectIndexStore().getSessionIndex)
 // watch(index, (newQuestion, oldQuestion) => {
 // })
 
+const record = computed(() => ChatRecordStore().getChatById(index.value))
 
-const Init = async () => {
-    console.log('开始同步会话列表')
-
-    // let resp = await Connect().sessionList
-    // if (resp.success) {
-    //     console.log(resp.message)
-    // }
-}
-
-const record = ref([])
-// {
-//         'fromUid': '123',
-//         'targetUid': '123',
-//         'targetType': '123',//接收者类型
-//         'msgType': '1',//消息内容类型
-//         'msgUID': '123',
-//         'content': '你今天吃饭了吗',
-//         'dateTime': '123',
-//         'source': '123',
-//         'isSelf': false,
-//     }
-const nickname = ref('')
-// getSessionList({ 'username': '' }).then((res) => {
-//     console.log('sessionlist')
-//     if (res.data.code == 200) {
-//         state.list = res.data.data
-//         init()
-//     }
-// })
-
-
-
-const open = () => {
-    console.log("详情开关")
-    state.drawerStatus = true
-}
+const open = () => { state.drawerStatus = true }
 const close = () => { state.drawerStatus = false }
 
 //item切换
 const sessionItemSelect = (item: any) => {
-    nickname.value = item.nickname
+    state.nickname = item.nickname
     useSelectIndexStore().setSessionIndex(item.uid)
     SessionStore().setSelectSession(item.account, item.nickname, item.headPortraitUrl, item.type)
-    chatRecord(item.account)
     state.page = 1
-    //更新子组件数据
-
-    // getChatRecord({ 'uid': item.uid }).then((res) => {<span id="diandiandian">
-    //     if (res.data.code == 200) {
-    //         record.value = res.data.data
-    //     }
-    // })
-}
-
-const sendMessage = (content: any) => {
-    record.value.push(content)
     updateScrollTop()
 }
+
+const sendMessage = async (content: any) => {
+    let from = UserStore().getUid
+    let to = useSelectIndexStore().getSessionIndex
+
+    const m = {
+        "msgId": "",
+        "content": content.content,
+        "content_type": content.type,
+        "from": from,
+        "to": to,
+        "i_send": true,
+        "msg_type": "",//消息类型，如撤回
+        "send_time": '',
+        "status": 1,
+    }
+    //push到本地缓存中
+    // ChatRecordStore().addMessage(to, m)
+    // updateScrollTop()
+
+    let { status, res } = await Socket().talkToUser(to, content.content, content.type)
+    if (!status) {
+        log.error(status, 'message send fail')
+    }
+    m.msgId = res.message.data.msgId ?? ''
+    m.send_time = res.message.data.send_time ?? ''
+    ChatRecordStore().addMessage(to, m)
+    updateScrollTop()
+}
+
 
 //滚动条在最底下
 const innerRef = ref<HTMLDivElement>()
 const scrollbarRef = ref<InstanceType<typeof ElScrollbarType>>()
+
 const updateScrollTop = () => {
     nextTick(() => {
-        scrollbarRef.value!.setScrollTop(innerRef.value!.clientHeight)
-        // if (innerRef.value!.clientHeight > 200) {
-        // }
-    })
-}
-
-
-const chatRecord = (to: string) => {
-    console.log("请求聊天记录kaishi ")
-    singleChatRecord({ to: to, page: state.page }).then((res) => {
-        if (res.code == 0) {
-            if (res.data.total > 0) {
-                state.page++
-            }
-            state.total = res.data.total
-            record.value = res.data.list
-        } else {
-
+        if (record.value) {
+            scrollbarRef.value!.setScrollTop(innerRef.value!.clientHeight)
         }
     })
 }
 
+// const chatRecord = (to: string) => {
+//     console.log("请求聊天记录kaishi ")
+//     singleChatRecord({ to: to, page: state.page }).then((res) => {
+//         if (res.code == 0) {
+//             if (res.data.total > 0) {
+//                 state.page++
+//             }
+//             state.total = res.data.total
+//             //record = res.data.list
+//         } else {
 
-
-
+//         }
+//     })
+// }
 </script>
 
 <style lang="scss">
+@keyframes spinner {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
 .session_container {
     display: flex;
 
@@ -184,5 +175,11 @@ const chatRecord = (to: string) => {
         height: 100%;
         padding: 5px 0 5px 0;
     }
+
+    #content_container {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
 }
 </style>

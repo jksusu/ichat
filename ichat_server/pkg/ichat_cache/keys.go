@@ -21,6 +21,7 @@ const (
 	//未读消息
 	CONTACTS_UNREAD = "unread:contacts:"
 	GROUP_UNREAD    = "unread:group:"
+	UNREAD_MSG_ALL  = "unreadmsg:all"
 
 	MESSAGE_STATUS = "message:status:"
 )

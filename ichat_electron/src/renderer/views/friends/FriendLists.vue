@@ -8,7 +8,7 @@
                             <Item :class="{ select: item.friendUid == state.indexUid }"
                                 style="height: 62px; width: 356px; margin-top: 5px;" :nickname="item.nickname"
                                 :headPortraitUrl="item.headPortraitUrl" :account="item.friendUid" :pattern="pattern"
-                                v-bind="$attrs" v-menus:right="friend_menus">
+                                v-bind="$attrs" :data="item" v-menus:right="friend_menus">
                             </Item>
                         </div>
                     </div>
@@ -18,7 +18,13 @@
                 <div class="detail_container">
                     <div class="card_container" v-if="state.detailContainerShow">
                         <PersonDetailCard @createSession="createSession" :nickname="state.nickname"
-                            :account="state.indexUid" :headPortraitUrl="state.headPortraitUrl"></PersonDetailCard>
+                            :account="state.indexUid" :headPortraitUrl="state.headPortraitUrl">
+                            <template v-slot:bottom-button>
+                                <div class="buttom">
+                                    <div class="btn" @click="createSession(state)"><span>发消息</span></div>
+                                </div>
+                            </template>
+                        </PersonDetailCard>
                     </div>
                     <DefaultNullValue v-else></DefaultNullValue>
                 </div>
@@ -35,7 +41,6 @@ import SecondLevelContainer from "@/renderer/views/layout/SecondLevelContainer.v
 import { contactsList } from '@/renderer/api/apis'
 import { sendMessage, setRemarks, delFriend } from "@/renderer/module/menu"
 import { CreateSession } from "@/renderer/module/sessionEffect"
-import { router } from "@/renderer/router"
 
 //右键
 const friend_menus = ref([sendMessage, setRemarks, delFriend])
@@ -103,7 +108,7 @@ const ApiContactsList = (page: number) => {
 
 //创建会话
 const createSession = (user: any) => {
-    CreateSession(user.account, user.nickname, user.headPortraitUrl)
+    CreateSession(user.indexUid, user.nickname, user.headPortraitUrl)
 }
 </script>
 <style lang="scss" scoped>
@@ -130,4 +135,23 @@ const createSession = (user: any) => {
         border-radius: 8px 8px 8px 8px;
     }
 }
+
+.btn {
+        width: 74px;
+        height: 36px;
+        background: #1560FA;
+        border-radius: 4px 4px 4px 4px;
+        text-align: center;
+        line-height: 36px;
+        margin: 166px 0 18px 244px;
+
+        span {
+            width: 42px;
+            height: 20px;
+            font-size: 14px;
+            font-weight: 400;
+            color: #FFFFFF;
+            line-height: 16px;
+        }
+    }
 </style>

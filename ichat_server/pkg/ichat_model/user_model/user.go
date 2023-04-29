@@ -6,6 +6,14 @@ type Users struct {
 	ichat_model.Users
 }
 
+func (u *Users) GetUserByUid(uid string) (user *Users, err error) {
+	result := ichat_model.DB.First(&user, "uid = ?", uid)
+	if result.RowsAffected < 1 {
+		return nil, result.Error
+	}
+	return user, nil
+}
+
 func (u *Users) FindInIds(ids []string) ([]Users, error) {
 	var user []Users
 	err := ichat_model.DB.Model(&u).Where("uid IN (?)", ids).Find(&user).Error

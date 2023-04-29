@@ -1,16 +1,17 @@
 <template>
     <div>
-        <SecondLevelContainer :name="titleName">
+        <SecondLevelContainer name="新的好友">
             <template #list>
                 <el-scrollbar max-height="calc(100vh - 68px)">
                     <div style="margin: 8px 7px 0 8px;">
-                        <div class="fried_container" v-for="item in newFriendsList">
-                            <Items style="height: 62px; width: 356px;" :username="item.nickname"
-                                :last-message="item.message" @click="select(item)"
-                                :class="{ selectStyle: item.uid == index }" />
+                        <div class="fried_container" v-for="item in newFriendsList" @click="select(item)">
+                            <Item :class="{ select: item.uid == index }"
+                                style="height: 62px; width: 356px; margin-top: 5px;" :nickname="item.nickname"
+                                :headPortraitUrl="item.avatar" :account="item.from" :last-message="item.remark">
+                            </Item>
                             <div v-if="item.status == 1">
-                                <div @click="toreject()" class="button toreject"><span>拒绝</span></div>
-                                <div @click="agree()" class="button agree"><span>同意</span></div>
+                                <div @click="applyReplay(false, item.from)" class="button toreject"><span>拒绝</span></div>
+                                <div @click="applyReplay(true, item.from)" class="button agree"><span>同意</span></div>
                             </div>
                         </div>
                     </div>
@@ -20,11 +21,11 @@
                 <div class="detail_container">
                     <div class="card_container" v-if="index != ''">
                         <PersonalDataCard :nickname="state.nickname" :account="state.uid" :message="state.message"
-                            :headPortraitUrl='state.headPortraitUrl'>
+                            :headPortraitUrl='state.avatar'>
                         </PersonalDataCard>
                         <div v-if="state.status == 1">
-                            <div @click="toreject()" class="button toreject"><span>拒绝</span></div>
-                            <div @click="agree()" class="button agree"><span>同意</span></div>
+                            <div @click="applyReplay(false, state.uid)" class="button toreject"><span>拒绝</span></div>
+                            <div @click="applyReplay(true, state.uid)" class="button agree"><span>同意</span></div>
                         </div>
                     </div>
                     <DefaultNullValue v-else></DefaultNullValue>
@@ -35,14 +36,15 @@
 </template>
 <script lang="ts" setup>
 import { reactive } from "vue"
-import { computed } from "@vue/reactivity";
-import Items from '@/renderer/components/conversation/Items.vue';
-import SecondLevelContainer from "../layout/SecondLevelContainer.vue";
-import DefaultNullValue from "@/renderer/components/DefaultNullValue.vue";
+import { computed } from "@vue/reactivity"
+import Item from '@/renderer/components/conversation/Item.vue'
+import SecondLevelContainer from "../layout/SecondLevelContainer.vue"
+import DefaultNullValue from "@/renderer/components/DefaultNullValue.vue"
 import { useSelectIndexStore } from '@/renderer/stores/modules/selectIndex'
-import PersonalDataCard from "@/renderer/components/personal/PersonalDataCard.vue";
-
-const titleName = '新的好友';
+import PersonalDataCard from "@/renderer/components/personal/PersonalDataCard.vue"
+import { NewFriendsStore } from "@/renderer/stores/modules/newFriends"
+import { Socket } from "@/renderer/module/socket"
+import { ElMessage } from 'element-plus'
 
 const indexStore = useSelectIndexStore()
 const index = computed(() => indexStore.getNewFriendsIndex)
@@ -55,53 +57,30 @@ const state = reactive({
     uid: '',
     nickname: '',
     message: '',
-    headPortraitUrl: '',
+    avatar: '',
     status: 0,
     detailContainerShow: false,
 })
 
-
-//status 1:申请中 2:已添加 3:已拒绝 3:已过期
-const newFriendsList = [
-    {
-        'uid': '123214',
-        'nickname': '飞天小子',
-        'message': '能加一个好友吗？',
-        'headPortraitUrl': '',
-        'status': 1,
-    },
-    {
-        'uid': '1232114',
-        'nickname': '情爱的',
-        'message': '能加一个好友吗？',
-        'headPortraitUrl': '',
-        'status': 2,
-    }
-]
+const newFriendsList = NewFriendsStore().getList
 
 const setSelectUser = (list) => {
-    state.uid = list.uid
+    state.uid = list.from
     state.nickname = list.nickname
-    state.headPortraitUrl = list.headPortraitUrl
+    state.avatar = list.avatar
     state.status = list.status
     state.detailContainerShow = true
 }
 
-//index变化渲染右侧值
-if (index.value != '') {
-    newFriendsList.forEach(Items => {
-        if (Items.uid == index.value) {
-            setSelectUser(Items)
-        }
-    })
-}
 
-const agree = () => {
-    console.log('同意添加好友')
-}
-
-const toreject = () => {
-    console.log('拒绝添加好友')
+const applyReplay = async (bool: boolean, to: string) => {
+    let states = bool ? 2 : 3
+    let { status, res } = await Socket().contactsApplyReply(to, states)
+    if (!status) {
+        ElMessage({ showClose: true, message: '失败', type: 'error' })
+        return
+    }
+    ElMessage({ showClose: true, message: '处理成功', type: 'success' })
 }
 
 </script>
@@ -150,6 +129,7 @@ const toreject = () => {
     justify-content: center;
     align-items: center;
     height: 100%;
+
     .card_container {
         position: relative;
         width: 352px;

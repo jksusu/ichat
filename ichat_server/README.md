@@ -10,44 +10,11 @@
 ws://127.0.0.1:9501/ws?token=c3293857bc70d6ac198086386f33f78c 739613
 ws://127.0.0.1:9501/ws?token=537b469a2b3811b87d64420e0b003bb5 469264
 
+客户端定时发送心跳
+{"type":4}  
 
+添加好友
+{"reqId":1,"type":1,"from":"469264","route":"ichat.relation.friends.apply","data":{"to":"","remark":"dd"}}
+{"reqId":1,"type":1,"from":"739613","route":"ichat.relation.friends.apply.reply","data":{"msgId":"1644963360732614657","status":2}}
 
-1.心跳
-{"type":4}  客户端定时发送心跳
-{"type":4}  服务端收到心跳后返回信息
-
-
-2.CHAT类型表示上层业务需要的消息
-{
-	"reqId": 1,
-	"type": 1,
-	"from": "739613",
-	"route": "chat.user.message",
-	"data": {
-		"msgId": 1234,
-		"to": "469264",
-		"content": "dd",
-		"type": 1,
-		"send_time": 1678721586523,
-		"extra": ""
-	}
-}
-
-{"reqId":4,"type":1,"route":"chat.session.lists","from":"666666"}
-3.消息ack
 ```
-
-## 待优化点
-
-> 连接map打散到更小的bucket中，减少推送遍历
-
-## 消息ack
-
-> 根据 route 中的内容来确定 状态
-> * chat.message.server.ack 服务端已收到并已经缓存
-> * chat.message.arrive.ack 已经送达，但还未读
-> * chat.message.read.ack 已读回执
-
-## 唯一数生成
-
-> 1. 一个字节8个bit

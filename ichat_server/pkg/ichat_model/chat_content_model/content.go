@@ -12,3 +12,6 @@ func (c *ChatMessageContent) GetContentByIds(ids []int64) (content []*ChatMessag
 
 	return
 }
+
+func (c *ChatMessageContent) AddMessageContent() {
+}

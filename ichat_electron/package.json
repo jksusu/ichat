@@ -9,6 +9,7 @@
   },
   "main": "src/electron/main.js",
   "scripts": {
+    "web": "cross-env NODE_ENV=dev concurrently vite",
     "dev": "cross-env NODE_ENV=dev concurrently vite \"electron .\"",
     "build": "cross-env NODE_ENV=prod vite build && electron-builder"
   },

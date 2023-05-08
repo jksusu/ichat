@@ -1,7 +1,7 @@
 # 网关配置
 gateway:
   serviceId: gate01
-  serviceName: gateway
+  serviceName: gate
   wsPort: 9501 #监听端口
   wsReadTimeout: 200000 #读超时时间 毫秒
   wsWriteTimeout: 200000 #写超时时间 毫秒
@@ -34,6 +34,11 @@ redis:
   host: "127.0.0.1"
   port: 6379
   password: ""
+
+grpc:
+  LogicListenAddr: "localhost:9502"
+  messageListenAddr: "localhost:9503"
+  relationListenAddr: "localhost:9504"
 
 # email configuration
 email:

@@ -12,11 +12,11 @@ func getKey(UID string) string {
 }
 
 func Add(UID string, number int64) error {
-	return db.Redis.IncrBy(ichat_cache.Ctx, getKey(UID), number).Err()
+	return db.RDB.IncrBy(ichat_cache.Ctx, getKey(UID), number).Err()
 }
 
 func Get(UID string) int {
-	v, err := db.Redis.Get(ichat_cache.Ctx, getKey(UID)).Result()
+	v, err := db.RDB.Get(ichat_cache.Ctx, getKey(UID)).Result()
 	if err != nil {
 		return 0
 	}
@@ -25,5 +25,5 @@ func Get(UID string) int {
 }
 
 func Sub(UID string, number int64) error {
-	return db.Redis.DecrBy(ichat_cache.Ctx, getKey(UID), number).Err()
+	return db.RDB.DecrBy(ichat_cache.Ctx, getKey(UID), number).Err()
 }

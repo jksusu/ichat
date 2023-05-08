@@ -1,4 +1,4 @@
-package user
+package user_cache
 
 import (
 	"context"
@@ -8,11 +8,7 @@ import (
 	"time"
 )
 
-func CreateUserCacheService() *Users {
-	return &Users{}
-}
-
-type Users struct {
+type User struct {
 	Token        string `redis:"token"json:"token"`
 	Id           int    `redis:"id"json:"id"`
 	Uid          string `redis:"uid"json:"uid"`
@@ -24,10 +20,10 @@ type Users struct {
 
 var (
 	ctx       = context.Background()
-	UserCache = new(Users)
+	UserCache = new(User)
 )
 
-func (cache *Users) TokenCache(token string, user *Users, expire time.Duration) bool {
+func (cache *User) TokenCache(token string, user *User, expire time.Duration) bool {
 	if err := db.RDB.HSet(ctx, fmt.Sprintf("user:token:%s", token), user).Err(); err != nil {
 		return false
 	}
@@ -35,8 +31,8 @@ func (cache *Users) TokenCache(token string, user *Users, expire time.Duration) 
 }
 
 // GetUserByToken 获取缓存
-func (cache *Users) GetUserByToken(key string) (*Users, error) {
-	var u Users
+func (cache *User) GetUserByToken(key string) (*User, error) {
+	var u User
 	err := db.RDB.HGetAll(ctx, fmt.Sprintf("user:token:%s", key)).Scan(&u)
 	if err != nil {
 		if err == redis.Nil {
@@ -49,7 +45,7 @@ func (cache *Users) GetUserByToken(key string) (*Users, error) {
 }
 
 // DeleteUserCacheByToken 删除token
-func (cache *Users) DeleteUserCacheByToken(token string) bool {
+func (cache *User) DeleteUserCacheByToken(token string) bool {
 	_, err := db.RDB.Del(ctx, fmt.Sprintf("user:token:%s", token)).Result()
 	if err != nil {
 		return false

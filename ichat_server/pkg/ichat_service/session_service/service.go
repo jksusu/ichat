@@ -3,7 +3,7 @@ package session_service
 import (
 	"github.com/sirupsen/logrus"
 	cacheSessionList "ichat/pkg/ichat_cache/session/lists"
-	"ichat/pkg/ichat_model/user_model"
+	"ichat/pkg/ichat_model"
 	"time"
 )
 
@@ -25,7 +25,7 @@ func GetSessionAll(UID string) []*SessionList {
 		return nil
 	}
 
-	var user user_model.Users
+	var user ichat_model.Users
 	users, err := user.FindInIds(lists)
 	if err != nil {
 		logrus.Error(err)

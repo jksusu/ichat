@@ -2,7 +2,7 @@ package user
 
 import (
 	"ichat/pkg/db"
-	"ichat/pkg/ichat_model/user_model"
+	"ichat/pkg/ichat_model"
 	"ichat/pkg/ichat_tool/md5"
 	"ichat/pkg/ichat_tool/rand"
 	"ichat/pkg/response"
@@ -14,7 +14,7 @@ func UserService() *User {
 }
 
 type User struct {
-	*user_model.Users
+	*ichat_model.Users
 }
 
 // Register 账号注册
@@ -47,7 +47,7 @@ func (u *User) Login(username, password string) *response.Response {
 		}
 		//生成token
 		token := rand.GenToken()
-		userCacheData := &UserCache{
+		userCacheData := &Users{
 			Token:        token,
 			Id:           user.ID,
 			Uid:          user.UID,

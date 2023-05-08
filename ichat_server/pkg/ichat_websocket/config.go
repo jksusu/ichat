@@ -28,7 +28,7 @@ func InitConfig(filePath string) error {
 	}
 	viper.SetConfigFile(path)
 	viper.ReadInConfig()
-	maps := viper.GetStringMap("gateway")
+	maps := viper.GetStringMap("gate")
 	jsonArr, err := json.Marshal(maps)
 	if err != nil {
 		return err

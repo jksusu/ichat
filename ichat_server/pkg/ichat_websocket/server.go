@@ -139,7 +139,7 @@ func printStart() {
 	serviceId := GlobalConfig.WsServiceId
 	serviceName := GlobalConfig.WsServiceName
 
-	fmt.Printf("\033[1;31;47m %s \033[0m\n", "gateway ichat_websocket server start success")
+	fmt.Printf("\033[1;31;47m %s \033[0m\n", "gate ichat_websocket logic start success")
 	fmt.Printf("serviceId    : %s\n", serviceId)
 	fmt.Printf("serviceName  : %s\n", serviceName)
 	fmt.Printf("httpRoute    : /ws\n")

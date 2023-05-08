@@ -1,0 +1,72 @@
+syntax = "proto3";
+package pb;
+option go_package = "ichat_server/pkg/protocol/pb";
+
+service Message {
+  rpc MessageSync (MessageSyncRequest) returns (MessageSyncResponse);
+  rpc MessageRecall (MessageRecallRequest) returns (MessageRecallResponse);
+  rpc MessageAck (MessageAckRequest) returns (MessageAckResponse);
+  rpc MessageResp (MessageRespRequest) returns (MessageRespResponse);
+
+
+  rpc TalkToUser (TalkToUserRequest) returns (TalkToUserResponse);
+  rpc TalkToGroup (TalkToGroupRequest) returns (TalkToGroupResponse);
+  rpc TalkToRoom (TalkToRoomRequest) returns (TalkToRoomResponse);
+
+
+  //通知
+  rpc NoticeToUser (NoticeToUserRequest) returns (NoticeToUserResponse);
+  rpc NoticeToGroup (NoticeToGroupRequest) returns (NoticeToGroupResponse);
+
+  //会话
+  rpc SessionListGet (SessionListGetRequest) returns (SessionListGetResponse);
+  rpc SessionRemove (SessionRemoveRequest) returns (SessionRemoveResponse);
+  rpc SessionSetting (SessionSettingRequest) returns (SessionSettingResponse);
+}
+
+message MessageSyncRequest{}
+message MessageSyncResponse{}
+
+message MessageRecallRequest{}
+message MessageRecallResponse{}
+
+message MessageAckRequest{}
+message MessageAckResponse{}
+
+message MessageRespRequest{}
+message MessageRespResponse{}
+
+message TalkToUserRequest{
+  string from = 1;
+  string to = 2;
+  int32 type = 3;
+  string content = 4;
+  string extra = 5;
+  int64 sendTime = 6;
+}
+message TalkToUserResponse{
+  int64 msgId = 1;
+}
+
+message TalkToGroupRequest{}
+message TalkToGroupResponse{}
+
+message TalkToRoomRequest{}
+message TalkToRoomResponse{}
+
+//通知
+message NoticeToUserRequest{}
+message NoticeToUserResponse{}
+
+message NoticeToGroupRequest{}
+message NoticeToGroupResponse{}
+
+//会话
+message SessionListGetRequest{}
+message SessionListGetResponse{}
+
+message SessionRemoveRequest{}
+message SessionRemoveResponse{}
+
+message SessionSettingRequest{}
+message SessionSettingResponse{}

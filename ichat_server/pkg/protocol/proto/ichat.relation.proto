@@ -1,0 +1,56 @@
+syntax = "proto3";
+package pb;
+option go_package = "ichat_server/pkg/protocol/pb";
+
+//关系管理
+service Relation {
+  rpc FriendsApply (FriendsApplyRequest) returns (FriendsApplyResponse);
+  rpc FriendsApplyReply (FriendsApplyReplyRequest) returns (FriendsApplyReplyResponse);
+  rpc FriendsEdit (FriendsEditRequest) returns (FriendsEditResponse);
+  rpc FriendsDel (FriendsDelRequest) returns (FriendsDelResponse);
+
+  rpc GroupCreate (GroupCreateRequest) returns (GroupCreateResponse);
+  rpc GroupEdit (GroupEditRequest) returns (GroupEditResponse);
+  rpc GroupJoinApply (GroupJoinApplyRequest) returns (GroupJoinApplyResponse);
+  rpc GroupJoinApplyApprove (GroupJoinApplyApproveRequest) returns (GroupJoinApplyApproveResponse);
+  rpc GroupExit (GroupExitRequest) returns (GroupExitResponse);
+  rpc GroupMemberRemove (GroupMemberRemoveRequest) returns (GroupMemberRemoveResponse);
+  rpc GroupMemberSetUp (GroupMemberSetUpRequest) returns (GroupMemberSetUpResponse);
+}
+
+message FriendsApplyRequest {
+  string To = 1;
+  string Remark = 2;
+}
+message FriendsApplyResponse  {}
+
+message FriendsApplyReplyRequest {}
+message FriendsApplyReplyResponse  {}
+
+message FriendsEditRequest {}
+message FriendsEditResponse  {}
+
+message FriendsDelRequest  {}
+message FriendsDelResponse  {}
+
+//群
+message GroupCreateRequest {}
+message GroupCreateResponse {}
+
+message GroupEditRequest {}
+message GroupEditResponse {}
+
+message GroupJoinApplyRequest {}
+message GroupJoinApplyResponse {}
+
+message GroupJoinApplyApproveRequest {}
+message GroupJoinApplyApproveResponse {}
+
+message GroupExitRequest {}
+message GroupExitResponse {}
+
+message GroupMemberRemoveRequest {}
+message GroupMemberRemoveResponse {}
+
+message GroupMemberSetUpRequest {}
+message GroupMemberSetUpResponse {}

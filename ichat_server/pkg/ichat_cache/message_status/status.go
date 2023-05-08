@@ -18,17 +18,17 @@ type M struct {
 
 // 已发送
 func UpdateMsgHasBeenSent(fromUID, toUID string, msgId int64) error {
-	return db.Redis.HSet(ichat_cache.Ctx, getKey(fromUID, toUID), "last_has_been_sent_msg_id", msgId).Err()
+	return db.RDB.HSet(ichat_cache.Ctx, getKey(fromUID, toUID), "last_has_been_sent_msg_id", msgId).Err()
 }
 
 // 已送达
 func UpdateMsgReceive(fromUID, toUID string, msgId int64) error {
-	return db.Redis.HSet(ichat_cache.Ctx, getKey(fromUID, toUID), "last_receive_msg_id", msgId).Err()
+	return db.RDB.HSet(ichat_cache.Ctx, getKey(fromUID, toUID), "last_receive_msg_id", msgId).Err()
 }
 
 // 已读
 func UpdateMessageRead(fromUID, toUID string, msgId int64) error {
-	return db.Redis.HSet(ichat_cache.Ctx, getKey(fromUID, toUID), "last_read_msg_id", msgId).Err()
+	return db.RDB.HSet(ichat_cache.Ctx, getKey(fromUID, toUID), "last_read_msg_id", msgId).Err()
 }
 
 func GetAll(fromUID, toUID string, msgId int64) {

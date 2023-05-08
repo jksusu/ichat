@@ -25,13 +25,13 @@ func Add(UID, toUID string) error {
 		Score:  float64(time.Now().UnixNano()),
 		Member: toUID,
 	}
-	return db.Redis.ZAdd(ctx, getKey(UID), d).Err()
+	return db.RDB.ZAdd(ctx, getKey(UID), d).Err()
 }
 
 func Del(UID, toUID string) error {
-	return db.Redis.Del(ctx, getKey(UID), toUID).Err()
+	return db.RDB.Del(ctx, getKey(UID), toUID).Err()
 }
 
 func GetAll(UID string) ([]string, error) {
-	return db.Redis.ZRange(ichat_cache.Ctx, getKey(UID), 0, -1).Result()
+	return db.RDB.ZRange(ichat_cache.Ctx, getKey(UID), 0, -1).Result()
 }

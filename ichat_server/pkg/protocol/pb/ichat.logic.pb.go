@@ -10,6 +10,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -19,23 +20,1134 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type MessageSyncReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *MessageSyncReq) Reset() {
+	*x = MessageSyncReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MessageSyncReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MessageSyncReq) ProtoMessage() {}
+
+func (x *MessageSyncReq) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MessageSyncReq.ProtoReflect.Descriptor instead.
+func (*MessageSyncReq) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{0}
+}
+
+type MessageSyncResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *MessageSyncResp) Reset() {
+	*x = MessageSyncResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MessageSyncResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MessageSyncResp) ProtoMessage() {}
+
+func (x *MessageSyncResp) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MessageSyncResp.ProtoReflect.Descriptor instead.
+func (*MessageSyncResp) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{1}
+}
+
+type MessageRecallReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *MessageRecallReq) Reset() {
+	*x = MessageRecallReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MessageRecallReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MessageRecallReq) ProtoMessage() {}
+
+func (x *MessageRecallReq) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MessageRecallReq.ProtoReflect.Descriptor instead.
+func (*MessageRecallReq) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{2}
+}
+
+type MessageRecallResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *MessageRecallResp) Reset() {
+	*x = MessageRecallResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MessageRecallResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MessageRecallResp) ProtoMessage() {}
+
+func (x *MessageRecallResp) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MessageRecallResp.ProtoReflect.Descriptor instead.
+func (*MessageRecallResp) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{3}
+}
+
+type MessageAckReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *MessageAckReq) Reset() {
+	*x = MessageAckReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MessageAckReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MessageAckReq) ProtoMessage() {}
+
+func (x *MessageAckReq) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MessageAckReq.ProtoReflect.Descriptor instead.
+func (*MessageAckReq) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{4}
+}
+
+type MessageAckResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *MessageAckResp) Reset() {
+	*x = MessageAckResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MessageAckResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MessageAckResp) ProtoMessage() {}
+
+func (x *MessageAckResp) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MessageAckResp.ProtoReflect.Descriptor instead.
+func (*MessageAckResp) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{5}
+}
+
+type MessageRespReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *MessageRespReq) Reset() {
+	*x = MessageRespReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MessageRespReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MessageRespReq) ProtoMessage() {}
+
+func (x *MessageRespReq) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MessageRespReq.ProtoReflect.Descriptor instead.
+func (*MessageRespReq) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{6}
+}
+
+type MessageRespResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *MessageRespResp) Reset() {
+	*x = MessageRespResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MessageRespResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MessageRespResp) ProtoMessage() {}
+
+func (x *MessageRespResp) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MessageRespResp.ProtoReflect.Descriptor instead.
+func (*MessageRespResp) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{7}
+}
+
+type TalkToUserReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	From     string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	To       string `protobuf:"bytes,2,opt,name=to,proto3" json:"to,omitempty"`
+	Type     int32  `protobuf:"varint,3,opt,name=type,proto3" json:"type,omitempty"`
+	Content  string `protobuf:"bytes,4,opt,name=content,proto3" json:"content,omitempty"`
+	Extra    string `protobuf:"bytes,5,opt,name=extra,proto3" json:"extra,omitempty"`
+	SendTime int64  `protobuf:"varint,6,opt,name=sendTime,proto3" json:"sendTime,omitempty"`
+}
+
+func (x *TalkToUserReq) Reset() {
+	*x = TalkToUserReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TalkToUserReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TalkToUserReq) ProtoMessage() {}
+
+func (x *TalkToUserReq) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TalkToUserReq.ProtoReflect.Descriptor instead.
+func (*TalkToUserReq) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *TalkToUserReq) GetFrom() string {
+	if x != nil {
+		return x.From
+	}
+	return ""
+}
+
+func (x *TalkToUserReq) GetTo() string {
+	if x != nil {
+		return x.To
+	}
+	return ""
+}
+
+func (x *TalkToUserReq) GetType() int32 {
+	if x != nil {
+		return x.Type
+	}
+	return 0
+}
+
+func (x *TalkToUserReq) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+func (x *TalkToUserReq) GetExtra() string {
+	if x != nil {
+		return x.Extra
+	}
+	return ""
+}
+
+func (x *TalkToUserReq) GetSendTime() int64 {
+	if x != nil {
+		return x.SendTime
+	}
+	return 0
+}
+
+type TalkToUserResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	MsgId int64 `protobuf:"varint,1,opt,name=msgId,proto3" json:"msgId,omitempty"`
+}
+
+func (x *TalkToUserResp) Reset() {
+	*x = TalkToUserResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TalkToUserResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TalkToUserResp) ProtoMessage() {}
+
+func (x *TalkToUserResp) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TalkToUserResp.ProtoReflect.Descriptor instead.
+func (*TalkToUserResp) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *TalkToUserResp) GetMsgId() int64 {
+	if x != nil {
+		return x.MsgId
+	}
+	return 0
+}
+
+type TalkToGroupReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *TalkToGroupReq) Reset() {
+	*x = TalkToGroupReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TalkToGroupReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TalkToGroupReq) ProtoMessage() {}
+
+func (x *TalkToGroupReq) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TalkToGroupReq.ProtoReflect.Descriptor instead.
+func (*TalkToGroupReq) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{10}
+}
+
+type TalkToGroupResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *TalkToGroupResp) Reset() {
+	*x = TalkToGroupResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TalkToGroupResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TalkToGroupResp) ProtoMessage() {}
+
+func (x *TalkToGroupResp) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TalkToGroupResp.ProtoReflect.Descriptor instead.
+func (*TalkToGroupResp) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{11}
+}
+
+type TalkToRoomReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *TalkToRoomReq) Reset() {
+	*x = TalkToRoomReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TalkToRoomReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TalkToRoomReq) ProtoMessage() {}
+
+func (x *TalkToRoomReq) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TalkToRoomReq.ProtoReflect.Descriptor instead.
+func (*TalkToRoomReq) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{12}
+}
+
+type TalkToRoomResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *TalkToRoomResp) Reset() {
+	*x = TalkToRoomResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[13]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TalkToRoomResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TalkToRoomResp) ProtoMessage() {}
+
+func (x *TalkToRoomResp) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[13]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TalkToRoomResp.ProtoReflect.Descriptor instead.
+func (*TalkToRoomResp) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{13}
+}
+
+// 通知
+type NoticeToUserReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *NoticeToUserReq) Reset() {
+	*x = NoticeToUserReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NoticeToUserReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NoticeToUserReq) ProtoMessage() {}
+
+func (x *NoticeToUserReq) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NoticeToUserReq.ProtoReflect.Descriptor instead.
+func (*NoticeToUserReq) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{14}
+}
+
+type NoticeToUserResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *NoticeToUserResp) Reset() {
+	*x = NoticeToUserResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[15]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NoticeToUserResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NoticeToUserResp) ProtoMessage() {}
+
+func (x *NoticeToUserResp) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[15]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NoticeToUserResp.ProtoReflect.Descriptor instead.
+func (*NoticeToUserResp) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{15}
+}
+
+type NoticeToGroupReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *NoticeToGroupReq) Reset() {
+	*x = NoticeToGroupReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[16]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NoticeToGroupReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NoticeToGroupReq) ProtoMessage() {}
+
+func (x *NoticeToGroupReq) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[16]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NoticeToGroupReq.ProtoReflect.Descriptor instead.
+func (*NoticeToGroupReq) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{16}
+}
+
+type NoticeToGroupResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *NoticeToGroupResp) Reset() {
+	*x = NoticeToGroupResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[17]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NoticeToGroupResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NoticeToGroupResp) ProtoMessage() {}
+
+func (x *NoticeToGroupResp) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[17]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NoticeToGroupResp.ProtoReflect.Descriptor instead.
+func (*NoticeToGroupResp) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{17}
+}
+
+// 会话
+type SessionListGetReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *SessionListGetReq) Reset() {
+	*x = SessionListGetReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[18]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SessionListGetReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SessionListGetReq) ProtoMessage() {}
+
+func (x *SessionListGetReq) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[18]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SessionListGetReq.ProtoReflect.Descriptor instead.
+func (*SessionListGetReq) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{18}
+}
+
+type SessionListGetResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *SessionListGetResp) Reset() {
+	*x = SessionListGetResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[19]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SessionListGetResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SessionListGetResp) ProtoMessage() {}
+
+func (x *SessionListGetResp) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[19]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SessionListGetResp.ProtoReflect.Descriptor instead.
+func (*SessionListGetResp) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{19}
+}
+
+type SessionRemoveReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *SessionRemoveReq) Reset() {
+	*x = SessionRemoveReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[20]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SessionRemoveReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SessionRemoveReq) ProtoMessage() {}
+
+func (x *SessionRemoveReq) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[20]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SessionRemoveReq.ProtoReflect.Descriptor instead.
+func (*SessionRemoveReq) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{20}
+}
+
+type SessionRemoveResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *SessionRemoveResp) Reset() {
+	*x = SessionRemoveResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[21]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SessionRemoveResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SessionRemoveResp) ProtoMessage() {}
+
+func (x *SessionRemoveResp) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[21]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SessionRemoveResp.ProtoReflect.Descriptor instead.
+func (*SessionRemoveResp) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{21}
+}
+
+type SessionSettingReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *SessionSettingReq) Reset() {
+	*x = SessionSettingReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[22]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SessionSettingReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SessionSettingReq) ProtoMessage() {}
+
+func (x *SessionSettingReq) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[22]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SessionSettingReq.ProtoReflect.Descriptor instead.
+func (*SessionSettingReq) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{22}
+}
+
+type SessionSettingResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *SessionSettingResp) Reset() {
+	*x = SessionSettingResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ichat_logic_proto_msgTypes[23]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SessionSettingResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SessionSettingResp) ProtoMessage() {}
+
+func (x *SessionSettingResp) ProtoReflect() protoreflect.Message {
+	mi := &file_ichat_logic_proto_msgTypes[23]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SessionSettingResp.ProtoReflect.Descriptor instead.
+func (*SessionSettingResp) Descriptor() ([]byte, []int) {
+	return file_ichat_logic_proto_rawDescGZIP(), []int{23}
+}
+
 var File_ichat_logic_proto protoreflect.FileDescriptor
 
 var file_ichat_logic_proto_rawDesc = []byte{
 	0x0a, 0x11, 0x69, 0x63, 0x68, 0x61, 0x74, 0x2e, 0x6c, 0x6f, 0x67, 0x69, 0x63, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x12, 0x02, 0x70, 0x62, 0x32, 0x07, 0x0a, 0x05, 0x4c, 0x6f, 0x67, 0x69, 0x63,
-	0x42, 0x1e, 0x5a, 0x1c, 0x69, 0x63, 0x68, 0x61, 0x74, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x65, 0x72,
-	0x2f, 0x70, 0x6b, 0x67, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2f, 0x70, 0x62,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x74, 0x6f, 0x12, 0x02, 0x70, 0x62, 0x22, 0x10, 0x0a, 0x0e, 0x4d, 0x65, 0x73, 0x73, 0x61,
+	0x67, 0x65, 0x53, 0x79, 0x6e, 0x63, 0x52, 0x65, 0x71, 0x22, 0x11, 0x0a, 0x0f, 0x4d, 0x65, 0x73,
+	0x73, 0x61, 0x67, 0x65, 0x53, 0x79, 0x6e, 0x63, 0x52, 0x65, 0x73, 0x70, 0x22, 0x12, 0x0a, 0x10,
+	0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x63, 0x61, 0x6c, 0x6c, 0x52, 0x65, 0x71,
+	0x22, 0x13, 0x0a, 0x11, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x63, 0x61, 0x6c,
+	0x6c, 0x52, 0x65, 0x73, 0x70, 0x22, 0x0f, 0x0a, 0x0d, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
+	0x41, 0x63, 0x6b, 0x52, 0x65, 0x71, 0x22, 0x10, 0x0a, 0x0e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67,
+	0x65, 0x41, 0x63, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x22, 0x10, 0x0a, 0x0e, 0x4d, 0x65, 0x73, 0x73,
+	0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x52, 0x65, 0x71, 0x22, 0x11, 0x0a, 0x0f, 0x4d, 0x65,
+	0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x52, 0x65, 0x73, 0x70, 0x22, 0x93, 0x01,
+	0x0a, 0x0d, 0x54, 0x61, 0x6c, 0x6b, 0x54, 0x6f, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x12,
+	0x12, 0x0a, 0x04, 0x66, 0x72, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x66,
+	0x72, 0x6f, 0x6d, 0x12, 0x0e, 0x0a, 0x02, 0x74, 0x6f, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x02, 0x74, 0x6f, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x05, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x6f, 0x6e, 0x74, 0x65,
+	0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e,
+	0x74, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x78, 0x74, 0x72, 0x61, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x05, 0x65, 0x78, 0x74, 0x72, 0x61, 0x12, 0x1a, 0x0a, 0x08, 0x73, 0x65, 0x6e, 0x64, 0x54,
+	0x69, 0x6d, 0x65, 0x18, 0x06, 0x20, 0x01, 0x28, 0x03, 0x52, 0x08, 0x73, 0x65, 0x6e, 0x64, 0x54,
+	0x69, 0x6d, 0x65, 0x22, 0x26, 0x0a, 0x0e, 0x54, 0x61, 0x6c, 0x6b, 0x54, 0x6f, 0x55, 0x73, 0x65,
+	0x72, 0x52, 0x65, 0x73, 0x70, 0x12, 0x14, 0x0a, 0x05, 0x6d, 0x73, 0x67, 0x49, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x6d, 0x73, 0x67, 0x49, 0x64, 0x22, 0x10, 0x0a, 0x0e, 0x54,
+	0x61, 0x6c, 0x6b, 0x54, 0x6f, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52, 0x65, 0x71, 0x22, 0x11, 0x0a,
+	0x0f, 0x54, 0x61, 0x6c, 0x6b, 0x54, 0x6f, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52, 0x65, 0x73, 0x70,
+	0x22, 0x0f, 0x0a, 0x0d, 0x54, 0x61, 0x6c, 0x6b, 0x54, 0x6f, 0x52, 0x6f, 0x6f, 0x6d, 0x52, 0x65,
+	0x71, 0x22, 0x10, 0x0a, 0x0e, 0x54, 0x61, 0x6c, 0x6b, 0x54, 0x6f, 0x52, 0x6f, 0x6f, 0x6d, 0x52,
+	0x65, 0x73, 0x70, 0x22, 0x11, 0x0a, 0x0f, 0x4e, 0x6f, 0x74, 0x69, 0x63, 0x65, 0x54, 0x6f, 0x55,
+	0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x22, 0x12, 0x0a, 0x10, 0x4e, 0x6f, 0x74, 0x69, 0x63, 0x65,
+	0x54, 0x6f, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x22, 0x12, 0x0a, 0x10, 0x4e, 0x6f,
+	0x74, 0x69, 0x63, 0x65, 0x54, 0x6f, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52, 0x65, 0x71, 0x22, 0x13,
+	0x0a, 0x11, 0x4e, 0x6f, 0x74, 0x69, 0x63, 0x65, 0x54, 0x6f, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52,
+	0x65, 0x73, 0x70, 0x22, 0x13, 0x0a, 0x11, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x4c, 0x69,
+	0x73, 0x74, 0x47, 0x65, 0x74, 0x52, 0x65, 0x71, 0x22, 0x14, 0x0a, 0x12, 0x53, 0x65, 0x73, 0x73,
+	0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x47, 0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x22, 0x12,
+	0x0a, 0x10, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x52,
+	0x65, 0x71, 0x22, 0x13, 0x0a, 0x11, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x6d,
+	0x6f, 0x76, 0x65, 0x52, 0x65, 0x73, 0x70, 0x22, 0x13, 0x0a, 0x11, 0x53, 0x65, 0x73, 0x73, 0x69,
+	0x6f, 0x6e, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x22, 0x14, 0x0a, 0x12,
+	0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x52, 0x65,
+	0x73, 0x70, 0x32, 0x8d, 0x05, 0x0a, 0x05, 0x4c, 0x6f, 0x67, 0x69, 0x63, 0x12, 0x36, 0x0a, 0x0b,
+	0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x53, 0x79, 0x6e, 0x63, 0x12, 0x12, 0x2e, 0x70, 0x62,
+	0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x53, 0x79, 0x6e, 0x63, 0x52, 0x65, 0x71, 0x1a,
+	0x13, 0x2e, 0x70, 0x62, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x53, 0x79, 0x6e, 0x63,
+	0x52, 0x65, 0x73, 0x70, 0x12, 0x3c, 0x0a, 0x0d, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52,
+	0x65, 0x63, 0x61, 0x6c, 0x6c, 0x12, 0x14, 0x2e, 0x70, 0x62, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61,
+	0x67, 0x65, 0x52, 0x65, 0x63, 0x61, 0x6c, 0x6c, 0x52, 0x65, 0x71, 0x1a, 0x15, 0x2e, 0x70, 0x62,
+	0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x63, 0x61, 0x6c, 0x6c, 0x52, 0x65,
+	0x73, 0x70, 0x12, 0x33, 0x0a, 0x0a, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x41, 0x63, 0x6b,
+	0x12, 0x11, 0x2e, 0x70, 0x62, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x41, 0x63, 0x6b,
+	0x52, 0x65, 0x71, 0x1a, 0x12, 0x2e, 0x70, 0x62, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
+	0x41, 0x63, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x12, 0x33, 0x0a, 0x0a, 0x54, 0x61, 0x6c, 0x6b, 0x54,
+	0x6f, 0x55, 0x73, 0x65, 0x72, 0x12, 0x11, 0x2e, 0x70, 0x62, 0x2e, 0x54, 0x61, 0x6c, 0x6b, 0x54,
+	0x6f, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x1a, 0x12, 0x2e, 0x70, 0x62, 0x2e, 0x54, 0x61,
+	0x6c, 0x6b, 0x54, 0x6f, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x12, 0x36, 0x0a, 0x0b,
+	0x54, 0x61, 0x6c, 0x6b, 0x54, 0x6f, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x12, 0x12, 0x2e, 0x70, 0x62,
+	0x2e, 0x54, 0x61, 0x6c, 0x6b, 0x54, 0x6f, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52, 0x65, 0x71, 0x1a,
+	0x13, 0x2e, 0x70, 0x62, 0x2e, 0x54, 0x61, 0x6c, 0x6b, 0x54, 0x6f, 0x47, 0x72, 0x6f, 0x75, 0x70,
+	0x52, 0x65, 0x73, 0x70, 0x12, 0x33, 0x0a, 0x0a, 0x54, 0x61, 0x6c, 0x6b, 0x54, 0x6f, 0x52, 0x6f,
+	0x6f, 0x6d, 0x12, 0x11, 0x2e, 0x70, 0x62, 0x2e, 0x54, 0x61, 0x6c, 0x6b, 0x54, 0x6f, 0x52, 0x6f,
+	0x6f, 0x6d, 0x52, 0x65, 0x71, 0x1a, 0x12, 0x2e, 0x70, 0x62, 0x2e, 0x54, 0x61, 0x6c, 0x6b, 0x54,
+	0x6f, 0x52, 0x6f, 0x6f, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x12, 0x39, 0x0a, 0x0c, 0x4e, 0x6f, 0x74,
+	0x69, 0x63, 0x65, 0x54, 0x6f, 0x55, 0x73, 0x65, 0x72, 0x12, 0x13, 0x2e, 0x70, 0x62, 0x2e, 0x4e,
+	0x6f, 0x74, 0x69, 0x63, 0x65, 0x54, 0x6f, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x1a, 0x14,
+	0x2e, 0x70, 0x62, 0x2e, 0x4e, 0x6f, 0x74, 0x69, 0x63, 0x65, 0x54, 0x6f, 0x55, 0x73, 0x65, 0x72,
+	0x52, 0x65, 0x73, 0x70, 0x12, 0x3c, 0x0a, 0x0d, 0x4e, 0x6f, 0x74, 0x69, 0x63, 0x65, 0x54, 0x6f,
+	0x47, 0x72, 0x6f, 0x75, 0x70, 0x12, 0x14, 0x2e, 0x70, 0x62, 0x2e, 0x4e, 0x6f, 0x74, 0x69, 0x63,
+	0x65, 0x54, 0x6f, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52, 0x65, 0x71, 0x1a, 0x15, 0x2e, 0x70, 0x62,
+	0x2e, 0x4e, 0x6f, 0x74, 0x69, 0x63, 0x65, 0x54, 0x6f, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52, 0x65,
+	0x73, 0x70, 0x12, 0x3f, 0x0a, 0x0e, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73,
+	0x74, 0x47, 0x65, 0x74, 0x12, 0x15, 0x2e, 0x70, 0x62, 0x2e, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f,
+	0x6e, 0x4c, 0x69, 0x73, 0x74, 0x47, 0x65, 0x74, 0x52, 0x65, 0x71, 0x1a, 0x16, 0x2e, 0x70, 0x62,
+	0x2e, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x47, 0x65, 0x74, 0x52,
+	0x65, 0x73, 0x70, 0x12, 0x3c, 0x0a, 0x0d, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65,
+	0x6d, 0x6f, 0x76, 0x65, 0x12, 0x14, 0x2e, 0x70, 0x62, 0x2e, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f,
+	0x6e, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x52, 0x65, 0x71, 0x1a, 0x15, 0x2e, 0x70, 0x62, 0x2e,
+	0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x52, 0x65, 0x73,
+	0x70, 0x12, 0x3f, 0x0a, 0x0e, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x65, 0x74, 0x74,
+	0x69, 0x6e, 0x67, 0x12, 0x15, 0x2e, 0x70, 0x62, 0x2e, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e,
+	0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x1a, 0x16, 0x2e, 0x70, 0x62, 0x2e,
+	0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x52, 0x65,
+	0x73, 0x70, 0x42, 0x1e, 0x5a, 0x1c, 0x69, 0x63, 0x68, 0x61, 0x74, 0x5f, 0x73, 0x65, 0x72, 0x76,
+	0x65, 0x72, 0x2f, 0x70, 0x6b, 0x67, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2f,
+	0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
-var file_ichat_logic_proto_goTypes = []interface{}{}
+var (
+	file_ichat_logic_proto_rawDescOnce sync.Once
+	file_ichat_logic_proto_rawDescData = file_ichat_logic_proto_rawDesc
+)
+
+func file_ichat_logic_proto_rawDescGZIP() []byte {
+	file_ichat_logic_proto_rawDescOnce.Do(func() {
+		file_ichat_logic_proto_rawDescData = protoimpl.X.CompressGZIP(file_ichat_logic_proto_rawDescData)
+	})
+	return file_ichat_logic_proto_rawDescData
+}
+
+var file_ichat_logic_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
+var file_ichat_logic_proto_goTypes = []interface{}{
+	(*MessageSyncReq)(nil),     // 0: pb.MessageSyncReq
+	(*MessageSyncResp)(nil),    // 1: pb.MessageSyncResp
+	(*MessageRecallReq)(nil),   // 2: pb.MessageRecallReq
+	(*MessageRecallResp)(nil),  // 3: pb.MessageRecallResp
+	(*MessageAckReq)(nil),      // 4: pb.MessageAckReq
+	(*MessageAckResp)(nil),     // 5: pb.MessageAckResp
+	(*MessageRespReq)(nil),     // 6: pb.MessageRespReq
+	(*MessageRespResp)(nil),    // 7: pb.MessageRespResp
+	(*TalkToUserReq)(nil),      // 8: pb.TalkToUserReq
+	(*TalkToUserResp)(nil),     // 9: pb.TalkToUserResp
+	(*TalkToGroupReq)(nil),     // 10: pb.TalkToGroupReq
+	(*TalkToGroupResp)(nil),    // 11: pb.TalkToGroupResp
+	(*TalkToRoomReq)(nil),      // 12: pb.TalkToRoomReq
+	(*TalkToRoomResp)(nil),     // 13: pb.TalkToRoomResp
+	(*NoticeToUserReq)(nil),    // 14: pb.NoticeToUserReq
+	(*NoticeToUserResp)(nil),   // 15: pb.NoticeToUserResp
+	(*NoticeToGroupReq)(nil),   // 16: pb.NoticeToGroupReq
+	(*NoticeToGroupResp)(nil),  // 17: pb.NoticeToGroupResp
+	(*SessionListGetReq)(nil),  // 18: pb.SessionListGetReq
+	(*SessionListGetResp)(nil), // 19: pb.SessionListGetResp
+	(*SessionRemoveReq)(nil),   // 20: pb.SessionRemoveReq
+	(*SessionRemoveResp)(nil),  // 21: pb.SessionRemoveResp
+	(*SessionSettingReq)(nil),  // 22: pb.SessionSettingReq
+	(*SessionSettingResp)(nil), // 23: pb.SessionSettingResp
+}
 var file_ichat_logic_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0,  // 0: pb.Logic.MessageSync:input_type -> pb.MessageSyncReq
+	2,  // 1: pb.Logic.MessageRecall:input_type -> pb.MessageRecallReq
+	4,  // 2: pb.Logic.MessageAck:input_type -> pb.MessageAckReq
+	8,  // 3: pb.Logic.TalkToUser:input_type -> pb.TalkToUserReq
+	10, // 4: pb.Logic.TalkToGroup:input_type -> pb.TalkToGroupReq
+	12, // 5: pb.Logic.TalkToRoom:input_type -> pb.TalkToRoomReq
+	14, // 6: pb.Logic.NoticeToUser:input_type -> pb.NoticeToUserReq
+	16, // 7: pb.Logic.NoticeToGroup:input_type -> pb.NoticeToGroupReq
+	18, // 8: pb.Logic.SessionListGet:input_type -> pb.SessionListGetReq
+	20, // 9: pb.Logic.SessionRemove:input_type -> pb.SessionRemoveReq
+	22, // 10: pb.Logic.SessionSetting:input_type -> pb.SessionSettingReq
+	1,  // 11: pb.Logic.MessageSync:output_type -> pb.MessageSyncResp
+	3,  // 12: pb.Logic.MessageRecall:output_type -> pb.MessageRecallResp
+	5,  // 13: pb.Logic.MessageAck:output_type -> pb.MessageAckResp
+	9,  // 14: pb.Logic.TalkToUser:output_type -> pb.TalkToUserResp
+	11, // 15: pb.Logic.TalkToGroup:output_type -> pb.TalkToGroupResp
+	13, // 16: pb.Logic.TalkToRoom:output_type -> pb.TalkToRoomResp
+	15, // 17: pb.Logic.NoticeToUser:output_type -> pb.NoticeToUserResp
+	17, // 18: pb.Logic.NoticeToGroup:output_type -> pb.NoticeToGroupResp
+	19, // 19: pb.Logic.SessionListGet:output_type -> pb.SessionListGetResp
+	21, // 20: pb.Logic.SessionRemove:output_type -> pb.SessionRemoveResp
+	23, // 21: pb.Logic.SessionSetting:output_type -> pb.SessionSettingResp
+	11, // [11:22] is the sub-list for method output_type
+	0,  // [0:11] is the sub-list for method input_type
+	0,  // [0:0] is the sub-list for extension type_name
+	0,  // [0:0] is the sub-list for extension extendee
+	0,  // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_ichat_logic_proto_init() }
@@ -43,18 +1155,309 @@ func file_ichat_logic_proto_init() {
 	if File_ichat_logic_proto != nil {
 		return
 	}
+	if !protoimpl.UnsafeEnabled {
+		file_ichat_logic_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MessageSyncReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MessageSyncResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MessageRecallReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MessageRecallResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MessageAckReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MessageAckResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MessageRespReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MessageRespResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TalkToUserReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TalkToUserResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TalkToGroupReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TalkToGroupResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TalkToRoomReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TalkToRoomResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NoticeToUserReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NoticeToUserResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NoticeToGroupReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NoticeToGroupResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SessionListGetReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SessionListGetResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SessionRemoveReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SessionRemoveResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SessionSettingReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ichat_logic_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SessionSettingResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_ichat_logic_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   0,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_ichat_logic_proto_goTypes,
 		DependencyIndexes: file_ichat_logic_proto_depIdxs,
+		MessageInfos:      file_ichat_logic_proto_msgTypes,
 	}.Build()
 	File_ichat_logic_proto = out.File
 	file_ichat_logic_proto_rawDesc = nil

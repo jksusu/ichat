@@ -4,10 +4,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"ichat/internal/gate/message"
 	chat2 "ichat/internal/gate/router/chat"
-	"ichat/internal/gate/router/relation"
 	"ichat/internal/gate/router/route"
 	"ichat/internal/gate/router/session"
-	"ichat/internal/gate/router/user"
 )
 
 var funcTree = map[string]func(message *message.RequestMessage){
@@ -24,15 +22,6 @@ var funcTree = map[string]func(message *message.RequestMessage){
 	route.RouteSessionLists: session.HandlerSessionLists,
 	route.RouteSessionAdd:   session.HandlerSessionAdd,
 	route.RouteSessionDel:   session.HandlerSessionDel,
-
-	//关系管理
-	route.RouteRelationFriendsApply:      relation.HandlerFriendsApply,
-	route.RouteRelationFriendsApplyReply: relation.HandlerFriendsApplyReply,
-	route.RouteRelationFriendsEdit:       relation.HandlerFriendsEdit,
-	route.RouteRelationFriendsDel:        relation.HandlerFriendsDel,
-
-	//用户查询
-	route.RouteUserInfoSearch: user.HandlerUserSearch,
 }
 
 func MessageRoute(message *message.RequestMessage) {

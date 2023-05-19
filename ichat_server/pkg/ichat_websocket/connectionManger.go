@@ -10,7 +10,6 @@ type ConnManager struct {
 	onlines *sync.Map
 }
 
-// 初始化连接管理器
 func InitConnManager() (err error) {
 	GlobalConnManager = &ConnManager{
 		onlines: &sync.Map{},
@@ -18,15 +17,12 @@ func InitConnManager() (err error) {
 	return
 }
 
-// api 加入连接
 func (cm *ConnManager) AddConn(conn *Connect) {
 	cm.onlines.Store(conn.ID, conn)
-	OnlinesConnectNumber_INC()
 }
 
 func (cm *ConnManager) RemoveConn(conn *Connect) {
 	cm.onlines.Delete(conn.ID)
-	OnlinesConnectNumber_DEC()
 }
 
 func (cm *ConnManager) GetConn(ID any) (conn *Connect, ok bool) {
@@ -37,7 +33,6 @@ func (cm *ConnManager) GetConn(ID any) (conn *Connect, ok bool) {
 	return val.(*Connect), true
 }
 
-// 获取所有连接
 func (cm *ConnManager) GetAllConn() []*Connect {
 	arr := make([]*Connect, 0)
 	cm.onlines.Range(func(key, val interface{}) bool {

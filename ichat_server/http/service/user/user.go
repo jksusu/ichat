@@ -2,7 +2,6 @@ package user
 
 import (
 	"ichat/pkg/db"
-	"ichat/pkg/ichat_model"
 	"ichat/pkg/ichat_tool/md5"
 	"ichat/pkg/ichat_tool/rand"
 	"ichat/pkg/response"
@@ -14,7 +13,7 @@ func UserService() *User {
 }
 
 type User struct {
-	*ichat_model.Users
+	*model.Users
 }
 
 // Register 账号注册

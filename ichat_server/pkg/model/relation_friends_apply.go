@@ -1,4 +1,4 @@
-package ichat_model
+package model
 
 import (
 	"time"
@@ -17,12 +17,9 @@ type RelationFriendsApply struct {
 
 var RelationFriendsApplyModel = new(RelationFriendsApply)
 
-func (r *RelationFriendsApply) Add(friendsApply *RelationFriendsApply) (ok bool, err error) {
-	if result := DB.Create(friendsApply); result.RowsAffected > 0 {
-		return true, nil
-	} else {
-		return false, result.Error
-	}
+func (r *RelationFriendsApply) Add(data *RelationFriendsApply) (ok bool, err error) {
+	result := DB.Create(data)
+	return result.RowsAffected > 0, result.Error
 }
 
 func (r *RelationFriendsApply) UpdateProcessStatus(msgId int64, status int) error {

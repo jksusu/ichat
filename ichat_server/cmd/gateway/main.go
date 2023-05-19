@@ -19,30 +19,27 @@ func main() {
 	go func() {
 		_ = http.ListenAndServe("localhost:6060", nil)
 	}()
-
 	r()
 }
 
 func r() {
 	envPath := "/conf.yaml"
 	ichat.InitConf(envPath)
-	handler := handler.HandlerImpl{}
 	ws := ichat_websocket.NewServer(envPath)
-	ws.Acceptor = &handler
-	ws.MessageListener = &handler
-	ws.StateListener = &handler
-	ws.BeforeAcceptor = &handler
+	ws.Acceptor = &handler.HandlerImpl{}
+	ws.MessageListener = &handler.HandlerImpl{}
+	ws.StateListener = &handler.HandlerImpl{}
+	ws.BeforeAcceptor = &handler.HandlerImpl{}
 	if err := ws.Run(); err != nil {
 		logrus.Error(err)
 	}
-
 	server := grpc.NewServer()
-	pb.RegisterLogicServer(server, &api.LogicServer{})
-	listen, err := net.Listen("tcp", ichat.GrpcConf.LogicListenAddr)
+	pb.RegisterGatewayServer(server, &api.GatewayServer{})
+	listen, err := net.Listen("tcp", ichat.GrpcConf.GatewayListenAddr)
 	if err != nil {
 		panic(err)
 	}
-	log.Printf("server listening at %v", ichat.GrpcConf.LogicListenAddr)
+	log.Printf("grpc server listening at %v", ichat.GrpcConf.LogicListenAddr)
 	go func() {
 		if err = server.Serve(listen); err != nil {
 			log.Fatalf("failed to serve: %v", err)

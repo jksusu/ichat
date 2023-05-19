@@ -5,7 +5,6 @@ import (
 	"ichat/internal/gate/message"
 	"ichat/pkg/ichat_cache/connect"
 	"ichat/pkg/ichat_cache/unread"
-	"ichat/pkg/ichat_service/chat_service"
 	"ichat/pkg/ichat_tool/idgen"
 	"time"
 )
@@ -25,10 +24,10 @@ func HandlerSingleChat(request *message.RequestMessage) {
 	chatMsg.SendTime = sendTime
 	messageId = idgen.Gen.Node.Generate().Int64()
 
-	if err = chat_service.AddMessageContent(request.From, messageId, chatMsg); err != nil {
-		logrus.Error(err)
-		return
-	}
+	//if err = chat_service.AddMessageContent(request.From, messageId, chatMsg); err != nil {
+	//	logrus.Error(err)
+	//	return
+	//}
 
 	chatMsg.MsgId = messageId
 	//通知发送端已经发送成功了

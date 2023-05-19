@@ -5,21 +5,20 @@ import (
 	"github.com/sirupsen/logrus"
 	"ichat/internal/gate/message"
 	"ichat/pkg/ichat_cache/session/lists"
-	"ichat/pkg/ichat_service/session_service"
 )
 
 // 获取会话列表
 func HandlerSessionLists(request *message.RequestMessage) {
-	sessionList := session_service.GetSessionAll(request.From)
-
-	if err := message.Response(&message.ResponseMessage{
-		ReqId: request.ReqId,
-		From:  request.From,
-		Route: request.Route,
-		Data:  sessionList,
-	}); err != nil {
-		logrus.Error(err)
-	}
+	//sessionList := session_service.GetSessionAll(request.From)
+	//
+	//if err := message.Response(&message.ResponseMessage{
+	//	ReqId: request.ReqId,
+	//	From:  request.From,
+	//	Route: request.Route,
+	//	Data:  sessionList,
+	//}); err != nil {
+	//	logrus.Error(err)
+	//}
 }
 
 type SessionMessage struct {

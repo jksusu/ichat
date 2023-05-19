@@ -5,7 +5,6 @@ import (
 	"ichat"
 	"ichat/http/router"
 	"ichat/pkg/db"
-	"ichat/pkg/ichat_model"
 )
 
 func main() {
@@ -18,7 +17,7 @@ func main() {
 	//初始化路由
 	router.Routers(r)
 	//初始化ichat模型
-	ichat_model.DB = db.DB
+	model.DB = db.DB
 
 	r.Run("127.0.0.1:80")
 }

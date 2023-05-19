@@ -8,6 +8,8 @@ require (
 	github.com/spf13/viper v1.15.0
 )
 
+require github.com/golang/glog v1.1.1 // indirect
+
 require (
 	github.com/bwmarrin/snowflake v0.3.0 // indirect
 	github.com/bytedance/sonic v1.8.0 // indirect

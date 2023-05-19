@@ -38,7 +38,6 @@ type GrpcConfig struct {
 
 type GrpcClient struct {
 	Logic    pb.LogicClient
-	Message  pb.MessageClient
 	Relation pb.RelationClient
 	Gateway  pb.GatewayClient
 }

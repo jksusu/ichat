@@ -3,5 +3,69 @@ package pb;
 option go_package = "ichat_server/pkg/protocol/pb";
 
 service Logic {
+  rpc MessageSync (MessageSyncReq) returns (MessageSyncResp);
+  rpc MessageRecall (MessageRecallReq) returns (MessageRecallResp);
+  rpc MessageAck (MessageAckReq) returns (MessageAckResp);
 
+
+  rpc TalkToUser (TalkToUserReq) returns (TalkToUserResp);
+  rpc TalkToGroup (TalkToGroupReq) returns (TalkToGroupResp);
+  rpc TalkToRoom (TalkToRoomReq) returns (TalkToRoomResp);
+
+
+  //通知
+  rpc NoticeToUser (NoticeToUserReq) returns (NoticeToUserResp);
+  rpc NoticeToGroup (NoticeToGroupReq) returns (NoticeToGroupResp);
+
+  //会话
+  rpc SessionListGet (SessionListGetReq) returns (SessionListGetResp);
+  rpc SessionRemove (SessionRemoveReq) returns (SessionRemoveResp);
+  rpc SessionSetting (SessionSettingReq) returns (SessionSettingResp);
 }
+
+message MessageSyncReq{}
+message MessageSyncResp{}
+
+message MessageRecallReq{}
+message MessageRecallResp{}
+
+message MessageAckReq{}
+message MessageAckResp{}
+
+message MessageRespReq{}
+message MessageRespResp{}
+
+message TalkToUserReq{
+  string from = 1;
+  string to = 2;
+  int32 type = 3;
+  string content = 4;
+  string extra = 5;
+  int64 sendTime = 6;
+}
+message TalkToUserResp{
+  int64 msgId = 1;
+}
+
+message TalkToGroupReq{}
+message TalkToGroupResp{}
+
+message TalkToRoomReq{}
+message TalkToRoomResp{}
+
+//通知
+message NoticeToUserReq{}
+message NoticeToUserResp{}
+
+message NoticeToGroupReq{}
+message NoticeToGroupResp{}
+
+//会话
+message SessionListGetReq{}
+message SessionListGetResp{}
+
+message SessionRemoveReq{}
+message SessionRemoveResp{}
+
+message SessionSettingReq{}
+message SessionSettingResp{}

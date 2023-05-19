@@ -1,4 +1,4 @@
-package ichat_model
+package model
 
 type ChatMessageContent struct {
 	ID       int64  `gorm:"primarykey"`

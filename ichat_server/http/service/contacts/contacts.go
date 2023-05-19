@@ -1,12 +1,11 @@
 package contacts
 
 import (
-	"ichat/pkg/ichat_model"
 	"ichat/pkg/response"
 )
 
 type Friend struct {
-	FriendsModel *ichat_model.Friends
+	FriendsModel *model.Friends
 }
 
 // ContactsService 关系服务
@@ -39,7 +38,7 @@ func (f *Friend) FriendList(uid string, page, pageSize int) *response.Response {
 	}
 
 	//获取用户信息
-	var user ichat_model.Users
+	var user model.Users
 	users, err := user.FindInIds(ids)
 	if err != nil {
 		response.Fail.WithMsg("获取联系人失败")

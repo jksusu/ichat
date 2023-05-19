@@ -1,4 +1,4 @@
-package ichat_model
+package model
 
 import "time"
 

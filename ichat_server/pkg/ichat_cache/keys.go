@@ -4,7 +4,7 @@ import (
 	"context"
 )
 
-var Ctx = context.Background()
+var Ctx = context.TODO()
 
 const (
 	SESSION_LIST         = "session:list:"         //会话列表

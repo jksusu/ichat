@@ -1,9 +1,6 @@
 package ichat_websocket
 
 import (
-	"bytes"
-	"encoding/gob"
-	json2 "encoding/json"
 	"errors"
 	"fmt"
 	"net"
@@ -66,7 +63,6 @@ func (s *Server) Run() (err error) {
 	if s.Acceptor == nil || s.MessageListener == nil || s.StateListener == nil || s.BeforeAcceptor == nil {
 		return errors.New("must be achieved Acceptor MessageListener StateListener BeforeAcceptor interface")
 	}
-
 	mux := http.NewServeMux()
 	mux.HandleFunc("/ws", s.handleConnect)
 	s.server = &http.Server{
@@ -93,9 +89,7 @@ func (s *Server) handleConnect(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-
 	id := fmt.Sprintf("%d%s", time.Now().UnixNano(), "b")
-
 	conn := HttpUpgraderToWebsocket(id, websocket)
 	logrus.Infof("new connect id:%v", id)
 	defer conn.Close()
@@ -144,22 +138,4 @@ func printStart() {
 	fmt.Printf("serviceName  : %s\n", serviceName)
 	fmt.Printf("httpRoute    : /ws\n")
 	fmt.Printf("listen       : %s\n", listenAddr)
-}
-
-// Send 发送聊天消息
-func Send(connId string, msg *BusinessMessage) error {
-	return Response(connId, msg)
-}
-
-func Response(connId string, msg interface{}) error {
-	buf := new(bytes.Buffer)
-	if err := gob.NewEncoder(buf).Encode(msg); err != nil {
-		fmt.Println(err)
-	}
-	jsonData, _ := json2.Marshal(msg)
-	conn, ok := GlobalConnManager.GetConn(connId)
-	if !ok {
-		return errors.New("send get conn error")
-	}
-	return conn.Push(&WSMessage{MsgType: websocket.TextMessage, MsgData: jsonData})
 }

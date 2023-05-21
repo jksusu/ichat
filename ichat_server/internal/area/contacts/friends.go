@@ -1,45 +1,46 @@
 package contacts
 
 import (
+	"context"
 	"github.com/golang/glog"
 	"ichat/internal/area/gate"
-	"ichat/internal/gate/message"
+	"ichat/internal/format"
 	"ichat/pkg/ichat_tool/idgen"
 	"ichat/pkg/model"
 	"time"
 )
 
-type friend struct{}
+type friend struct {
+	Remarks   string    `json:"remarks"`
+	ApplyTime time.Time `json:"applyTime"`
+	Status    int       `json:"status"`
+}
 
 var Friend = new(friend)
 
-func (*friend) FriendsApply(to, from, remark string, applyTime time.Time) {
+func (f *friend) FriendsApply(ctx context.Context, r *format.R) {
+	format.Decode(r.Data, &f)
+	msgId := idgen.Gen.Node.Generate().Int64()
 	if _, err := model.RelationFriendsApplyModel.Add(&model.RelationFriendsApply{
-		MsgId:     idgen.Gen.Node.Generate().Int64(),
-		UID:       from,
-		TO:        to,
-		Remarks:   remark,
-		ApplyTime: applyTime,
+		MsgId:     msgId,
+		UID:       r.From,
+		TO:        r.To,
+		Remarks:   f.Remarks,
+		ApplyTime: f.ApplyTime,
 	}); err != nil {
 		glog.Error(err)
+		return
 	}
-	gate.Gateway.Resp()
-	gate.Gateway.Notice(to)
+	gate.Gateway.Resp(r).Notice(r)
 }
 
-type Reply struct {
-	MsgId  string `json:"msgId"`
-	Status int    `json:"status"`
+func (*friend) FriendsApplyReply(ctx context.Context, r *format.R) {
 }
 
-func (*friend) FriendsApplyReply() {
-	//ichat.RpcClient.Gateway.Response(&pb.ResponseReq{ReqId: 0, From: "", Route: ""})
-}
-
-func (*friend) FriendsEdit(message *message.RequestMessage) {
+func (*friend) FriendsEdit(ctx context.Context, r *format.R) {
 
 }
 
-func (*friend) FriendsDel(message *message.RequestMessage) {
+func (*friend) FriendsDel(ctx context.Context, r *format.R) {
 
 }

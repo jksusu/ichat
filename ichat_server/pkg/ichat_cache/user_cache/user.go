@@ -18,13 +18,10 @@ type User struct {
 	Status       int    `redis:"status"json:"status"`
 }
 
-var (
-	ctx       = context.Background()
-	UserCache = new(User)
-)
+var UserCache = new(User)
 
 func (cache *User) TokenCache(token string, user *User, expire time.Duration) bool {
-	if err := db.RDB.HSet(ctx, fmt.Sprintf("user:token:%s", token), user).Err(); err != nil {
+	if err := db.RDB.HSet(context.TODO(), fmt.Sprintf("user:token:%s", token), user).Err(); err != nil {
 		return false
 	}
 	return true
@@ -33,7 +30,7 @@ func (cache *User) TokenCache(token string, user *User, expire time.Duration) bo
 // GetUserByToken 获取缓存
 func (cache *User) GetUserByToken(key string) (*User, error) {
 	var u User
-	err := db.RDB.HGetAll(ctx, fmt.Sprintf("user:token:%s", key)).Scan(&u)
+	err := db.RDB.HGetAll(context.TODO(), fmt.Sprintf("user:token:%s", key)).Scan(&u)
 	if err != nil {
 		if err == redis.Nil {
 			return nil, nil
@@ -46,7 +43,7 @@ func (cache *User) GetUserByToken(key string) (*User, error) {
 
 // DeleteUserCacheByToken 删除token
 func (cache *User) DeleteUserCacheByToken(token string) bool {
-	_, err := db.RDB.Del(ctx, fmt.Sprintf("user:token:%s", token)).Result()
+	_, err := db.RDB.Del(context.TODO(), fmt.Sprintf("user:token:%s", token)).Result()
 	if err != nil {
 		return false
 	}

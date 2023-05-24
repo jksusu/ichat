@@ -1,6 +1,7 @@
 package contacts
 
 import (
+	"ichat/pkg/model"
 	"ichat/pkg/response"
 )
 

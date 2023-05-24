@@ -4,8 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/redis/go-redis/v9"
-	"ichat/pkg/db"
-	"ichat/pkg/ichat_cache"
+	"ichat/pkg/cache"
 	"time"
 )
 
@@ -17,7 +16,7 @@ type SessionList struct {
 var ctx = context.Background()
 
 func getKey(UID string) string {
-	return fmt.Sprintf("%v%v", ichat_cache.SESSION_LIST, UID)
+	return fmt.Sprintf("%v%v", cache.SESSION_LIST, UID)
 }
 
 func Add(UID, toUID string) error {
@@ -25,13 +24,13 @@ func Add(UID, toUID string) error {
 		Score:  float64(time.Now().UnixNano()),
 		Member: toUID,
 	}
-	return db.RDB.ZAdd(ctx, getKey(UID), d).Err()
+	return cache.DB.ZAdd(ctx, getKey(UID), d).Err()
 }
 
 func Del(UID, toUID string) error {
-	return db.RDB.Del(ctx, getKey(UID), toUID).Err()
+	return cache.DB.Del(ctx, getKey(UID), toUID).Err()
 }
 
 func GetAll(UID string) ([]string, error) {
-	return db.RDB.ZRange(ichat_cache.Ctx, getKey(UID), 0, -1).Result()
+	return cache.DB.ZRange(cache.Ctx, getKey(UID), 0, -1).Result()
 }

@@ -8,11 +8,11 @@ import (
 	"github.com/gorilla/websocket"
 	"ichat/internal/format"
 	"ichat/pkg/ichat_cache/connect"
-	"ichat/pkg/ichat_websocket"
+	"ichat/pkg/ichat_ws"
 )
 
 type gate struct {
-	Conn *ichat_websocket.Connect
+	Conn *ichat_ws.Connect
 
 	Err error
 }
@@ -50,9 +50,9 @@ func (g *gate) send(connId string, r *format.R) (err error) {
 	if d, err = json.Marshal(r); err != nil {
 		return
 	}
-	conn, ok := ichat_websocket.GlobalConnManager.GetConn(connId)
+	conn, ok := ichat_ws.GlobalConnManager.Get(connId)
 	if !ok {
 		return errors.New("connection not connId")
 	}
-	return conn.Push(&ichat_websocket.WSMessage{MsgType: websocket.TextMessage, MsgData: d})
+	return conn.Push(&ichat_ws.WSMessage{MsgType: websocket.TextMessage, MsgData: d})
 }

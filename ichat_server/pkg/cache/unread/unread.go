@@ -3,7 +3,6 @@ package unread
 import (
 	"fmt"
 	"ichat/pkg/db"
-	"ichat/pkg/ichat_cache"
 	"strconv"
 	"time"
 )
@@ -16,17 +15,17 @@ type UnReadMessage struct {
 }
 
 func getKye(uid string) string {
-	return fmt.Sprintf("%s:%s", ichat_cache.UNREAD_MSG_ALL, uid)
+	return fmt.Sprintf("%s:%s", cache.UNREAD_MSG_ALL, uid)
 }
 
 func SetContactsLastMsg(uid, contactsUid string, msgId int64) error {
-	k := fmt.Sprintf("%s%s", ichat_cache.CONTACTS_UNREAD, uid)
-	return db.RDB.HSet(ichat_cache.Ctx, k, contactsUid, msgId).Err()
+	k := fmt.Sprintf("%s%s", cache.CONTACTS_UNREAD, uid)
+	return db.RDB.HSet(cache.Ctx, k, contactsUid, msgId).Err()
 }
 
 func GetContactsLastMsg(uid, contactsUid string) (int64, error) {
-	k := fmt.Sprintf("%s%s", ichat_cache.CONTACTS_UNREAD, uid)
-	s, err := db.RDB.HGet(ichat_cache.Ctx, k, contactsUid).Result()
+	k := fmt.Sprintf("%s%s", cache.CONTACTS_UNREAD, uid)
+	s, err := db.RDB.HGet(cache.Ctx, k, contactsUid).Result()
 	if err != nil {
 		return 0, err
 	}
@@ -37,16 +36,16 @@ func GetContactsLastMsg(uid, contactsUid string) (int64, error) {
 
 // 添加未读消息
 func AddUnReadMsg(unread *UnReadMessage) error {
-	return db.RDB.HSet(ichat_cache.Ctx, getKye(unread.MessageBelongToUid), unread).Err()
+	return db.RDB.HSet(cache.Ctx, getKye(unread.MessageBelongToUid), unread).Err()
 }
 
 // 获取所有未读消息
 func GetAllReadMsg(uid string) (unread *UnReadMessage, err error) {
-	err = db.RDB.HGetAll(ichat_cache.Ctx, getKye(uid)).Scan(&unread)
+	err = db.RDB.HGetAll(cache.Ctx, getKye(uid)).Scan(&unread)
 
 	return
 }
 
 func DelUnReadMsgByMsgId(uid string, msgId int64) {
-	db.RDB.Del(ichat_cache.Ctx, getKye(uid))
+	db.RDB.Del(cache.Ctx, getKye(uid))
 }

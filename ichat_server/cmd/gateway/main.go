@@ -2,14 +2,9 @@ package main
 
 import (
 	"github.com/sirupsen/logrus"
-	"google.golang.org/grpc"
 	"ichat"
-	"ichat/internal/api"
-	"ichat/internal/gate/handler"
-	"ichat/pkg/ichat_websocket"
-	"ichat/pkg/protocol/pb"
-	"log"
-	"net"
+	"ichat/internal/area/gate"
+	"ichat/pkg/ichat_ws"
 	"net/http"
 	_ "net/http/pprof"
 	"time"
@@ -19,21 +14,18 @@ func main() {
 	go func() {
 		_ = http.ListenAndServe("localhost:6060", nil)
 	}()
-	r()
-}
 
-func r() {
-	envPath := "/conf.yaml"
-	ichat.InitConf(envPath)
-	ws := ichat_websocket.NewServer(envPath)
-	ws.Acceptor = &handler.HandlerImpl{}
-	ws.MessageListener = &handler.HandlerImpl{}
-	ws.StateListener = &handler.HandlerImpl{}
-	ws.BeforeAcceptor = &handler.HandlerImpl{}
+	ichat.GlobalConf.InitConf("/conf.yaml")
+
+	ws := ichat_ws.NewServer()
+	ws.Acceptor = &gate.HandlerImpl{}
+	ws.MessageListener = &gate.HandlerImpl{}
+	ws.StateListener = &gate.HandlerImpl{}
+	ws.BeforeAcceptor = &gate.HandlerImpl{}
 	if err := ws.Run(); err != nil {
 		logrus.Error(err)
 	}
-	server := grpc.NewServer()
+	/*server := grpc.NewServer()
 	pb.RegisterGatewayServer(server, &api.GatewayServer{})
 	listen, err := net.Listen("tcp", ichat.GrpcConf.GatewayListenAddr)
 	if err != nil {
@@ -44,7 +36,7 @@ func r() {
 		if err = server.Serve(listen); err != nil {
 			log.Fatalf("failed to serve: %v", err)
 		}
-	}()
+	}()*/
 
 	//初始化雪花id生成
 	//idgen.NewIDGenerator(1)

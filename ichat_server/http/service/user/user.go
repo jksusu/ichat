@@ -1,10 +1,10 @@
 package user
 
 import (
-	"ichat/pkg/db"
-	"ichat/pkg/ichat_tool/md5"
-	"ichat/pkg/ichat_tool/rand"
+	"ichat/pkg/model"
 	"ichat/pkg/response"
+	"ichat/pkg/tools/md5"
+	"ichat/pkg/tools/rand"
 	"time"
 )
 
@@ -61,7 +61,7 @@ func (u *User) Login(username, password string) *response.Response {
 		}
 		//更新token
 		user.Token = token
-		db.DB.Save(&user)
+		model.DB.Save(&user)
 		return response.Ok.WithMsg("登录成功").WithData(userCacheData)
 	}
 	return response.Fail.WithMsg("账号不存在，请重试")

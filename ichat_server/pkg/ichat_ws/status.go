@@ -1,4 +1,4 @@
-package ichat_websocket
+package ichat_ws
 
 import (
 	"encoding/json"

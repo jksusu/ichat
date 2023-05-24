@@ -1,4 +1,4 @@
-package ichat_websocket
+package ichat_ws
 
 import (
 	"encoding/json"
@@ -13,7 +13,7 @@ const (
 	RESPONSEPOMG = 5
 )
 
-// ichat_websocket 基础消息格式
+// 基础消息格式
 type WSMessage struct {
 	MsgType int
 	MsgData []byte

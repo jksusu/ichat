@@ -1,25 +1,15 @@
 package main
 
-import (
-	"google.golang.org/grpc"
-	"ichat"
-	"ichat/internal/api"
-	"ichat/pkg/protocol/pb"
-	"log"
-	"net"
-	"time"
-)
-
-var client = map[string]string{
+/*var client = map[string]string{
 	"gateway": ichat.GrpcConf.GatewayListenAddr,
 	"logic":   ichat.GrpcConf.LogicListenAddr,
-}
+}*/
 
 func main() {
-	server := grpc.NewServer()
+	/*server := grpc.NewServer()
 	pb.RegisterLogicServer(server, &api.LogicServer{})
 	pb.RegisterRelationServer(server, &api.RelationServer{})
-	listen, err := net.Listen("tcp", ichat.GrpcConf.LogicListenAddr)
+	listen, err := net.Listen("tcp", ichat.GlobalConf.LogicListenAddr)
 	if err != nil {
 		panic(err)
 	}
@@ -34,12 +24,13 @@ func main() {
 
 	for {
 		time.Sleep(1 * time.Second)
-	}
+	}*/
 }
 func ListenLogic() {
 
 }
 
+/*
 func Dial() {
 	for name, addr := range client {
 		conn, err := grpc.Dial(addr, grpc.WithInsecure())
@@ -55,4 +46,4 @@ func Dial() {
 			break
 		}
 	}
-}
+}*/

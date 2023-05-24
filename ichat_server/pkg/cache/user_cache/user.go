@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/redis/go-redis/v9"
-	"ichat/pkg/db"
+	"ichat/pkg/cache"
 	"time"
 )
 
@@ -20,17 +20,17 @@ type User struct {
 
 var UserCache = new(User)
 
-func (cache *User) TokenCache(token string, user *User, expire time.Duration) bool {
-	if err := db.RDB.HSet(context.TODO(), fmt.Sprintf("user:token:%s", token), user).Err(); err != nil {
+func (c *User) TokenCache(token string, user *User, expire time.Duration) bool {
+	if err := cache.DB.HSet(context.TODO(), fmt.Sprintf("user:token:%s", token), user).Err(); err != nil {
 		return false
 	}
 	return true
 }
 
 // GetUserByToken 获取缓存
-func (cache *User) GetUserByToken(key string) (*User, error) {
+func (c *User) GetUserByToken(key string) (*User, error) {
 	var u User
-	err := db.RDB.HGetAll(context.TODO(), fmt.Sprintf("user:token:%s", key)).Scan(&u)
+	err := cache.DB.HGetAll(context.TODO(), fmt.Sprintf("user:token:%s", key)).Scan(&u)
 	if err != nil {
 		if err == redis.Nil {
 			return nil, nil
@@ -42,8 +42,8 @@ func (cache *User) GetUserByToken(key string) (*User, error) {
 }
 
 // DeleteUserCacheByToken 删除token
-func (cache *User) DeleteUserCacheByToken(token string) bool {
-	_, err := db.RDB.Del(context.TODO(), fmt.Sprintf("user:token:%s", token)).Result()
+func (c *User) DeleteUserCacheByToken(token string) bool {
+	_, err := cache.DB.Del(context.TODO(), fmt.Sprintf("user:token:%s", token)).Result()
 	if err != nil {
 		return false
 	}

@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"ichat/internal/rpc/message"
 	"ichat/pkg/protocol/pb"
 )
 
@@ -23,7 +22,7 @@ func (*LogicServer) MessageAck(ctx context.Context, request *pb.MessageAckReq) (
 }
 
 func (*LogicServer) TalkToUser(ctx context.Context, r *pb.TalkToUserReq) (*pb.TalkToUserResp, error) {
-	return message.Talk.ToUser(ctx, r)
+	return nil, nil
 }
 
 func (*LogicServer) TalkToGroup(ctx context.Context, request *pb.TalkToGroupReq) (*pb.TalkToGroupResp, error) {

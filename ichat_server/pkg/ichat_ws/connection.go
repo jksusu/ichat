@@ -1,4 +1,4 @@
-package ichat_websocket
+package ichat_ws
 
 import (
 	"encoding/json"
@@ -68,12 +68,12 @@ func HttpUpgraderToWebsocket(ID string, conn *websocket.Conn) *Connect {
 		Conn:              conn,
 		LastHeartbeatTime: time.Now(),
 
-		readChan:  make(chan *WSMessage, GlobalConfig.WsReadChannelSize),
-		writeChan: make(chan *WSMessage, GlobalConfig.WsWriteChannelSize),
+		readChan:  make(chan *WSMessage, Config{}.WsReadChannelSize),
+		writeChan: make(chan *WSMessage, Config{}.WsWriteChannelSize),
 		closeChan: make(chan byte),
 	}
 
-	GlobalConnManager.AddConn(connect) //把当前连接加入到连接管理
+	GlobalConnManager.Add(connect) //把当前连接加入到连接管理
 
 	go connect.readLoop()
 	go connect.writeLoop()
@@ -97,7 +97,6 @@ func (c *Connect) Push(message *WSMessage) (err error) {
 func (c *Connect) ReadMsg() (message *WSMessage, err error) {
 	select {
 	case message = <-c.readChan:
-		ReadMessageNumber_DEC()
 	case <-c.closeChan:
 		err = errors.New("connect close")
 	}
@@ -110,7 +109,7 @@ func (c *Connect) Close() {
 
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
-	GlobalConnManager.RemoveConn(c)
+	GlobalConnManager.Remove(c)
 	if !c.isClosed {
 		logrus.Infof("connect close id:%v", c.ID)
 		GlobalServer.Disconnect(c.ID)
@@ -125,7 +124,7 @@ func (c *Connect) IsLive() bool {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
-	if c.isClosed || time.Now().Sub(c.LastHeartbeatTime) > time.Duration(GlobalConfig.WsHeartbeatTimeout)*time.Second {
+	if c.isClosed || time.Now().Sub(c.LastHeartbeatTime) > time.Duration(Config{}.WsHeartbeatTimeout)*time.Second {
 		logrus.Infof("connect no live id:%v ", c.ID)
 		return false
 	}
@@ -141,8 +140,7 @@ func (c *Connect) Saveheartbeat() {
 }
 
 func (c *Connect) heartbeatCheck() {
-	timer := time.NewTimer(time.Duration(GlobalConfig.WsHeartbeatTimeout) * time.Second)
-
+	timer := time.NewTimer(time.Duration(Config{}.WsHeartbeatTimeout) * time.Second)
 	for {
 		select {
 		case <-timer.C:
@@ -150,13 +148,12 @@ func (c *Connect) heartbeatCheck() {
 				c.Close()
 				return
 			}
-			timer.Reset(time.Duration(GlobalConfig.WsHeartbeatTimeout) * time.Second)
+			timer.Reset(time.Duration(Config{}.WsHeartbeatTimeout) * time.Second)
 		case <-c.closeChan:
 			timer.Stop()
 			return
 		}
 	}
-	return
 }
 
 func (c *Connect) Pong(m *BusinessMessage) (err error) {

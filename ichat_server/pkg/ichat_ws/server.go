@@ -1,4 +1,4 @@
-package ichat_websocket
+package ichat_ws
 
 import (
 	"errors"
@@ -12,17 +12,15 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type BeforeAcceptor interface {
-	BeforeAccept(*http.Request) error
-}
-type Acceptor interface {
-	Accept(*Connect, *http.Request) (uint64, error)
-}
-type MessageListener interface {
-	Receive(*Connect, *BusinessMessage)
-}
-type StateListener interface {
-	Disconnect(id string) error
+type Config struct {
+	WsServiceId        string `json:"serviceid"`          //服务id
+	WsServiceName      string `json:"servicename"`        //服务名
+	WsPort             int    `json:"wsport"`             //端口
+	WsReadTimeout      int    `json:"wsreadtimeout"`      //毫秒读超时时间
+	WsWriteTimeout     int    `json:"wswritetimeout"`     //毫秒写超时时间
+	WsWriteChannelSize int    `json:"wswritechannelsize"` //写通道最大数量
+	WsReadChannelSize  int    `json:"wsreadchannelsize"`  //读通道最大数量
+	WsHeartbeatTimeout int    `json:"wsheartbeattimeout"` //秒心跳超时时间，超过这个时间触发重连
 }
 
 type Server struct {
@@ -45,16 +43,7 @@ var (
 )
 
 // 新的websocket服务
-func NewServer(path string) *Server {
-	if err := InitConfig(path); err != nil {
-		logrus.Error(err)
-	}
-	if err := InitConnManager(); err != nil {
-		logrus.Error(err)
-	}
-	if err := InitStatusManager(); err != nil {
-		logrus.Error(err)
-	}
+func NewServer() *Server {
 	return &Server{}
 }
 
@@ -66,12 +55,12 @@ func (s *Server) Run() (err error) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/ws", s.handleConnect)
 	s.server = &http.Server{
-		ReadTimeout:  time.Duration(GlobalConfig.WsReadTimeout) * time.Millisecond,
-		WriteTimeout: time.Duration(GlobalConfig.WsWriteTimeout) * time.Millisecond,
+		ReadTimeout:  time.Duration(Config{}.WsReadTimeout) * time.Millisecond,
+		WriteTimeout: time.Duration(Config{}.WsWriteTimeout) * time.Millisecond,
 		Handler:      mux,
 	}
 	var listen net.Listener
-	if listen, err = net.Listen("tcp", fmt.Sprintf(":%d", GlobalConfig.WsPort)); err != nil {
+	if listen, err = net.Listen("tcp", fmt.Sprintf(":%d", Config{}.WsPort)); err != nil {
 		return
 	}
 	GlobalServer = s
@@ -121,21 +110,34 @@ func (s *Server) handler(c *Connect) {
 				return
 			}
 		case REQUEST:
-			if msg.Data != nil {
-				s.Receive(c, msg)
+			if data.MsgData != nil {
+				s.Receive(c, data)
 			}
 		}
 	}
 }
 func printStart() {
 
-	listenAddr := fmt.Sprintf(":%d", GlobalConfig.WsPort)
-	serviceId := GlobalConfig.WsServiceId
-	serviceName := GlobalConfig.WsServiceName
+	listenAddr := fmt.Sprintf(":%d", Config{}.WsPort)
+	serviceId := Config{}.WsServiceId
+	serviceName := Config{}.WsServiceName
 
 	fmt.Printf("\033[1;31;47m %s \033[0m\n", "gate ichat_websocket logic start success")
 	fmt.Printf("serviceId    : %s\n", serviceId)
 	fmt.Printf("serviceName  : %s\n", serviceName)
 	fmt.Printf("httpRoute    : /ws\n")
 	fmt.Printf("listen       : %s\n", listenAddr)
+}
+
+type BeforeAcceptor interface {
+	BeforeAccept(*http.Request) error
+}
+type Acceptor interface {
+	Accept(*Connect, *http.Request) (uint64, error)
+}
+type MessageListener interface {
+	Receive(*Connect, *WSMessage)
+}
+type StateListener interface {
+	Disconnect(id string) error
 }

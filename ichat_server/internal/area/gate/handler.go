@@ -2,12 +2,13 @@ package gate
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/sirupsen/logrus"
 	"ichat/internal/format"
 	"ichat/internal/gate/router/route"
 	"ichat/pkg/ichat_cache/connect"
-	websocket "ichat/pkg/ichat_websocket"
+	"ichat/pkg/ichat_ws"
 	"net/http"
 	"net/url"
 )
@@ -31,7 +32,7 @@ func (h *HandlerImpl) BeforeAccept(r *http.Request) error {
 	return nil
 }
 
-func (h *HandlerImpl) Accept(conn *websocket.Connect, r *http.Request) (uint64, error) {
+func (h *HandlerImpl) Accept(conn *ichat_ws.Connect, r *http.Request) (uint64, error) {
 	uid, err := connect.GetUidByToken(UrlDecodeToken(r))
 	if err != nil {
 		logrus.Error(err)
@@ -53,13 +54,18 @@ func (h *HandlerImpl) Accept(conn *websocket.Connect, r *http.Request) (uint64, 
 	return 1, nil
 }
 
-func (h *HandlerImpl) Receive(conn *websocket.Connect, r *format.R) {
-	ctx := context.Background()
-	context.WithValue(ctx, "fcId", conn.ID) //formConnId
-	context.WithValue(ctx, "type", r.Type)
-	context.WithValue(ctx, "from", r.From)
-	context.WithValue(ctx, "to", r.To)
-	Router(ctx, r)
+func (h *HandlerImpl) Receive(conn *ichat_ws.Connect, msg *ichat_ws.WSMessage) {
+	if msg.MsgData != nil {
+		r := new(format.R)
+		j, _ := json.Marshal(msg.MsgData)
+		json.Unmarshal(j, &r)
+		ctx := context.Background()
+		context.WithValue(ctx, "fcId", conn.ID) //formConnId
+		context.WithValue(ctx, "type", r.Type)
+		context.WithValue(ctx, "from", r.From)
+		context.WithValue(ctx, "to", r.To)
+		Router(ctx, r)
+	}
 }
 
 func (h *HandlerImpl) Disconnect(connId string) error {
@@ -69,7 +75,6 @@ func (h *HandlerImpl) Disconnect(connId string) error {
 	return nil
 }
 
-// UrlDecodeToken 从url中解析token
 func UrlDecodeToken(r *http.Request) string {
 	raw := r.URL.RawQuery
 	values, _ := url.ParseQuery(raw)

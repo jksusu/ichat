@@ -2,16 +2,19 @@ package ichat
 
 import (
 	"github.com/spf13/viper"
+	"ichat/pkg/ichat_ws"
+	"ichat/pkg/model"
 	"ichat/pkg/protocol/pb"
 	"path/filepath"
 )
 
-var (
+var GlobalConf = new(IchatConf)
+
+type IchatConf struct {
 	MysqlConf *MysqlConfig
 	RedisConf *RedisConfig
-	GrpcConf  *GrpcConfig
-	RpcClient *GrpcClient
-)
+	WsConf    *ichat_ws.Config
+}
 
 type MysqlConfig struct {
 	Host     string `json:"host"`
@@ -42,17 +45,13 @@ type GrpcClient struct {
 	Gateway  pb.GatewayClient
 }
 
-func init() {
-	InitConf("./conf.yaml")
-}
-
-func InitConf(filePath string) error {
+func (c *IchatConf) InitConf(path string) error {
 	viper := viper.New()
-	path, err := filepath.Abs(filePath)
+	file, err := filepath.Abs(path)
 	if err != nil {
 		return err
 	}
-	viper.SetConfigFile(path)
+	viper.SetConfigFile(file)
 	if err = viper.ReadInConfig(); err != nil {
 		return err
 	}
@@ -64,9 +63,12 @@ func InitConf(filePath string) error {
 	if err = viper.Unmarshal(&allConf); err != nil {
 		return err
 	}
-	MysqlConf = allConf.Mysql
-	RedisConf = allConf.Redis
-	GrpcConf = allConf.Grpc
+	c.MysqlConf = allConf.Mysql
+	c.RedisConf = allConf.Redis
+	return err
+}
 
-	return nil
+func InitDb() {
+	model.InitMysql(GlobalConf.MysqlConf)
+	model.InitMysql(GlobalConf.MysqlConf)
 }

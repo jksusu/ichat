@@ -2,8 +2,7 @@ package user
 
 import (
 	"errors"
-	"ichat/pkg/db"
-	"ichat/pkg/ichat_cache/user_cache"
+	"ichat/pkg/cache/user_cache"
 	"ichat/pkg/ichat_tool/md5"
 	"ichat/pkg/ichat_tool/rand"
 	"ichat/pkg/model"
@@ -46,7 +45,7 @@ func (*user) Login(username string, password string) (*user, error) {
 	}
 
 	list.Token = token
-	db.DB.Save(&list)
+	model.DB.Save(&list)
 
 	return &user{Uid: list.UID, Nickname: list.Nickname, Token: data.Token, Avatar: list.HeadPortrait}, nil
 }

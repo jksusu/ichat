@@ -1,10 +1,17 @@
-package ichat_cache
+package cache
 
 import (
 	"context"
+	"fmt"
+	"github.com/golang/glog"
+	"github.com/redis/go-redis/v9"
+	"ichat"
 )
 
-var Ctx = context.TODO()
+var (
+	Ctx = context.Background()
+	DB  *redis.Client
+)
 
 const (
 	SESSION_LIST         = "session:list:"         //会话列表
@@ -25,3 +32,12 @@ const (
 
 	MESSAGE_STATUS = "message:status:"
 )
+
+func InitRedis(conf *ichat.RedisConfig) {
+	DB = redis.NewClient(&redis.Options{
+		Addr:     fmt.Sprintf("%s:%d", conf.Host, conf.Port),
+		Password: conf.Password,
+		DB:       conf.Database,
+	})
+	glog.Infoln("redis database:%s:%d connection succeeded", conf.Host, conf.Port)
+}

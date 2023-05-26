@@ -1,42 +1,23 @@
 package ichat
 
 import (
+	"flag"
+	"github.com/golang/glog"
 	"github.com/spf13/viper"
+	"ichat/pkg/cache"
 	"ichat/pkg/ichat_ws"
 	"ichat/pkg/model"
 	"ichat/pkg/protocol/pb"
-	"path/filepath"
+	"ichat/pkg/tools/idgen"
 )
 
-var GlobalConf = new(IchatConf)
+var GlobalConf *Conf
 
-type IchatConf struct {
-	MysqlConf *MysqlConfig
-	RedisConf *RedisConfig
-	WsConf    *ichat_ws.Config
-}
-
-type MysqlConfig struct {
-	Host     string `json:"host"`
-	Port     int    `json:"port"`
-	Database string `json:"database"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Charset  string `json:"charset"`
-}
-
-type RedisConfig struct {
-	Host     string `json:"host"`
-	Port     int    `json:"port"`
-	Password string `json:"password"`
-	Database int    `json:"database"`
-}
-
-type GrpcConfig struct {
-	LogicListenAddr    string `json:"logicListenAddr"`
-	MessageListenAddr  string `json:"messageListenAddr"`
-	RelationListenAddr string `json:"relationListenAddr"`
-	GatewayListenAddr  string `json:"gatewayListenAddr"`
+type Conf struct {
+	Mysql   *model.MysqlConf
+	Redis   *cache.RedisConf
+	Gateway *ichat_ws.Config
+	Tcp     *ichat_ws.Config
 }
 
 type GrpcClient struct {
@@ -45,30 +26,38 @@ type GrpcClient struct {
 	Gateway  pb.GatewayClient
 }
 
-func (c *IchatConf) InitConf(path string) error {
+func Init() (err error) {
+	flag.Parse()
+	defer glog.Flush()
+
 	viper := viper.New()
-	file, err := filepath.Abs(path)
-	if err != nil {
-		return err
-	}
-	viper.SetConfigFile(file)
+	viper.SetConfigFile("../../conf.yaml")
 	if err = viper.ReadInConfig(); err != nil {
-		return err
+		return
 	}
-	allConf := struct {
-		Mysql *MysqlConfig
-		Redis *RedisConfig
-		Grpc  *GrpcConfig
-	}{}
-	if err = viper.Unmarshal(&allConf); err != nil {
-		return err
-	}
-	c.MysqlConf = allConf.Mysql
-	c.RedisConf = allConf.Redis
+	viper.Unmarshal(&GlobalConf)
+
+	//雪花id生成器
+	idgen.NewIDGenerator(1)
+	err = model.InitMysql(GlobalConf.Mysql)
+	err = cache.InitRedis(GlobalConf.Redis)
 	return err
 }
 
-func InitDb() {
-	model.InitMysql(GlobalConf.MysqlConf)
-	model.InitMysql(GlobalConf.MysqlConf)
+func InitGrpc() {
+	/*var (
+		listen net.Listener
+		err    error
+		server = grpc.NewServer()
+	)
+	pb.RegisterGatewayServer(server, &api.GatewayServer{})
+	if listen, err = net.Listen("tcp", GrpcConf.Push); err != nil {
+		panic(err)
+	}
+	glog.Info("grpc server listening at %s", GrpcConf.LogicListenAddr)
+	go func() {
+		if err = server.Serve(listen); err != nil {
+			glog.Fatalf("failed to serve: %v", err)
+		}
+	}()*/
 }

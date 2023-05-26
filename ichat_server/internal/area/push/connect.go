@@ -1,25 +1,29 @@
-package gate
+package push
 
 import (
 	"bytes"
 	"encoding/gob"
 	"encoding/json"
 	"errors"
-	"github.com/gorilla/websocket"
 	"ichat/internal/format"
 	"ichat/pkg/cache/connect"
 	"ichat/pkg/ichat_ws"
+
+	"github.com/gorilla/websocket"
 )
 
-type gate struct {
-	Conn *ichat_ws.Connect
-
+type push struct {
 	Err error
 }
 
-var Gateway = new(gate)
+var Push = new(push)
 
-func (g *gate) Notice(r *format.R) *gate {
+// 获取Fd连接节点信息
+func (g *push) getNode() {
+
+}
+
+func (g *push) Notice(r *format.R) *push {
 	var connId string
 	r.Type = format.NOTICE
 	connId, g.Err = connect.GetConnIdByUid(r.To)
@@ -30,7 +34,7 @@ func (g *gate) Notice(r *format.R) *gate {
 	return g
 }
 
-func (g *gate) Resp(r *format.R) *gate {
+func (g *push) Resp(r *format.R) *push {
 	var connId string
 	r.Type = format.RESPONSE
 	if connId, g.Err = connect.GetConnIdByUid(r.From); g.Err != nil {
@@ -40,8 +44,8 @@ func (g *gate) Resp(r *format.R) *gate {
 	return g
 }
 
-// send 私有的所有下发消息都走send
-func (g *gate) send(connId string, r *format.R) (err error) {
+// 所有下发消息都走send
+func (g *push) send(connId string, r *format.R) (err error) {
 	buf := new(bytes.Buffer)
 	if err = gob.NewEncoder(buf).Encode(r); err != nil {
 		return

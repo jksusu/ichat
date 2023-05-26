@@ -1,7 +1,7 @@
 package model
 
 import (
-	"ichat/pkg/ichat_tool/idgen"
+	"ichat/pkg/tools/idgen"
 )
 
 type ChatMessageIndex struct {

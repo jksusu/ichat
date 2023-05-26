@@ -5,8 +5,14 @@ import (
 	"fmt"
 	"github.com/golang/glog"
 	"github.com/redis/go-redis/v9"
-	"ichat"
 )
+
+type RedisConf struct {
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
+	Password string `json:"password"`
+	Database int    `json:"database"`
+}
 
 var (
 	Ctx = context.Background()
@@ -33,7 +39,7 @@ const (
 	MESSAGE_STATUS = "message:status:"
 )
 
-func InitRedis(conf *ichat.RedisConfig) {
+func InitRedis(conf *RedisConf) {
 	DB = redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%d", conf.Host, conf.Port),
 		Password: conf.Password,

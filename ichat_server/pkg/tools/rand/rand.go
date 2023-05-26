@@ -3,7 +3,7 @@ package rand
 import (
 	"fmt"
 	uuid "github.com/satori/go.uuid"
-	"ichat/pkg/ichat_tool/md5"
+	"ichat/pkg/tools/md5"
 	"math/rand"
 	"time"
 )

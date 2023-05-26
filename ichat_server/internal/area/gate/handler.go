@@ -6,14 +6,16 @@ import (
 	"errors"
 	"github.com/sirupsen/logrus"
 	"ichat/internal/format"
-	"ichat/internal/gate/router/route"
-	"ichat/pkg/ichat_cache/connect"
+	"ichat/pkg/cache/connect"
 	"ichat/pkg/ichat_ws"
+	"log"
 	"net/http"
 	"net/url"
 )
 
 type HandlerImpl struct{}
+
+var Handler = new(HandlerImpl)
 
 type UserInfo struct {
 	ConnID   string `json:"connId"`
@@ -42,7 +44,7 @@ func (h *HandlerImpl) Accept(conn *ichat_ws.Connect, r *http.Request) (uint64, e
 	connect.AddConnBidirectionalBindingUid(conn.ID, uid)
 	//推送第一个包是用户信息
 	conn.Conn.WriteJSON(&format.R{
-		Route: route.RouteUserInfoUpdate,
+		Route: format.RouteUserInfoUpdate,
 		Type:  format.RESPONSE,
 		Data: UserInfo{
 			ConnID:   conn.ID,
@@ -79,4 +81,14 @@ func UrlDecodeToken(r *http.Request) string {
 	raw := r.URL.RawQuery
 	values, _ := url.ParseQuery(raw)
 	return values.Get("token")
+}
+
+var Map = map[string]func(ctx context.Context, r *format.R){}
+
+func Router(ctx context.Context, r *format.R) {
+	if fuc, ok := Map[r.Route]; ok {
+		fuc(ctx, r)
+	} else {
+		log.Print("NOT ROUTER")
+	}
 }

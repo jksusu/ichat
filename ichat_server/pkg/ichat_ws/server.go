@@ -3,19 +3,19 @@ package ichat_ws
 import (
 	"errors"
 	"fmt"
+	"github.com/golang/glog"
+	"github.com/gorilla/websocket"
 	"net"
 	"net/http"
 	"sync"
 	"time"
-
-	"github.com/gorilla/websocket"
-	"github.com/sirupsen/logrus"
 )
 
 type Config struct {
-	WsServiceId        string `json:"serviceid"`          //服务id
-	WsServiceName      string `json:"servicename"`        //服务名
-	WsPort             int    `json:"wsport"`             //端口
+	ServiceId          string `json:"serviceid"`   //服务id
+	ServiceName        string `json:"servicename"` //服务名
+	WsPort             int    `json:"wsport"`      //端口
+	WsRoute            int    `json:"wsroute"`
 	WsReadTimeout      int    `json:"wsreadtimeout"`      //毫秒读超时时间
 	WsWriteTimeout     int    `json:"wswritetimeout"`     //毫秒写超时时间
 	WsWriteChannelSize int    `json:"wswritechannelsize"` //写通道最大数量
@@ -31,6 +31,7 @@ type Server struct {
 	Acceptor
 	MessageListener
 	StateListener
+	*Config
 }
 
 var (
@@ -48,25 +49,31 @@ func NewServer() *Server {
 }
 
 // Run 初始化websocket服务
-func (s *Server) Run() (err error) {
+func (s *Server) Start() (err error) {
 	if s.Acceptor == nil || s.MessageListener == nil || s.StateListener == nil || s.BeforeAcceptor == nil {
 		return errors.New("must be achieved Acceptor MessageListener StateListener BeforeAcceptor interface")
 	}
 	mux := http.NewServeMux()
-	mux.HandleFunc("/ws", s.handleConnect)
+	mux.HandleFunc(fmt.Sprintf("/%s", s.WsRoute), s.handleConnect)
 	s.server = &http.Server{
-		ReadTimeout:  time.Duration(Config{}.WsReadTimeout) * time.Millisecond,
-		WriteTimeout: time.Duration(Config{}.WsWriteTimeout) * time.Millisecond,
+		ReadTimeout:  time.Duration(s.WsReadTimeout) * time.Millisecond,
+		WriteTimeout: time.Duration(s.WsWriteTimeout) * time.Millisecond,
 		Handler:      mux,
 	}
 	var listen net.Listener
-	if listen, err = net.Listen("tcp", fmt.Sprintf(":%d", Config{}.WsPort)); err != nil {
+	if listen, err = net.Listen("tcp", fmt.Sprintf(":%d", s.WsPort)); err != nil {
 		return
 	}
 	GlobalServer = s
-	printStart()
+
+	fmt.Printf("\033[1;31;47m %s \033[0m\n", fmt.Sprintf("%s ichat_ws start success", s.ServiceName))
+	glog.Infoln("serverId:%s serverName:%s port:%s route:%s", s.ServiceId, s, s.ServiceName, s.WsPort, s.WsRoute)
+
 	go s.server.Serve(listen)
-	return
+
+	for {
+		time.Sleep(1 * time.Second)
+	}
 }
 
 func (s *Server) handleConnect(w http.ResponseWriter, r *http.Request) {
@@ -74,13 +81,13 @@ func (s *Server) handleConnect(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 		return
 	}
-	websocket, err := Upgrader.Upgrade(w, r, nil)
+	ws, err := Upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		return
 	}
 	id := fmt.Sprintf("%d%s", time.Now().UnixNano(), "b")
-	conn := HttpUpgraderToWebsocket(id, websocket)
-	logrus.Infof("new connect id:%v", id)
+	conn := HttpUpgraderToWebsocket(id, ws)
+	glog.Infoln("new connect id:%v", id)
 	defer conn.Close()
 	s.Accept(conn, r)
 	s.handler(conn)
@@ -103,9 +110,9 @@ func (s *Server) handler(c *Connect) {
 		}
 		switch msg.Type {
 		case REQUESTPING:
-			logrus.Info("ping")
+			glog.Info("ping")
 			if err = c.Pong(msg); err != nil {
-				logrus.Error(err)
+				glog.Error(err)
 				c.Close()
 				return
 			}
@@ -115,18 +122,6 @@ func (s *Server) handler(c *Connect) {
 			}
 		}
 	}
-}
-func printStart() {
-
-	listenAddr := fmt.Sprintf(":%d", Config{}.WsPort)
-	serviceId := Config{}.WsServiceId
-	serviceName := Config{}.WsServiceName
-
-	fmt.Printf("\033[1;31;47m %s \033[0m\n", "gate ichat_websocket logic start success")
-	fmt.Printf("serviceId    : %s\n", serviceId)
-	fmt.Printf("serviceName  : %s\n", serviceName)
-	fmt.Printf("httpRoute    : /ws\n")
-	fmt.Printf("listen       : %s\n", listenAddr)
 }
 
 type BeforeAcceptor interface {

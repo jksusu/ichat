@@ -1,6 +1,9 @@
 package idgen
 
-import "github.com/bwmarrin/snowflake"
+import (
+	"fmt"
+	"github.com/bwmarrin/snowflake"
+)
 
 type IDGenerator struct {
 	Node *snowflake.Node
@@ -8,11 +11,21 @@ type IDGenerator struct {
 
 var Gen *IDGenerator
 
-func NewIDGenerator(nodeID int64) error {
-	node, err := snowflake.NewNode(nodeID)
+func NewIDGenerator(nodeId int64) error {
+	node, err := snowflake.NewNode(nodeId)
 	if err != nil {
 		return err
 	}
 	Gen = &IDGenerator{Node: node}
 	return nil
+}
+
+// 生成消息id
+func GenChatMsgId() int64 {
+	return Gen.Node.Generate().Int64()
+}
+
+// 业务 + 节点id + 数字
+func GenConnectId() string {
+	return fmt.Sprintf("%d%s", Gen.Node.Generate(), "b")
 }

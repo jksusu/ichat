@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/golang/glog"
 	"github.com/gorilla/websocket"
+	"ichat/pkg/tools/idgen"
 	"net"
 	"net/http"
 	"sync"
@@ -15,7 +16,7 @@ type Config struct {
 	ServiceId          string `json:"serviceid"`   //服务id
 	ServiceName        string `json:"servicename"` //服务名
 	WsPort             int    `json:"wsport"`      //端口
-	WsRoute            int    `json:"wsroute"`
+	WsRoute            string `json:"wsroute"`
 	WsReadTimeout      int    `json:"wsreadtimeout"`      //毫秒读超时时间
 	WsWriteTimeout     int    `json:"wswritetimeout"`     //毫秒写超时时间
 	WsWriteChannelSize int    `json:"wswritechannelsize"` //写通道最大数量
@@ -32,29 +33,19 @@ type Server struct {
 	MessageListener
 	StateListener
 	*Config
+	*Manager
 }
 
-var (
-	GlobalServer *Server
-	Upgrader     = websocket.Upgrader{
-		CheckOrigin: func(r *http.Request) bool {
-			return true
-		},
-	}
-)
-
-// 新的websocket服务
 func NewServer() *Server {
 	return &Server{}
 }
 
-// Run 初始化websocket服务
 func (s *Server) Start() (err error) {
 	if s.Acceptor == nil || s.MessageListener == nil || s.StateListener == nil || s.BeforeAcceptor == nil {
 		return errors.New("must be achieved Acceptor MessageListener StateListener BeforeAcceptor interface")
 	}
 	mux := http.NewServeMux()
-	mux.HandleFunc(fmt.Sprintf("/%s", s.WsRoute), s.handleConnect)
+	mux.HandleFunc(fmt.Sprintf("%s", s.WsRoute), s.handleConnect)
 	s.server = &http.Server{
 		ReadTimeout:  time.Duration(s.WsReadTimeout) * time.Millisecond,
 		WriteTimeout: time.Duration(s.WsWriteTimeout) * time.Millisecond,
@@ -64,13 +55,13 @@ func (s *Server) Start() (err error) {
 	if listen, err = net.Listen("tcp", fmt.Sprintf(":%d", s.WsPort)); err != nil {
 		return
 	}
-	GlobalServer = s
 
-	fmt.Printf("\033[1;31;47m %s \033[0m\n", fmt.Sprintf("%s ichat_ws start success", s.ServiceName))
-	glog.Infoln("serverId:%s serverName:%s port:%s route:%s", s.ServiceId, s, s.ServiceName, s.WsPort, s.WsRoute)
+	s.Manager = &Manager{&sync.Map{}}
+	GlobalConnManager = s.Manager
+	glog.Info("\u001B[1;31;47mconn manager init success\u001B[0m")
+	glog.Infof("\u001B[1;31;47mserverId:%s serverName:%s port:%d route:%s\u001B[0m", s.ServiceId, s.ServiceName, s.WsPort, s.WsRoute)
 
 	go s.server.Serve(listen)
-
 	for {
 		time.Sleep(1 * time.Second)
 	}
@@ -81,14 +72,24 @@ func (s *Server) handleConnect(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 		return
 	}
-	ws, err := Upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		return
+	var (
+		ws       *websocket.Conn
+		err      error
+		Upgrader = websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool {
+				return true
+			},
+		}
+	)
+	if ws, err = Upgrader.Upgrade(w, r, nil); err != nil {
+		glog.Fatalf("ws conn upgrader fail %v", err)
 	}
-	id := fmt.Sprintf("%d%s", time.Now().UnixNano(), "b")
-	conn := HttpUpgraderToWebsocket(id, ws)
+	id := idgen.GenConnectId()
+	conn := HttpUpgraderToWebsocket(s, id, ws)
 	glog.Infoln("new connect id:%v", id)
+
 	defer conn.Close()
+
 	s.Accept(conn, r)
 	s.handler(conn)
 }

@@ -4,31 +4,31 @@ import (
 	"sync"
 )
 
-var GlobalConnManager = new(manager)
+var GlobalConnManager = new(Manager)
 
-type manager struct {
-	online *sync.Map
+type Manager struct {
+	*sync.Map
 }
 
-func (m *manager) Add(conn *Connect) {
-	m.online.Store(conn.ID, conn)
+func (m *Manager) Add(conn *Connect) {
+	m.Store(conn.ID, conn)
 }
 
-func (m *manager) Remove(conn *Connect) {
-	m.online.Delete(conn.ID)
+func (m *Manager) Remove(conn *Connect) {
+	m.Delete(conn.ID)
 }
 
-func (m *manager) Get(ID any) (conn *Connect, ok bool) {
-	val, ok := m.online.Load(ID)
+func (m *Manager) Get(ID any) (conn *Connect, ok bool) {
+	val, ok := m.Load(ID)
 	if !ok {
 		return nil, false
 	}
 	return val.(*Connect), true
 }
 
-func (m *manager) GetAll() []*Connect {
+func (m *Manager) GetAll() []*Connect {
 	arr := make([]*Connect, 0)
-	m.online.Range(func(key, val interface{}) bool {
+	m.Range(func(key, val interface{}) bool {
 		arr = append(arr, val.(*Connect))
 		return true
 	})

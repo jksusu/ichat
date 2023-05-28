@@ -20,10 +20,12 @@ type gate struct {
 var Gateway = new(gate)
 
 func (g *gate) Notice(r *format.R) *gate {
-	var connId string
+	var (
+		connId string
+		err    error
+	)
 	r.Type = format.NOTICE
-	connId, g.Err = connect.GetConnIdByUid(r.To)
-	if g.Err != nil {
+	if connId, err = connect.GetConnIdByUid(r.To); err != nil {
 		return g
 	}
 	g.Err = g.send(connId, r)
@@ -31,16 +33,18 @@ func (g *gate) Notice(r *format.R) *gate {
 }
 
 func (g *gate) Resp(r *format.R) *gate {
-	var connId string
+	var (
+		connId string
+		err    error
+	)
 	r.Type = format.RESPONSE
-	if connId, g.Err = connect.GetConnIdByUid(r.From); g.Err != nil {
+	if connId, err = connect.GetConnIdByUid(r.From); err != nil {
 		return g
 	}
 	g.Err = g.send(connId, r)
 	return g
 }
 
-// send 私有的所有下发消息都走send
 func (g *gate) send(connId string, r *format.R) (err error) {
 	buf := new(bytes.Buffer)
 	if err = gob.NewEncoder(buf).Encode(r); err != nil {

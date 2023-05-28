@@ -3,11 +3,11 @@ package ichat_ws
 import (
 	"encoding/json"
 	"errors"
+	"github.com/golang/glog"
 	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/sirupsen/logrus"
 )
 
 // Connect 连接管理
@@ -21,6 +21,7 @@ type Connect struct {
 	writeChan chan *WSMessage //写
 	closeChan chan byte       //关闭chan
 	isClosed  bool            //关闭状态机
+	*Config
 }
 
 // 读
@@ -61,28 +62,23 @@ func (c *Connect) writeLoop() {
 	return
 }
 
-// 初始化websocket连接 启动读写协程
-func HttpUpgraderToWebsocket(ID string, conn *websocket.Conn) *Connect {
+func HttpUpgraderToWebsocket(s *Server, ID string, conn *websocket.Conn) *Connect {
 	connect := &Connect{
 		ID:                ID,
 		Conn:              conn,
 		LastHeartbeatTime: time.Now(),
-
-		readChan:  make(chan *WSMessage, Config{}.WsReadChannelSize),
-		writeChan: make(chan *WSMessage, Config{}.WsWriteChannelSize),
-		closeChan: make(chan byte),
+		readChan:          make(chan *WSMessage, s.Config.WsReadChannelSize),
+		writeChan:         make(chan *WSMessage, s.Config.WsWriteChannelSize),
+		closeChan:         make(chan byte),
+		Config:            s.Config,
 	}
-
-	GlobalConnManager.Add(connect) //把当前连接加入到连接管理
-
+	s.Add(connect)
 	go connect.readLoop()
 	go connect.writeLoop()
 	go connect.heartbeatCheck()
-
 	return connect
 }
 
-// Push 推送消息
 func (c *Connect) Push(message *WSMessage) (err error) {
 	select {
 	case c.writeChan <- message:
@@ -103,35 +99,30 @@ func (c *Connect) ReadMsg() (message *WSMessage, err error) {
 	return
 }
 
-// Close  线程安全可重入关闭
 func (c *Connect) Close() {
 	c.Conn.Close()
-
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	GlobalConnManager.Remove(c)
 	if !c.isClosed {
-		logrus.Infof("connect close id:%v", c.ID)
-		GlobalServer.Disconnect(c.ID)
+		glog.Infof("connect close id:%v", c.ID)
+		Server{}.Disconnect(c.ID)
 		c.isClosed = true
 		close(c.closeChan)
 	}
 	return
 }
 
-// 检测连接是否存活
 func (c *Connect) IsLive() bool {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
-
-	if c.isClosed || time.Now().Sub(c.LastHeartbeatTime) > time.Duration(Config{}.WsHeartbeatTimeout)*time.Second {
-		logrus.Infof("connect no live id:%v ", c.ID)
+	if c.isClosed || time.Now().Sub(c.LastHeartbeatTime) > time.Duration(c.Config.WsHeartbeatTimeout)*time.Second {
+		glog.Infof("connect no live id:%v ", c.ID)
 		return false
 	}
 	return true
 }
 
-// 更新心跳时间
 func (c *Connect) Saveheartbeat() {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -140,7 +131,7 @@ func (c *Connect) Saveheartbeat() {
 }
 
 func (c *Connect) heartbeatCheck() {
-	timer := time.NewTimer(time.Duration(Config{}.WsHeartbeatTimeout) * time.Second)
+	timer := time.NewTimer(time.Duration(c.Config.WsHeartbeatTimeout) * time.Second)
 	for {
 		select {
 		case <-timer.C:
@@ -148,7 +139,7 @@ func (c *Connect) heartbeatCheck() {
 				c.Close()
 				return
 			}
-			timer.Reset(time.Duration(Config{}.WsHeartbeatTimeout) * time.Second)
+			timer.Reset(time.Duration(c.Config.WsHeartbeatTimeout) * time.Second)
 		case <-c.closeChan:
 			timer.Stop()
 			return
@@ -163,10 +154,9 @@ func (c *Connect) Pong(m *BusinessMessage) (err error) {
 	c.Saveheartbeat()
 	var buf []byte
 	m.Type = RESPONSEPOMG
-	//pong := &BusinessMessage{Type: RESPONSEPOMG}
 	if buf, err = json.Marshal(m); err != nil {
 		return
 	}
-	logrus.Info(m.From + "pong")
+	glog.Infoln(m.From + "pong")
 	return c.Push(&WSMessage{MsgType: websocket.TextMessage, MsgData: buf})
 }

@@ -15,13 +15,10 @@ func (c *ChatMessageContent) GetContentByIds(ids []int64) (content []*ChatMessag
 	err = DB.Model(&c).Where("id IN (?)", ids).Find(&content).Error
 	return
 }
-func (c *ChatMessageContent) Add(msgId int64, types int, content, extra string, sendTime int64) error {
-	res := DB.Create(&ChatMessageContent{
-		ID:       msgId,
-		Type:     types,
-		Content:  content,
-		Extra:    extra,
-		SendTime: sendTime,
-	})
-	return res.Error
+
+func (*ChatMessageContent) Insert(data *ChatMessageContent) (bool, error) {
+	if res := DB.Create(data); res.Error != nil || res.RowsAffected == 0 {
+		return false, res.Error
+	}
+	return true, nil
 }

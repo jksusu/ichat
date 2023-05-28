@@ -18,11 +18,18 @@ type R struct {
 	Data  interface{} `json:"data"`  //数据
 }
 
+type HttpResult struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
+	Data any    `json:"data"`
+}
+
 type ErrResp struct {
 	ErrCode int    `json:"errCode"`
 	ErrMsg  string `json:"errMsg"`
 }
 
+// 解析data内容
 func Decode(data interface{}, v any) (err error) {
 	var p []byte
 	p, err = json.Marshal(data)

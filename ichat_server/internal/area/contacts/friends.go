@@ -3,10 +3,9 @@ package contacts
 import (
 	"context"
 	"github.com/golang/glog"
-	"ichat/internal/area/gate"
 	"ichat/internal/format"
-	"ichat/pkg/ichat_tool/idgen"
 	"ichat/pkg/model"
+	"ichat/pkg/tools/idgen"
 	"time"
 )
 
@@ -18,10 +17,10 @@ type friend struct {
 
 var Friend = new(friend)
 
-func (f *friend) FriendsApply(ctx context.Context, r *format.R) {
+func (f *friend) FriendsApply(ctx context.Context, r *format.R) (err error) {
 	format.Decode(r.Data, &f)
 	msgId := idgen.Gen.Node.Generate().Int64()
-	if _, err := model.RelationFriendsApplyModel.Add(&model.RelationFriendsApply{
+	if _, err = model.RelationFriendsApplyModel.Add(&model.RelationFriendsApply{
 		MsgId:     msgId,
 		UID:       r.From,
 		TO:        r.To,
@@ -31,7 +30,7 @@ func (f *friend) FriendsApply(ctx context.Context, r *format.R) {
 		glog.Error(err)
 		return
 	}
-	gate.Gateway.Resp(r).Notice(r)
+	return
 }
 
 func (*friend) FriendsApplyReply(ctx context.Context, r *format.R) {

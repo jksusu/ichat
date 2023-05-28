@@ -1,4 +1,4 @@
-package user_cache
+package user
 
 import (
 	"context"
@@ -18,7 +18,7 @@ type User struct {
 	Status       int    `redis:"status"json:"status"`
 }
 
-var UserCache = new(User)
+var Rdb = new(User)
 
 func (c *User) TokenCache(token string, user *User, expire time.Duration) bool {
 	if err := cache.DB.HSet(context.TODO(), fmt.Sprintf("user:token:%s", token), user).Err(); err != nil {

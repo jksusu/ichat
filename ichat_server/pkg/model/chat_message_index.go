@@ -1,11 +1,8 @@
 package model
 
-import (
-	"ichat/pkg/tools/idgen"
-)
-
 type ChatMessageIndex struct {
 	ID       int64  `gorm:"primarykey"`
+	Seq      int64  `json:"seq"`
 	A        string `gorm:"index;size:60;not null;comment:账户a"`
 	B        string `gorm:"size:60;not null;comment:账户b"`
 	ISend    int    `gorm:"default:0;not null;comment:是否为账户a发送"`
@@ -26,13 +23,17 @@ func (mi *ChatMessageIndex) GetARecord(a, b string, page, pageSize int) (index [
 	return
 }
 
-func (*ChatMessageIndex) Add(from, to string, isend int, msgId int64, sendTime int64) {
-	DB.Create(ChatMessageIndex{
-		ID:       idgen.Gen.Node.Generate().Int64(),
-		A:        from,
-		B:        to,
-		ISend:    isend,
-		MsgId:    msgId,
-		SendTime: sendTime,
-	})
+func (*ChatMessageIndex) Insert(data *ChatMessageIndex) bool {
+	if tx := DB.Create(data); tx.Error != nil || tx.RowsAffected == 0 {
+		return false
+	}
+	return true
+}
+
+// 批量
+func (*ChatMessageIndex) BatchInsert(data map[int]*ChatMessageIndex) (bool, error) {
+	if tx := DB.Create(data); tx.Error != nil || tx.RowsAffected == 0 {
+		return false, tx.Error
+	}
+	return true, nil
 }

@@ -1,0 +1,37 @@
+syntax = "proto3";
+package pb;
+option go_package = "ichat_server/pkg/protocol/pb";
+
+
+service Gateway {
+  rpc Resp(LoginReq) returns (LoginResp);
+  rpc Notice (NoticeReq) returns (Empty);
+}
+
+message LoginReq {
+  string username = 1;
+  string password = 2;
+}
+message LoginResp {
+  string uid = 1;
+  string nickname = 2;
+  string token = 3;
+}
+
+message ResponseReq {
+  int32 type = 1;
+  int64 reqId = 2;
+  string from = 3;
+  string route = 4;
+  //google.protobuf.Any data = 5;
+}
+
+message NoticeReq {
+  int64 msgId = 1;
+  string route = 2;
+  int64 type = 3;
+  string from = 4;
+  //google.protobuf.Any data = 5;
+}
+
+message Empty {}

@@ -8,15 +8,9 @@ import (
 func NewWsServer() *ichat_ws.Server {
 	ws := ichat_ws.NewServer()
 	ws.Config = ichat.GlobalConf.Gateway
-
 	ws.Acceptor = &HandlerImpl{}
 	ws.MessageListener = &HandlerImpl{}
 	ws.StateListener = &HandlerImpl{}
 	ws.BeforeAcceptor = &HandlerImpl{}
-
 	return ws
-}
-
-func NewTcpServer() {
-
 }

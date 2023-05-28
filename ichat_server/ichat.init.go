@@ -18,6 +18,9 @@ type Conf struct {
 	Redis   *cache.RedisConf
 	Gateway *ichat_ws.Config
 	Tcp     *ichat_ws.Config
+	Other   struct {
+		nodeId int64 `json:"nodeId"`
+	}
 }
 
 type GrpcClient struct {
@@ -27,20 +30,23 @@ type GrpcClient struct {
 }
 
 func Init() (err error) {
-	flag.Parse()
-	defer glog.Flush()
+	flag.Lookup("v").Value.Set("0")
+	flag.Lookup("stderrthreshold").Value.Set("INFO")
+	flag.Lookup("log_dir").Value.Set("../log/")
+	flag.Set("logtostderr", "true")
+	glog.Flush()
 
 	viper := viper.New()
-	viper.SetConfigFile("../../conf.yaml")
+	viper.SetConfigFile("../conf.yaml")
 	if err = viper.ReadInConfig(); err != nil {
 		return
 	}
 	viper.Unmarshal(&GlobalConf)
 
-	//雪花id生成器
-	idgen.NewIDGenerator(1)
-	err = model.InitMysql(GlobalConf.Mysql)
-	err = cache.InitRedis(GlobalConf.Redis)
+	idgen.NewIDGenerator(GlobalConf.Other.nodeId)
+	cache.InitRedis(GlobalConf.Redis)
+	model.InitMysql(GlobalConf.Mysql)
+
 	return err
 }
 

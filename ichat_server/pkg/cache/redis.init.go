@@ -7,6 +7,11 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+var (
+	Ctx = context.TODO()
+	DB  *redis.Client
+)
+
 type RedisConf struct {
 	Host     string `json:"host"`
 	Port     int    `json:"port"`
@@ -14,10 +19,14 @@ type RedisConf struct {
 	Database int    `json:"database"`
 }
 
-var (
-	Ctx = context.Background()
-	DB  *redis.Client
-)
+func InitRedis(conf *RedisConf) {
+	DB = redis.NewClient(&redis.Options{
+		Addr:     fmt.Sprintf("%s:%d", conf.Host, conf.Port),
+		Password: conf.Password,
+		DB:       conf.Database,
+	})
+	glog.Infof("\u001B[1;31;47mredis database:%d  connection success\u001B[0m", conf.Database)
+}
 
 const (
 	SESSION_LIST         = "session:list:"         //会话列表
@@ -38,12 +47,3 @@ const (
 
 	MESSAGE_STATUS = "message:status:"
 )
-
-func InitRedis(conf *RedisConf) {
-	DB = redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%d", conf.Host, conf.Port),
-		Password: conf.Password,
-		DB:       conf.Database,
-	})
-	glog.Infoln("redis database:%s:%d connection succeeded", conf.Host, conf.Port)
-}

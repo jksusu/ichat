@@ -1,22 +1,21 @@
-# 网关配置
 gateway:
   serviceId: gate01
   serviceName: gate
   wsPort: 9501 #监听端口
+  wsRoute: "/ws"
   wsReadTimeout: 200000 #读超时时间 毫秒
   wsWriteTimeout: 200000 #写超时时间 毫秒
   wsWriteChannelSize: 1000 #通道最大消息数量
   wsReadChannelSize: 1000 #读通道最大数量
   wsHeartbeatTimeout: 600 #心跳超时时间 秒
-  #  tags:
-  #    IDC: SH_ALI
+
+register:
   domain:
   consulurl: localhost:8500
   appsecret: ""
   messagegpool: 5000
   connectiongpool: 15000
 
-# mysql connect configuration
 mysql:
   host: localhost
   port: 3306
@@ -28,7 +27,6 @@ mysql:
   log-mode: false
   log-zap: false
 
-# redis configuration
 redis:
   host: "127.0.0.1"
   port: 6379
@@ -40,7 +38,6 @@ grpc:
   messageListenAddr: "localhost:9503"
   relationListenAddr: "localhost:9504"
 
-# email configuration
 email:
   to: "xxx@qq.com"
   port: 465
@@ -49,3 +46,6 @@ email:
   is-ssl: true
   secret: "xxx"
   nickname: "test"
+
+other:
+  nodeId: 1 #雪花Id生成节点id

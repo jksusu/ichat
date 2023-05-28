@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/golang/glog"
 	"github.com/sirupsen/logrus"
 	"ichat/internal/format"
 	"ichat/pkg/cache/connect"
 	"ichat/pkg/ichat_ws"
-	"log"
 	"net/http"
 	"net/url"
 )
@@ -21,6 +21,16 @@ type UserInfo struct {
 	ConnID   string `json:"connId"`
 	UID      string `json:"uid"`
 	Nickname string `json:"nickname"`
+}
+
+var Map = map[string]func(ctx context.Context, r *format.R){}
+
+func Router(ctx context.Context, r *format.R) {
+	if fuc, ok := Map[r.Route]; ok {
+		fuc(ctx, r)
+	} else {
+		glog.Errorf("route %s not absent", r.Route)
+	}
 }
 
 func (h *HandlerImpl) BeforeAccept(r *http.Request) error {
@@ -40,19 +50,12 @@ func (h *HandlerImpl) Accept(conn *ichat_ws.Connect, r *http.Request) (uint64, e
 		logrus.Error(err)
 		return 0, err
 	}
-	//双向绑定
 	connect.AddConnBidirectionalBindingUid(conn.ID, uid)
-	//推送第一个包是用户信息
 	conn.Conn.WriteJSON(&format.R{
 		Route: format.RouteUserInfoUpdate,
-		Type:  format.RESPONSE,
-		Data: UserInfo{
-			ConnID:   conn.ID,
-			UID:      uid,
-			Nickname: "",
-		},
+		Type:  format.NOTICE,
+		Data:  UserInfo{ConnID: conn.ID, UID: uid},
 	})
-
 	return 1, nil
 }
 
@@ -62,7 +65,7 @@ func (h *HandlerImpl) Receive(conn *ichat_ws.Connect, msg *ichat_ws.WSMessage) {
 		j, _ := json.Marshal(msg.MsgData)
 		json.Unmarshal(j, &r)
 		ctx := context.Background()
-		context.WithValue(ctx, "fcId", conn.ID) //formConnId
+		context.WithValue(ctx, "connId", conn.ID) //formConnId
 		context.WithValue(ctx, "type", r.Type)
 		context.WithValue(ctx, "from", r.From)
 		context.WithValue(ctx, "to", r.To)
@@ -81,14 +84,4 @@ func UrlDecodeToken(r *http.Request) string {
 	raw := r.URL.RawQuery
 	values, _ := url.ParseQuery(raw)
 	return values.Get("token")
-}
-
-var Map = map[string]func(ctx context.Context, r *format.R){}
-
-func Router(ctx context.Context, r *format.R) {
-	if fuc, ok := Map[r.Route]; ok {
-		fuc(ctx, r)
-	} else {
-		log.Print("NOT ROUTER")
-	}
 }

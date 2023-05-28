@@ -2,7 +2,7 @@ package model
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
+	"github.com/golang/glog"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -29,10 +29,9 @@ func InitMysql(conf *MysqlConf) (err error) {
 		},
 		Logger: logger.Default.LogMode(logger.Info),
 	}); err != nil {
-		panic(err)
-	} else {
-		logrus.Infof("mysql database:%s connection succeeded", conf.Database)
+		glog.Fatalln(err)
 	}
+	glog.Infof("\u001B[1;31;47mmysql database:%s connection success\u001B[0m", conf.Database)
 	return
 }
 

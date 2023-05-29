@@ -46,7 +46,7 @@ func Init() (err error) {
 
 	idgen.NewIDGenerator(GlobalConf.Other.NodeId)
 	cache.InitRedis(GlobalConf.Redis)
-	//model.InitMysql(GlobalConf.Mysql)
+	model.InitMysql(GlobalConf.Mysql)
 
 	return err
 }

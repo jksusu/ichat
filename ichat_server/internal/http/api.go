@@ -3,7 +3,11 @@ package http
 import (
 	"github.com/gin-gonic/gin"
 	"ichat"
-	"ichat/pkg/cache/user"
+	"ichat/internal/http/contacts"
+	"ichat/internal/http/group"
+	"ichat/internal/http/session"
+	"ichat/internal/http/user"
+	cache "ichat/pkg/cache/user"
 	"ichat/pkg/tools/response"
 	"net/http"
 )
@@ -30,7 +34,7 @@ func tokenInspect() gin.HandlerFunc {
 			response.Fail.WithCodeMessage(http.StatusUnauthorized, "token不存在，请登录后再试").Json(c)
 			c.Abort()
 		}
-		info, _ := user.Rdb.GetUserByToken(token)
+		info, _ := cache.Rdb.GetUserByToken(token)
 		if len(info.Token) == 0 {
 			response.Fail.WithCodeMessage(http.StatusUnauthorized, "请登录后在试").Json(c)
 			c.Abort()
@@ -45,36 +49,35 @@ func RegisterApi() error {
 	router.Use(cors())
 	v1 := router.Group("/v1")
 	{
-		v1.POST("/login")
-		v1.POST("/register")
-		v1.GET("/code")
+		v1.POST("/login", user.Login)
+		v1.POST("/register", user.Register)
+		v1.GET("/code", user.GetCode)
 		v1.POST("/scan_code_login")
 
-		contacts := v1.Group("contacts").Use(tokenInspect())
+		v1contacts := v1.Group("contacts").Use(tokenInspect())
 		{
-			contacts.POST("/lists")
-			contacts.POST("/del")
-			contacts.POST("/edit")
+			v1contacts.POST("/lists", contacts.Lists)
+			v1contacts.POST("/del", contacts.Del)
+			v1contacts.POST("/edit", contacts.Edit)
 		}
-		group := v1.Group("group").Use(tokenInspect())
+		v1group := v1.Group("group").Use(tokenInspect())
 		{
-			group.POST("/lists")
-			group.POST("/del")
-			group.POST("/edit")
-			group.POST("/member/lists")
-			group.POST("/member/remove")
+			v1group.POST("/lists", group.Lists)
+			v1group.POST("/del", group.Del)
+			v1group.POST("/edit", group.Edit)
+			v1group.POST("/member/lists", group.MemberLists)
+			v1group.POST("/member/remove", group.MemberRemove)
 		}
-		session := v1.Group("session").Use(tokenInspect())
+		v1session := v1.Group("session").Use(tokenInspect())
 		{
-			session.POST("/lists")
-			session.POST("/del")
-			session.POST("/edit")
+			v1session.POST("/lists", session.Lists)
+			v1session.POST("/del", session.Del)
+			v1session.POST("/edit", session.Edit)
 		}
-		user := v1.Group("user").Use(tokenInspect())
+		v1user := v1.Group("user").Use(tokenInspect())
 		{
-			user.POST("/info") //用户信息
+			v1user.POST("/info", user.GetUserInfo) //用户信息
 		}
 	}
-
 	return router.Run(ichat.GlobalConf.Other.HttpAddr)
 }

@@ -49,4 +49,4 @@ email:
 
 other:
   nodeId: 1 #雪花Id生成节点id
-  httpAddr: "0.0.0.0:80" #http监听端口
+  httpAddr: "127.0.0.1:80" #http监听端口

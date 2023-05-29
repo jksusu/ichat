@@ -15,31 +15,36 @@ type friend struct {
 	Status    int       `json:"status"`
 }
 
-var Friend = new(friend)
-
-func (f *friend) FriendsApply(ctx context.Context, r *format.R) (err error) {
-	format.Decode(r.Data, &f)
-	msgId := idgen.Gen.Node.Generate().Int64()
+func FriendsApply(ctx context.Context, r *format.R) (*format.R, error) {
+	var (
+		data *friend
+		err  error
+	)
+	if err = format.Decode(r, &data); err != nil {
+		glog.Errorf("contacts friend apply data decode fail %s", err)
+	}
+	r.MsgId = idgen.GenChatMsgId()
 	if _, err = model.RelationFriendsApplyModel.Add(&model.RelationFriendsApply{
-		MsgId:     msgId,
+		MsgId:     r.MsgId,
 		UID:       r.From,
 		TO:        r.To,
-		Remarks:   f.Remarks,
-		ApplyTime: f.ApplyTime,
+		Remarks:   data.Remarks,
+		ApplyTime: data.ApplyTime,
 	}); err != nil {
 		glog.Error(err)
-		return
+		return r, err
 	}
-	return
+	return r, err
 }
 
-func (*friend) FriendsApplyReply(ctx context.Context, r *format.R) {
+func FriendsApplyReply(ctx context.Context, r *format.R) (*format.R, error) {
+	return r, nil
 }
 
-func (*friend) FriendsEdit(ctx context.Context, r *format.R) {
+func FriendsEdit(ctx context.Context, r *format.R) {
 
 }
 
-func (*friend) FriendsDel(ctx context.Context, r *format.R) {
+func FriendsDel(ctx context.Context, r *format.R) {
 
 }

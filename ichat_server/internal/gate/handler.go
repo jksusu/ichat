@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/golang/glog"
 	"github.com/sirupsen/logrus"
+	"ichat"
 	"ichat/internal/format"
+	"ichat/internal/route"
 	"ichat/pkg/cache/connect"
 	"ichat/pkg/ichat_ws"
 	"net/http"
@@ -23,14 +24,14 @@ type UserInfo struct {
 	Nickname string `json:"nickname"`
 }
 
-var Map = map[string]func(ctx context.Context, r *format.R){}
-
-func Router(ctx context.Context, r *format.R) {
-	if fuc, ok := Map[r.Route]; ok {
-		fuc(ctx, r)
-	} else {
-		glog.Errorf("route %s not absent", r.Route)
-	}
+func NewWsServer() *ichat_ws.Server {
+	ws := ichat_ws.NewServer()
+	ws.Config = ichat.GlobalConf.Gateway
+	ws.Acceptor = &HandlerImpl{}
+	ws.MessageListener = &HandlerImpl{}
+	ws.StateListener = &HandlerImpl{}
+	ws.BeforeAcceptor = &HandlerImpl{}
+	return ws
 }
 
 func (h *HandlerImpl) BeforeAccept(r *http.Request) error {
@@ -52,7 +53,7 @@ func (h *HandlerImpl) Accept(conn *ichat_ws.Connect, r *http.Request) (uint64, e
 	}
 	connect.AddConnBidirectionalBindingUid(conn.ID, uid)
 	conn.Conn.WriteJSON(&format.R{
-		Route: format.RouteUserInfoUpdate,
+		Route: route.RouteUserInfoUpdate,
 		Type:  format.NOTICE,
 		Data:  UserInfo{ConnID: conn.ID, UID: uid},
 	})
@@ -61,15 +62,14 @@ func (h *HandlerImpl) Accept(conn *ichat_ws.Connect, r *http.Request) (uint64, e
 
 func (h *HandlerImpl) Receive(conn *ichat_ws.Connect, msg *ichat_ws.WSMessage) {
 	if msg.MsgData != nil {
-		r := new(format.R)
-		j, _ := json.Marshal(msg.MsgData)
-		json.Unmarshal(j, &r)
+		r := &format.R{}
+		json.Unmarshal(msg.MsgData, &r)
 		ctx := context.Background()
 		context.WithValue(ctx, "connId", conn.ID) //formConnId
 		context.WithValue(ctx, "type", r.Type)
 		context.WithValue(ctx, "from", r.From)
 		context.WithValue(ctx, "to", r.To)
-		Router(ctx, r)
+		route.Router(ctx, r)
 	}
 }
 

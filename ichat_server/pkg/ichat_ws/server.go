@@ -86,9 +86,9 @@ func (s *Server) handleConnect(w http.ResponseWriter, r *http.Request) {
 	}
 	id := idgen.GenConnectId()
 	conn := HttpUpgraderToWebsocket(s, id, ws)
-	glog.Infoln("new connect id:%v", id)
+	glog.Infoln("new connect id:", id)
 
-	defer conn.Close()
+	defer conn.Close(s)
 
 	s.Accept(conn, r)
 	s.handler(conn)
@@ -98,7 +98,7 @@ func (s *Server) handler(c *Connect) {
 	for {
 		data, err := c.ReadMsg()
 		if err != nil {
-			c.Close()
+			c.Close(s)
 			return
 		}
 		if data == nil || data.MsgType != 1 {
@@ -106,7 +106,7 @@ func (s *Server) handler(c *Connect) {
 		}
 		msg, err := DecodeMessageBody(data.MsgData)
 		if err != nil {
-			c.Close()
+			c.Close(s)
 			return
 		}
 		switch msg.Type {
@@ -114,7 +114,7 @@ func (s *Server) handler(c *Connect) {
 			glog.Info("ping")
 			if err = c.Pong(msg); err != nil {
 				glog.Error(err)
-				c.Close()
+				c.Close(s)
 				return
 			}
 		case REQUEST:

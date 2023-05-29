@@ -19,7 +19,8 @@ type Conf struct {
 	Gateway *ichat_ws.Config
 	Tcp     *ichat_ws.Config
 	Other   struct {
-		nodeId int64 `json:"nodeId"`
+		NodeId   int64  `json:"nodeId"`
+		HttpAddr string `json:"httpPort"`
 	}
 }
 
@@ -37,33 +38,15 @@ func Init() (err error) {
 	glog.Flush()
 
 	viper := viper.New()
-	viper.SetConfigFile("../conf.yaml")
+	viper.SetConfigFile("conf.yaml")
 	if err = viper.ReadInConfig(); err != nil {
 		return
 	}
 	viper.Unmarshal(&GlobalConf)
 
-	idgen.NewIDGenerator(GlobalConf.Other.nodeId)
+	idgen.NewIDGenerator(GlobalConf.Other.NodeId)
 	cache.InitRedis(GlobalConf.Redis)
-	model.InitMysql(GlobalConf.Mysql)
+	//model.InitMysql(GlobalConf.Mysql)
 
 	return err
-}
-
-func InitGrpc() {
-	/*var (
-		listen net.Listener
-		err    error
-		server = grpc.NewServer()
-	)
-	pb.RegisterGatewayServer(server, &api.GatewayServer{})
-	if listen, err = net.Listen("tcp", GrpcConf.Push); err != nil {
-		panic(err)
-	}
-	glog.Info("grpc server listening at %s", GrpcConf.LogicListenAddr)
-	go func() {
-		if err = server.Serve(listen); err != nil {
-			glog.Fatalf("failed to serve: %v", err)
-		}
-	}()*/
 }

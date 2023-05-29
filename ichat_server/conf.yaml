@@ -30,7 +30,7 @@ mysql:
 redis:
   host: "127.0.0.1"
   port: 6379
-  database: 0
+  database: 1
   password: ""
 
 grpc:
@@ -49,3 +49,4 @@ email:
 
 other:
   nodeId: 1 #雪花Id生成节点id
+  httpAddr: "0.0.0.0:80" #http监听端口

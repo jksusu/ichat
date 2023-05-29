@@ -1,4 +1,4 @@
-package chat
+package talk
 
 type sync struct{}
 

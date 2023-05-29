@@ -25,7 +25,7 @@ type Connect struct {
 }
 
 // 读
-func (c *Connect) readLoop() {
+func (c *Connect) readLoop(s *Server) {
 	var (
 		messageType int
 		p           []byte
@@ -34,7 +34,7 @@ func (c *Connect) readLoop() {
 	)
 	for {
 		if messageType, p, err = c.Conn.ReadMessage(); err != nil {
-			c.Close()
+			c.Close(s)
 		}
 
 		m = BuildWSMessage(messageType, p)
@@ -47,13 +47,13 @@ func (c *Connect) readLoop() {
 	return
 }
 
-func (c *Connect) writeLoop() {
+func (c *Connect) writeLoop(s *Server) {
 	var message *WSMessage
 	for {
 		select {
 		case message = <-c.writeChan:
 			if err := c.Conn.WriteMessage(message.MsgType, message.MsgData); err != nil {
-				c.Close()
+				c.Close(s)
 			}
 		case <-c.closeChan:
 			return
@@ -73,9 +73,9 @@ func HttpUpgraderToWebsocket(s *Server, ID string, conn *websocket.Conn) *Connec
 		Config:            s.Config,
 	}
 	s.Add(connect)
-	go connect.readLoop()
-	go connect.writeLoop()
-	go connect.heartbeatCheck()
+	go connect.readLoop(s)
+	go connect.writeLoop(s)
+	go connect.heartbeatCheck(s)
 	return connect
 }
 
@@ -99,14 +99,14 @@ func (c *Connect) ReadMsg() (message *WSMessage, err error) {
 	return
 }
 
-func (c *Connect) Close() {
+func (c *Connect) Close(s *Server) {
 	c.Conn.Close()
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	GlobalConnManager.Remove(c)
 	if !c.isClosed {
 		glog.Infof("connect close id:%v", c.ID)
-		Server{}.Disconnect(c.ID)
+		s.Disconnect(c.ID)
 		c.isClosed = true
 		close(c.closeChan)
 	}
@@ -130,13 +130,13 @@ func (c *Connect) Saveheartbeat() {
 	c.LastHeartbeatTime = time.Now()
 }
 
-func (c *Connect) heartbeatCheck() {
+func (c *Connect) heartbeatCheck(s *Server) {
 	timer := time.NewTimer(time.Duration(c.Config.WsHeartbeatTimeout) * time.Second)
 	for {
 		select {
 		case <-timer.C:
 			if !c.IsLive() {
-				c.Close()
+				c.Close(s)
 				return
 			}
 			timer.Reset(time.Duration(c.Config.WsHeartbeatTimeout) * time.Second)

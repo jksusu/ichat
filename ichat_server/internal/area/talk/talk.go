@@ -18,7 +18,7 @@ type talk struct {
 	Content  string `json:"content"`
 	Type     int    `json:"type"`
 	SendTime int64  `json:"sendTime"`
-	State    int    `json:"state"` //消息状态
+	State    int    `json:"state"`
 	Extra    string `json:"extra"`
 }
 
@@ -34,12 +34,12 @@ func ToUser(ctx context.Context, r *format.R) (*format.R, error) {
 	data.SendTime = time.Now().Unix()
 	data.MsgId = r.MsgId
 	if err = model.DB.Transaction(func(tx *gorm.DB) (err error) {
-		_, err = model.ChatMsgIndexModel.BatchInsert(
-			map[int]*model.ChatMessageIndex{
-				0: {Seq: 0, A: r.From, B: r.To, ISend: 1, MsgId: r.MsgId, SendTime: data.SendTime},
-				1: {Seq: 0, A: r.To, B: r.From, MsgId: r.MsgId, SendTime: data.SendTime},
-			},
-		)
+		if _, err = model.ChatMsgIndexModel.BatchInsert([]*model.ChatMessageIndex{
+			{A: r.From, B: r.To, ISend: 1, MsgId: r.MsgId, SendTime: data.SendTime},
+			{A: r.To, B: r.From, MsgId: r.MsgId, SendTime: data.SendTime},
+		}); err != nil {
+			return err
+		}
 		_, err = model.ChatMsgContentModel.Insert(&model.ChatMessageContent{
 			ID: r.MsgId, Type: data.Type, Content: data.Content, Extra: data.Extra, SendTime: data.SendTime,
 		})

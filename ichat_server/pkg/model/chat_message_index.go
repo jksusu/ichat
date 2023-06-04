@@ -2,7 +2,6 @@ package model
 
 type ChatMessageIndex struct {
 	ID       int64  `gorm:"primarykey"`
-	Seq      int64  `json:"seq"`
 	A        string `gorm:"index;size:60;not null;comment:账户a"`
 	B        string `gorm:"size:60;not null;comment:账户b"`
 	ISend    int    `gorm:"default:0;not null;comment:是否为账户a发送"`
@@ -13,16 +12,6 @@ type ChatMessageIndex struct {
 
 var ChatMsgIndexModel = new(ChatMessageIndex)
 
-// GetARecord 查询A的聊天记录
-func (mi *ChatMessageIndex) GetARecord(a, b string, page, pageSize int) (index []*ChatMessageIndex, total int64, err error) {
-	offset := (page - 1) * pageSize
-	if err = DB.Model(&mi).Where("a = ? AND b = ?", a, b).Count(&total).Error; err != nil {
-		return
-	}
-	err = DB.Model(&mi).Where("a = ? AND b = ?", a, b).Limit(pageSize).Offset(offset).Find(&index).Error
-	return
-}
-
 func (*ChatMessageIndex) Insert(data *ChatMessageIndex) bool {
 	if tx := DB.Create(data); tx.Error != nil || tx.RowsAffected == 0 {
 		return false
@@ -31,9 +20,21 @@ func (*ChatMessageIndex) Insert(data *ChatMessageIndex) bool {
 }
 
 // 批量
-func (*ChatMessageIndex) BatchInsert(data map[int]*ChatMessageIndex) (bool, error) {
-	if tx := DB.Create(data); tx.Error != nil || tx.RowsAffected == 0 {
+func (c *ChatMessageIndex) BatchInsert(data []*ChatMessageIndex) (bool, error) {
+	if tx := DB.Model(&c).Create(data); tx.Error != nil || tx.RowsAffected == 0 {
 		return false, tx.Error
 	}
 	return true, nil
+}
+
+// 游标查询
+func (*ChatMessageIndex) GetRecord(form, to string, msgId int64, limit int) []*ChatMessageIndex {
+	list := make([]*ChatMessageIndex, 0)
+	if msgId < 1 {
+		//第一页
+		DB.Where("a = ? AND b = ? ", form, to).Limit(limit).Offset(0).Find(&list)
+	} else {
+		DB.Where("a = ?", form).Where("b = ?", to).Where("msg_id <= ?", msgId).Find(&list)
+	}
+	return list
 }

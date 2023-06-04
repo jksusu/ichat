@@ -1,8 +1,6 @@
 package push
 
 import (
-	"bytes"
-	"encoding/gob"
 	"encoding/json"
 	"errors"
 	"github.com/gorilla/websocket"
@@ -46,10 +44,6 @@ func (g *s) Resp(r *format.R) *s {
 }
 
 func (g *s) send(connId string, r *format.R) (err error) {
-	buf := new(bytes.Buffer)
-	if err = gob.NewEncoder(buf).Encode(r); err != nil {
-		return
-	}
 	var d []byte
 	if d, err = json.Marshal(r); err != nil {
 		return

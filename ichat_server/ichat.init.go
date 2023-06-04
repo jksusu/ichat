@@ -13,22 +13,28 @@ import (
 
 var GlobalConf *Conf
 
-type Conf struct {
-	Mysql   *model.MysqlConf
-	Redis   *cache.RedisConf
-	Gateway *ichat_ws.Config
-	Tcp     *ichat_ws.Config
-	Other   struct {
-		NodeId   int64  `json:"nodeId"`
-		HttpAddr string `json:"httpPort"`
+type (
+	Conf struct {
+		Mysql   *model.MysqlConf
+		Redis   *cache.RedisConf
+		Gateway *ichat_ws.Config
+		Tcp     *ichat_ws.Config
+		Other   struct {
+			NodeId   int64  `json:"nodeId"`
+			HttpAddr string `json:"httpPort"`
+		}
 	}
-}
 
-type GrpcClient struct {
-	Logic    pb.LogicClient
-	Relation pb.RelationClient
-	Gateway  pb.GatewayClient
-}
+	GrpcClient struct {
+		Logic    pb.LogicClient
+		Relation pb.RelationClient
+		Gateway  pb.GatewayClient
+	}
+
+	Log struct {
+		Level string `env-required:"true" yaml:"log_level"   env:"LOG_LEVEL"`
+	}
+)
 
 func Init() (err error) {
 	flag.Lookup("v").Value.Set("0")

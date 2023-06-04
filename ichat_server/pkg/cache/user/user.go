@@ -9,13 +9,13 @@ import (
 )
 
 type User struct {
-	Token        string `redis:"token"json:"token"`
-	Id           int    `redis:"id"json:"id"`
-	Uid          string `redis:"uid"json:"uid"`
-	Username     string `redis:"username"json:"username"`
-	Nickname     string `redis:"nickname"json:"nickname"`
-	HeadPortrait string `redis:"head_portrait"json:"head_portrait"`
-	Status       int    `redis:"status"json:"status"`
+	Token    string `redis:"token" json:"token"`
+	Id       int    `redis:"id" json:"id"`
+	Uid      string `redis:"uid" json:"uid"`
+	Username string `redis:"username" json:"username"`
+	Nickname string `redis:"nickname" json:"nickname"`
+	Avatar   string `redis:"avatar" json:"avatar"`
+	Status   int    `redis:"status" json:"status"`
 }
 
 var Rdb = new(User)
@@ -25,6 +25,15 @@ func (c *User) TokenCache(token string, user *User, expire time.Duration) bool {
 		return false
 	}
 	return true
+}
+
+func (c *User) GetUserByKey(key string) (*User, error) {
+	var u *User
+	err := cache.DB.HGetAll(context.TODO(), fmt.Sprintf("user:token:%s", key)).Scan(&u)
+	if err != nil && err == redis.Nil {
+		err = nil
+	}
+	return u, err
 }
 
 // GetUserByToken 获取缓存
@@ -48,4 +57,7 @@ func (c *User) DeleteUserCacheByToken(token string) bool {
 		return false
 	}
 	return true
+}
+
+func (c *User) DeleteUserCacheByUid(uid string) {
 }

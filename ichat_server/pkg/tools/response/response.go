@@ -15,9 +15,9 @@ type Response struct {
 }
 
 var (
-	Ok             = response(0, "处理成功")
-	Fail           = response(1, "处理失败")
-	ValidatorError = response(http.StatusUnprocessableEntity, "验证未通过")
+	Ok             = response(0, "success")
+	Fail           = response(1, "fail")
+	ValidatorError = response(http.StatusUnprocessableEntity, "field check fail")
 )
 
 // 带分页的结构
@@ -68,7 +68,6 @@ func response(code int, message string) *Response {
 	}
 }
 
-// 返回实例
 func (r *Response) Json(c *gin.Context) {
 	c.JSON(http.StatusOK, r)
 	return

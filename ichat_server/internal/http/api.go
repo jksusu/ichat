@@ -2,10 +2,10 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
-	"ichat"
 	"ichat/internal/http/contacts"
 	"ichat/internal/http/group"
 	"ichat/internal/http/session"
+	"ichat/internal/http/talk"
 	"ichat/internal/http/user"
 	cache "ichat/pkg/cache/user"
 	"ichat/pkg/tools/response"
@@ -44,7 +44,7 @@ func tokenInspect() gin.HandlerFunc {
 	}
 }
 
-func RegisterApi() error {
+func RegisterApi() *gin.Engine {
 	router := gin.Default()
 	router.Use(cors())
 	v1 := router.Group("/v1")
@@ -78,6 +78,11 @@ func RegisterApi() error {
 		{
 			v1user.POST("/info", user.GetUserInfo) //用户信息
 		}
+		v1message := v1.Group("message").Use(tokenInspect())
+		{
+			v1message.POST("/record", talk.GetMessageRecord) //用户信息
+		}
 	}
-	return router.Run(ichat.GlobalConf.Other.HttpAddr)
+
+	return router
 }

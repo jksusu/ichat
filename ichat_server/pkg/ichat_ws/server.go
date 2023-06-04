@@ -12,29 +12,31 @@ import (
 	"time"
 )
 
-type Config struct {
-	ServiceId          string `json:"serviceid"`   //服务id
-	ServiceName        string `json:"servicename"` //服务名
-	WsPort             int    `json:"wsport"`      //端口
-	WsRoute            string `json:"wsroute"`
-	WsReadTimeout      int    `json:"wsreadtimeout"`      //毫秒读超时时间
-	WsWriteTimeout     int    `json:"wswritetimeout"`     //毫秒写超时时间
-	WsWriteChannelSize int    `json:"wswritechannelsize"` //写通道最大数量
-	WsReadChannelSize  int    `json:"wsreadchannelsize"`  //读通道最大数量
-	WsHeartbeatTimeout int    `json:"wsheartbeattimeout"` //秒心跳超时时间，超过这个时间触发重连
-}
+type (
+	Config struct {
+		ServiceId          string `json:"serviceid"`   //服务id
+		ServiceName        string `json:"servicename"` //服务名
+		WsPort             int    `json:"wsport"`      //端口
+		WsRoute            string `json:"wsroute"`
+		WsReadTimeout      int    `json:"wsreadtimeout"`      //毫秒读超时时间
+		WsWriteTimeout     int    `json:"wswritetimeout"`     //毫秒写超时时间
+		WsWriteChannelSize int    `json:"wswritechannelsize"` //写通道最大数量
+		WsReadChannelSize  int    `json:"wsreadchannelsize"`  //读通道最大数量
+		WsHeartbeatTimeout int    `json:"wsheartbeattimeout"` //秒心跳超时时间，超过这个时间触发重连
+	}
 
-type Server struct {
-	sync.Once
-	server *http.Server
-	connId string
-	BeforeAcceptor
-	Acceptor
-	MessageListener
-	StateListener
-	*Config
-	*Manager
-}
+	Server struct {
+		sync.Once
+		server *http.Server
+		connId string
+		BeforeAcceptor
+		Acceptor
+		MessageListener
+		StateListener
+		*Config
+		*Manager
+	}
+)
 
 func NewServer() *Server {
 	return &Server{}
@@ -62,9 +64,8 @@ func (s *Server) Start() (err error) {
 	glog.Infof("\u001B[1;31;47mserverId:%s serverName:%s port:%d route:%s\u001B[0m", s.ServiceId, s.ServiceName, s.WsPort, s.WsRoute)
 
 	go s.server.Serve(listen)
-	for {
-		time.Sleep(1 * time.Second)
-	}
+
+	return nil
 }
 
 func (s *Server) handleConnect(w http.ResponseWriter, r *http.Request) {

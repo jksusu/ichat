@@ -1,16 +1,24 @@
 package model
 
+import (
+	"gorm.io/gorm"
+	"time"
+)
+
 type Users struct {
-	GLOBALMODEL
-	UID         string `json:"uid" gorm:"index;comment:用户uid"`
-	Nickname    string `json:"nickname" gorm:"comment:用户昵称"`
-	Username    string `json:"username" gorm:"uniqueIndex;comment:用户名"`
-	Password    string `json:"-" gorm:"comment:登录密码"`
-	Salt        string `json:"-" gorm:"comment:密码盐"`
-	Avatar      string `json:"avatar" gorm:"comment:头像"`
-	Status      int    `json:"status" gorm:"default:1;comment:账号状态 1:正常 2:封号中 3:拉黑"`
-	LastLoginIp string `json:"last_login_ip" gorm:"column:last_login_ip;comment:最后登录ip地址"`
-	Token       string `json:"token" gorm:"column:token;comment:token"`
+	ID          int            `json:"id" gorm:"primarykey;comment:主键id"`
+	UID         string         `json:"uid" gorm:"index;comment:用户uid"`
+	Nickname    string         `json:"nickname" gorm:"comment:用户昵称"`
+	Username    string         `json:"username" gorm:"uniqueIndex;comment:用户名"`
+	Avatar      string         `json:"avatar" gorm:"comment:头像"`
+	Password    string         `json:"-" gorm:"comment:登录密码"`
+	Salt        string         `json:"-" gorm:"comment:密码盐"`
+	Status      int            `json:"status" gorm:"default:1;comment:账号状态 1:正常 2:封号中 3:拉黑"`
+	LastLoginIp string         `json:"last_login_ip" gorm:"column:last_login_ip;comment:最后登录ip地址"`
+	Token       string         `json:"token" gorm:"column:token;comment:token"`
+	CreatedAt   time.Time      `json:"created_at" gorm:"comment:创建时间"`
+	UpdatedAt   time.Time      `json:"updated_at" gorm:"comment:更新时间"`
+	DeletedAt   gorm.DeletedAt `json:"deleted_at" gorm:"comment:删除时间"`
 }
 
 var UserModel = new(Users)

@@ -71,6 +71,7 @@ func RegisterApi() *gin.Engine {
 		v1session := v1.Group("session").Use(tokenInspect())
 		{
 			v1session.POST("/lists", session.Lists)
+			v1session.POST("/add", session.Add)
 			v1session.POST("/del", session.Del)
 			v1session.POST("/edit", session.Edit)
 		}

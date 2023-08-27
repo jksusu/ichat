@@ -25,7 +25,7 @@ const jumpTo = (route: string) => {
 
 .login_method {
   display: flex;
-  width: 107px;
+  justify-content: flex-end;
   height: 30px;
   margin: 17px 30px 0 223px;
   -webkit-user-drag: none;
@@ -48,7 +48,6 @@ const jumpTo = (route: string) => {
 
 .login_logo {
   height: 123px;
-  width: 189px;
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -54,7 +54,6 @@ import { Socket } from "@/renderer/module/socket"
 import ChatInputContaineri from "@/renderer/components/conversation/ChatInputContaineri.vue"
 import { ChatRecordStore } from '@/renderer/stores/modules/chatRecord'
 import { UserStore } from '@/renderer/stores/modules/user'
-import { fr } from 'element-plus/es/locale'
 
 //控制滚动条在最下面
 onMounted(() => {

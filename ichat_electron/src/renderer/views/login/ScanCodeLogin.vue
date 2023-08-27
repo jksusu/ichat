@@ -4,15 +4,13 @@
             <LogoRegion route="/login" :icon-url="iconUrl" :trip-url="tripUrl"></LogoRegion>
             <div id="qrcode-login">
                 <div v-if="state.status != 3" class="qrcode">
-                    <div v-if="state.status == 2">
-                        <div class="location index">
-                            <img @click="refresh" :src="qccodeInvalidUrl" />
-                        </div>
-                        <div class="qccode_invalid_message location">
+                    <div v-if="state.status == 2" class="location index">
+                        <img @click="refresh" :src="qccodeInvalidUrl" />
+                        <div class="qccode_invalid_message">
                             <p>二维码失效点击刷新</p>
                         </div>
                     </div>
-                    <qrcode-vue class="location" style="z-index: 1;" :value="state.code" :size="size" level="H" />
+                    <qrcode-vue v-else class="location" :value="state.code" :size="size" level="H" />
                 </div>
                 <div v-if="state.status != 3" class="qrcode-login-message">请使用APP扫码登录</div>
 

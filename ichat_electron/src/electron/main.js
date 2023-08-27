@@ -1,6 +1,6 @@
 const path = require('path')
 const { iconUrl, isDev, isMacos } = require('./env')
-const ElectronTrayTips = require('electron-tray-tips');
+//const ElectronTrayTips = require('electron-tray-tips');
 const { app, BrowserWindow, ipcMain, Menu, Tray, nativeImage } = require('electron');
 const console = require('console');
 
@@ -24,7 +24,7 @@ const createWindow = () => {
     })
     console.log(process.env['NODE_ENV'])
     if (process.env['NODE_ENV'] == 'dev') {
-        mainWindow.loadURL('http://localhost:5173/#/login')
+        mainWindow.loadURL('http://localhost:8080/#/login')
         mainWindow.webContents.openDevTools({ mode: 'detach' })
     } else {
         console.log('正式环境')
@@ -52,7 +52,7 @@ app.whenReady().then(() => {
     appIcon.on('click', () => {
         mainWindow.show()
     })
-    const ElectronTrayTipsClass = new ElectronTrayTips(appIcon);
+    //const ElectronTrayTipsClass = new ElectronTrayTips(appIcon);
     appIcon.addListener('mouse-move', ((event, position) => {
         if (!mouseMoveIng) {
             // ElectronTrayTipsClass.showTrayTips(`http://localhost:5173/#/messageTrip`, () => {

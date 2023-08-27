@@ -88,7 +88,7 @@ const addTargetApply = async () => {
 }
 
 const closeAll = () => {
-    targetInfo = {
+    this.targetInfo = {
         uid: '',
         nickname: '',
         avatar: '',

@@ -8,19 +8,19 @@
     .qrcode {
         width: 180px;
         height: 180px;
-        border-radius: 8px 8px 8px 8px;
+        display: flex;
+        border-radius: 8px;
         border: 1px solid #D0D0D0;
 
         //定位
         .location {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            position: absolute;
-            left: 100px;
-            right: 100px;
-            top: 264px;
-            border-radius: 4px 4px 4px 4px;
+            margin: auto;
+            border-radius: 4px;
+            position: relative;
 
             img {
                 width: 36px;
@@ -29,18 +29,14 @@
         }
 
         .qccode_invalid_message {
-            //display: none;
-            height: 40px;
             width: 160px;
-            z-index: 3;
             background: rgba(253, 133, 3, 0.2);
-            border-radius: 0px 0px 4px 4px;
-            top: 384px;
             text-align: center;
-
+            position: absolute;
+            bottom: 0;
+            border-radius: inherit; 
+            
             p {
-                width: 145px;
-                height: 20px;
                 font-size: 14px;
                 font-weight: 400;
                 color: #FD8503;
@@ -76,9 +72,10 @@
     }
 
     .bottom-options {
-        position: absolute;
-        bottom: 40px;
-        height: 20px;
+        margin-top:30px;
+        // position: absolute;
+        // bottom: 40px;
+        // height: 20px;
 
         label {
             width: 56px;

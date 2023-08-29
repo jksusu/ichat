@@ -3,7 +3,7 @@ import { UserStore } from '@/renderer/stores/modules/user';
 
 const config = {
     //baseURL: import.meta.env.VITE_API_URL,
-    baseURL: 'http://localhost',
+    baseURL: 'http://localhost:8081',
     timeout: 10000,
 }
 

@@ -89,7 +89,7 @@ const startLogin = (formEl: FormInstance | undefined) => {
 
           setTimeout(() => {
             loading.close()
-            //showHomeWindow()
+            showHomeWindow()
             router.push('/session')
           }, 2000)
 

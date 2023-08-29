@@ -11,10 +11,11 @@ let mouseMoveIng = null//鼠标移动到托盘事件
 
 const createWindow = () => {
     const mainWindow = new BrowserWindow({
-        titleBarStyle: 'hidden',
+        titleBarStyle: 'hiddenInset',//隐藏标题栏全尺寸内容窗口
         transparent: true,
         fullscreen: false,
         resizable: false,//禁止改变窗口尺寸
+        frame:false, //无边框
         backgroundColor: '#00000000',
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
@@ -22,10 +23,13 @@ const createWindow = () => {
             webSecurity: false,
         }
     })
+    //macos 使用原生关闭缩小按钮
+    mainWindow.setWindowButtonVisibility(true); // 隐藏关闭按钮
+
     console.log(process.env['NODE_ENV'])
     if (process.env['NODE_ENV'] == 'dev') {
         mainWindow.loadURL('http://localhost:8080/#/login')
-        mainWindow.webContents.openDevTools({ mode: 'detach' })
+        //mainWindow.webContents.openDevTools({ mode: 'detach' })
     } else {
         console.log('正式环境')
         mainWindow.loadFile('dist/index.html')
@@ -33,13 +37,15 @@ const createWindow = () => {
     }
     return mainWindow
 }
-const createLoginWindow = () => { mainWindow.setContentSize(360, 560) }
-const createMainWindow = () => { mainWindow.setContentSize(1440, 900), mainWindow.center() }
+const createLoginWindow = () => { 
+    mainWindow.setContentSize(360, 560)
+ }//login窗体
+const createMainWindow = () => { mainWindow.setContentSize(1440, 900), mainWindow.center() }//主窗体
 
 
 app.whenReady().then(() => {
     mainWindow = createWindow()
-    createLoginWindow()
+        createLoginWindow()
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createLoginWindow()
     }).on('window-all-closed', () => {

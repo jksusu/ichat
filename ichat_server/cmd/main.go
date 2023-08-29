@@ -17,7 +17,7 @@ func main() {
 		glog.Fatalf("ws start fail:%v", err)
 	}
 
-	if err := http.RegisterApi().Run("localhost:80"); err != nil {
+	if err := http.RegisterApi().Run("localhost:8081"); err != nil {
 		glog.Fatalf("http run fail:%v", err)
 	}
 

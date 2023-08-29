@@ -12,13 +12,14 @@
     background: #FFFFFF;
     border-radius: 12px 12px 0 0;
 
-    
 
     img {
         -webkit-user-drag: none;
     }
 
     .header_title {
+        display: flex;
+        justify-content: space-between;
         -webkit-app-region: drag;
     }
 
@@ -46,7 +47,7 @@
     }
 
     .el-checkbox__inner {
-        border-radius: 12px 12px 12px 12px;
+        border-radius: 12px;
     }
 
     .el-checkbox {
@@ -55,5 +56,8 @@
 
     .el-checkbox__label {
         color: #666666
+    }
+    .max {
+        display: none !important;
     }
 }

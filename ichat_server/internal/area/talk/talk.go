@@ -34,15 +34,15 @@ func ToUser(ctx context.Context, r *format.R) (*format.R, error) {
 	data.SendTime = time.Now().Unix()
 	data.MsgId = r.MsgId
 	if err = model.DB.Transaction(func(tx *gorm.DB) (err error) {
-		if _, err = model.ChatMsgIndexModel.BatchInsert([]*model.ChatMessageIndex{
-			{A: r.From, B: r.To, ISend: 1, MsgId: r.MsgId, SendTime: data.SendTime},
-			{A: r.To, B: r.From, MsgId: r.MsgId, SendTime: data.SendTime},
-		}); err != nil {
-			return err
-		}
-		_, err = model.ChatMsgContentModel.Insert(&model.ChatMessageContent{
-			ID: r.MsgId, Type: data.Type, Content: data.Content, Extra: data.Extra, SendTime: data.SendTime,
-		})
+		//if _, err = model.ChatMsgIndexModel.BatchInsert([]*model.ChatMessageIndex{
+		//	{A: r.From, B: r.To, ISend: 1, MsgId: r.MsgId, SendTime: data.SendTime},
+		//	{A: r.To, B: r.From, MsgId: r.MsgId, SendTime: data.SendTime},
+		//}); err != nil {
+		//	return err
+		//}
+		//_, err = model.ChatMsgContentModel.Insert(&model.ChatMessageContent{
+		//	ID: r.MsgId, Type: data.Type, Content: data.Content, Extra: data.Extra, SendTime: data.SendTime,
+		//})
 		return err
 	}); err != nil {
 		glog.Errorf("talk talk to user insert fail %s", err)

@@ -11,7 +11,7 @@ let mouseMoveIng = null//鼠标移动到托盘事件
 
 const createWindow = () => {
     const mainWindow = new BrowserWindow({
-        titleBarStyle: 'hiddenInset',//隐藏标题栏全尺寸内容窗口
+        titleBarStyle: 'hidden',//隐藏标题栏全尺寸内容窗口
         transparent: true,
         fullscreen: false,
         resizable: false,//禁止改变窗口尺寸
@@ -28,7 +28,7 @@ const createWindow = () => {
 
     console.log(process.env['NODE_ENV'])
     if (process.env['NODE_ENV'] == 'dev') {
-        mainWindow.loadURL('http://localhost:8080/#/login')
+        mainWindow.loadURL('http://localhost:8081/#/login')
         //mainWindow.webContents.openDevTools({ mode: 'detach' })
     } else {
         console.log('正式环境')

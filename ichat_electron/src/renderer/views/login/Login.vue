@@ -34,7 +34,7 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
-import { jump } from '@/renderer/tool/tool';
+import { ifWeb, jump } from '@/renderer/tool/tool';
 import { router } from '@/renderer/router';
 import { showHomeWindow } from '@/common/ipcRenderer';
 import LogoRegion from '@/renderer/views/login/components/LogoRegion.vue';
@@ -81,7 +81,17 @@ const startLogin = (formEl: FormInstance | undefined) => {
       })
       loginFrom.loginButtonName = '登陆中'
 
-      login({ username: loginFrom.username, password: loginFrom.password }).then( (res) => {
+      setTimeout(() => {
+        loading.close()
+        //判断环境
+        if (!ifWeb()) {
+          showHomeWindow()
+        }
+        router.push('/session')
+      }, 2000)
+      return
+
+      login({ username: loginFrom.username, password: loginFrom.password }).then((res) => {
         if (res.code == 0) {
           let data = res.data
           UserStore().setToken(data.token)

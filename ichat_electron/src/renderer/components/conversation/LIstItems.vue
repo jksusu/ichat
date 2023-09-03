@@ -84,9 +84,7 @@ const props = withDefaults(defineProps<{
 
     .item_container {
         margin: 0 8px 0 8px;
-        min-height: 762px;
-        height: calc(100vh - 139px);
-
+        //height: calc(100vh - 139px);
         .items {
             padding-top: 4px;
 

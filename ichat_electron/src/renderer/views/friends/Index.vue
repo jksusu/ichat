@@ -42,7 +42,6 @@ import newFriends from '@/renderer/assets/images/new_friends.png'
 import groupChat from '@/renderer/assets/images/group_chat.png'
 import friends from '@/renderer/assets/images/friends.png'
 import Dropdown from "./components/Dropdown.vue";
-import { ref } from "vue"
 
 const index = computed(() => useSelectIndexStore().getMaillistIndex)
 const select = (route: string) => {
@@ -75,8 +74,10 @@ const featureButtonList = [
 <style lang="scss" scoped>
 .second_leavel_container {
     display: flex;
-    width: 1080px;
-    height: 832px;
+    //width: 1080px;
+    //height: 832px;
+    width:100%;
+    height: 100%;
     background: #FFFFFF;
     align-items: center;
     justify-content: center;
@@ -117,7 +118,7 @@ const featureButtonList = [
 .mail_list_container {
     margin-top: 1px;
     width: 296px;
-    min-height: 761px;
+    //min-height: 761px;
     height: calc(100vh - 139px);
     background: #FFFFFF;
 

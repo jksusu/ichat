@@ -7,3 +7,8 @@ export const jump = (route: string) => {
 export const ifWin = () => {
     return import.meta.env.VITE_TERMINAl == 'win' ? true : false
 }
+
+//是否 web环境
+export const ifWeb = () => {
+    return import.meta.env.VITE_TERMINAl == 'web' ? true : false
+}

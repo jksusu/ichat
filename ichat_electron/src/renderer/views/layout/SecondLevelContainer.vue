@@ -24,20 +24,20 @@ const index = computed(() => indexStore.getMaillistIndex)
 <style lang="scss" scoped>
 .second_leavel_container {
     display: flex;
-    min-width: 1080px;
-    min-height: 832px;
+    //min-width: 1080px;
+    //min-height: 832px;
     height: calc(100vh - 68px);
     background: #FFFFFF;
     border-left: 1px solid #EAEAEA;
     box-sizing: border-box;
 
     .left_item {
-        width: 371px;
+        //width: 371px;
         background: #FFFFFF;
     }
 
     .right_item {
-        width: calc(100vw - 732px);
+        //width: calc(100vw - 732px);
         background: #F5F6F7;
     }
 }

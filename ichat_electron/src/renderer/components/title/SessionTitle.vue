@@ -4,7 +4,7 @@
             <label v-if="route == '/session'" @click="$emit('sessionTitleClickEvent')">{{ select.nickname }}</label>
         </div>
         <div class="menu">
-            <RightTitle :show-max="true" />
+            <RightTitle v-if="ifWin()" :show-max="true" />
             <div class="session_slot">
                 <slot name="titleRight"></slot>
             </div>
@@ -14,6 +14,7 @@
   
 <script lang="ts" setup>
 import { computed } from "vue"
+import { ifWin } from '@/renderer/tool/tool';
 import RightTitle from './RightTitle.vue';
 import { SessionStore } from '@/renderer/stores/modules/sessionList'
 import { useSelectIndexStore } from '@/renderer/stores/modules/selectIndex'
@@ -25,8 +26,8 @@ const route = computed(() => useSelectIndexStore().getAsideMenuIndex)
 .session_title {
     display: flex;
     justify-content: space-between;
-    min-width: 1080px;
-    width: calc(100vw - 360px);
+    //min-width: 1080px;
+    //width: calc(100vw - 360px);
     height: 68px;
     background: #F5F6F7;
     border-bottom: 1px solid #EAEAEA;

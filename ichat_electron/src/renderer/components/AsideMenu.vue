@@ -45,6 +45,13 @@ const select = (route: string) => {
 // })
 
 const state = reactive({
+    dashboard: {
+        'menuName': '仪表盘',
+        'iconName': 'dashboard',
+        'route': '/dashboard',
+        'color': '#808899',
+        'tipsNumber': '',
+    },
     session: {
         'menuName': '会话',
         'iconName': 'conversation',
@@ -80,7 +87,7 @@ const state = reactive({
 }
 
 #aside_container {
-    width: 64px;
+    width: 100%;
     height: 100%;
     background: #F5F6F7;
     display: flex;

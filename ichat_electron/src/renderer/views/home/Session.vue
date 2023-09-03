@@ -1,35 +1,32 @@
 <template>
-    <div class="session_container">
-        <LIstItems titlename="全部会话" @clickEvent="sessionItemSelect" :list="SessionStore().getSessionLists"></LIstItems>
-        <div>
-            <div v-if="selectSession">
-                <SessionTitle :name="state.nickname" @sessionTitleClickEvent="open()">
-                    <template #titleRight>
-                        <div id="diandiandian">
-                            <SvgIcon @click="open()" color="#808899" name="dian"></SvgIcon>
-                        </div>
-                    </template>
-                </SessionTitle>
-                <div>
+    <div class="session-container">
+        <div class="session-title">
+            <information></information>
+            <session-title :name="state.nickname" @sessionTitleClickEvent="open()">
+                <template v-if="selectSession" #titleRight>
+                    <div id="diandiandian">
+                        <SvgIcon @click="open()" color="#808899" name="dian"></SvgIcon>
+                    </div>
+                </template>
+            </session-title>
+        </div>
+        <div class="session-content">
+            <LIstItems titlename="全部会话" @clickEvent="sessionItemSelect" :list="SessionStore().getSessionLists"></LIstItems>
+            <div class="message-container">
+                <div v-if="selectSession">
                     <el-scrollbar id="chat_message_container" ref="scrollbarRef">
                         <div id="content_container" ref="innerRef">
-                            <ChatBubble style="margin: 0 23px 0 23px;" v-for="item in record" :content="item.content"
-                                :is-self="Boolean(item.i_send)" :send-time="formatWechatTime(item.send_time)"></ChatBubble>
+                            <ChatBubble style="margin: 0 23px 0 23px;" :key="item" v-for="item in record"
+                                :content="item.content" :is-self="Boolean(item.i_send)"
+                                :send-time="formatWechatTime(item.send_time)"></ChatBubble>
                         </div>
                     </el-scrollbar>
                     <ChatInputContaineri @sendMessage="sendMessage"></ChatInputContaineri>
                 </div>
-            </div>
-            <div v-else>
-                <SessionTitle style="background:rgb(255, 255, 255);border-bottom:none"></SessionTitle>
-                <div style="display: flex;justify-content: center;height: calc(100vh - 240px);">
-                    <DefaultNullValue
-                        style="display: flex;align-items: center;height: 100%;flex-direction: column;justify-content: center;">
-                    </DefaultNullValue>
+                <DefaultNullValue v-else />
+                <div>
+                    <Drawer @close="close" :status="state.drawerStatus" type="person"></Drawer>
                 </div>
-            </div>
-            <div>
-                <Drawer @close="close" :status="state.drawerStatus" type="person"></Drawer>
             </div>
         </div>
     </div>
@@ -153,13 +150,9 @@ const updateScrollTop = () => {
 }
 
 
-.session_container {
-    display: flex;
-
-    #diandiandian {
-        position: absolute;
-        margin-left: 100px;
-    }
+#diandiandian {
+    position: absolute;
+    margin-left: 100px;
 }
 
 #chat_message_container {
@@ -180,5 +173,25 @@ const updateScrollTop = () => {
         margin-bottom: 10px;
     }
 
+}
+
+.session-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+
+    .session-content {
+        display: flex;
+        height: 100%;
+    }
+
+    .message-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+    }
 }
 </style>

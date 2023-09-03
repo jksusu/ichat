@@ -20,19 +20,22 @@ import { showLoginWindow } from '@/common/ipcRenderer'
 import AsideMenu from '@/renderer/components/AsideMenu.vue'
 import { computed, watchEffect, watch, onMounted } from 'vue'
 import { Connect, Socket } from './module/socket'
-import log from 'loglevel-es'
+import { ifWeb } from './tool/tool'
 
 let router = useRouter()
 router.beforeEach((to, from) => {
   const token = UserStore().getToken
   //读取本地token
   if (to.meta.auth && token == '') {
-    //showLoginWindow()
-    return {
-      path: '/login',
-      // 保存我们所在的位置，以便以后再来
-      query: { redirect: to.fullPath },
+    if (!ifWeb()) {
+      // showLoginWindow()
     }
+   
+    // return {
+    //   path: '/login',
+    //   // 保存我们所在的位置，以便以后再来
+    //   query: { redirect: to.fullPath },
+    // }
   }
 })
 onMounted(() => {
@@ -61,18 +64,19 @@ body {
 }
 
 .container {
-  min-width: 1440px;
-  min-height: 900px;
+  //min-width: 1440px;
+  //min-height: 900px;
   width: 100vw;
   height: 100vh;
   position: relative;
 }
 
 .el-aside {
-  width: 64px;
+  width: 75px;
 }
 
 .el-main {
   --el-main-padding: 0;
+  width: 100%;
 }
 </style>

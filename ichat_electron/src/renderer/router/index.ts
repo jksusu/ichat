@@ -10,10 +10,12 @@ import GroupListsView from '@/renderer/views/friends/GroupLists.vue'
 import FriendListsView from '@/renderer/views/friends/FriendLists.vue'
 import ScanCodeLoginView from '@/renderer/views/login/ScanCodeLogin.vue'
 import RetrievePasswordView from '@/renderer/views/login/RetrievePassword.vue'
+import Dashboard from '@/renderer/views/dashboard/Index.vue'
 
 
 const routes: Array<RouteRecordRaw> = [
-  { path: '/', component: sessionView, meta: { auth: true, keepAlive: true } },
+  { path: '/', component: Dashboard, meta: { auth: true, keepAlive: true } },
+  { path: '/dashboard', component: Dashboard, meta: { auth: true, keepAlive: true } },
   { path: '/home', component: HomeView, meta: { auth: true } },
   { path: '/login', component: LoginView, meta: { auth: false } },
   { path: '/scan_code_login', component: ScanCodeLoginView },

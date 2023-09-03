@@ -17,7 +17,7 @@ const isWinos = () => {
  * 获取 icon
  * @returns string
  */
-const iconUrl = isMacos ? '../../public/icon.png' : '../../public/icon@2x.png'
+const iconUrl = isMacos ? '../../public/icon.png' : '../../public/icon_2x_256x256.ico'
 
 module.exports = {
     isDev,
